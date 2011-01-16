@@ -286,25 +286,25 @@ function setAppMonomeLayer(aValue) {
 
 function incrementDisplayColumnOffset() {
     if (debugItem.functionName) { post("                     --incrementDisplayColumnOffset--\n"); }
-    incrementParameterProperty("displayColumnOffset", 1);
+    changeParameterProperty("displayColumnOffset", 1);
     updateAppWindow();
 }
 
 function decrementDisplayColumnOffset() {
     if (debugItem.functionName) { post("                     --decrementDisplayColumnOffset--\n"); }
-    decrementParameterProperty("displayColumnOffset", 1);
+    changeParameterProperty("displayColumnOffset", -1);
     updateAppWindow();
 }
 
 function incrementDisplayRowOffset() {
     if (debugItem.functionName) { post("                     --incrementDisplayRowOffset--\n"); }
-    incrementParameterProperty("displayRowOffset", 1);
+    changeParameterProperty("displayRowOffset", 1);
     updateAppWindow();
 }
 
 function decrementDisplayRowOffset() {
     if (debugItem.functionName) { post("                     --decrementDisplayRowOffset--\n"); }
-    decrementParameterProperty("displayRowOffset", 1);
+    changeParameterProperty("displayRowOffset", -1);
     updateAppWindow();
 }
 
@@ -759,14 +759,9 @@ function setParameterProperty(aPropertyString, aValue) {
 	}
 }
 
-function incrementParameterProperty(aPropertyString, aAmount) {
+function changeParameterProperty(aPropertyString, aAmount) {
     var lValue = parameter[aPropertyString].value + aAmount;
     setParameterProperty(aPropertyString, lValue);    
-}
-
-function decrementParameterProperty(aPropertyString, aAmount) {
-    var lValue = parameter[aPropertyString].value - aAmount;
-    setParameterProperty(aPropertyString, lValue);
 }
 
 function toggleParameterProperty(aPropertyString) {
@@ -782,16 +777,23 @@ function grabAllPattrValues() {
     }
 }
 
-
 function grabPattrValue(aProperty) {
-    if (debugItem.functionName) { post("                     --grabPattrValue--\n"); }
+    if (debugItem.functionName) {
+        post("                     --grabPattrValue--\n");
+    }
     if (debugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
+    
     var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
+    
     if (debugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+    
     var lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+    
     if (debugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+    
     aProperty.value = lValue;
     sendToHud(aProperty.name, aProperty.value, 0);
+    
     if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
 
