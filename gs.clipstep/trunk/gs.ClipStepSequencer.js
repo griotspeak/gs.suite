@@ -46,8 +46,6 @@ var newNoteVelocity;
 var newNoteLength;
 var cycles;
 var rootNote;
-var trackIndex;
-var clipScene;
 var currentScale;
 var currentScaleName;
 var rowOffset;
@@ -229,7 +227,7 @@ function bang() {
     post("monomeHeight:", monomeHeight, "\n");
     post("monomeWidth:", monomeWidth, "\n");
     post("root:", rootNote, "\n");
-    post("cycles:", cycles, "\n");
+    post("cycles:", parameter.cycles.value, "\n");
 }
 
 function initialize() {
@@ -307,7 +305,7 @@ function grabAllPattrValues() {
     
     parameter.clipScene.value = ((clipScenePVal != NaN) && (clipScenePVal  >= 0)) ? clipScenePVal : 0;
     currentScaleName = (currentScaleNamePVal != undefined) ? currentScaleNamePVal : "Drums";
-    cycles = ((cyclesPVal != NaN) && (cyclesPVal > 0)) ? cyclesPVal : 0;
+    parameter.cycles.value = ((cyclesPVal != NaN) && (cyclesPVal > 0)) ? cyclesPVal : 0;
     displayWidth = ((displayWidth != NaN) && (displayWidth > 0)) ? displayWidth : 0; 
     folding = ((folding != NaN) && (folding > 0)) ? folding : 0;
     foldingRowOffset = ((foldingRowOffset != NaN) && (foldingRowOffset > 0)) ? foldingRowOffset : 0;
@@ -372,7 +370,7 @@ function updatePattrs() {
     
     this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(currentScaleName);
-    this.patcher.getnamed("cyclesGsCssPattr").message(cycles);
+    this.patcher.getnamed("cyclesGsCssPattr").message(parameter.cycles.value);
     this.patcher.getnamed("displayWidthGsCssPattr").message(displayWidth);
     this.patcher.getnamed("foldingGsCssPattr").message(folding);
     this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
@@ -1358,7 +1356,7 @@ function updateHud() {
     sendToHud("noteLength", newNoteLength, 0);
     sendToHud("monomeHeight", monomeHeight, 0);
     sendToHud("monomeWidth", monomeWidth, 0);
-    sendToHud("cycles", cycles, 0);
+    sendToHud("cycles", parameter.cycles.value, 0);
     sendToHud("root", rootNote, 0);
     sendToHud("folding", folding, 0);
     sendToHud("velocity", newNoteVelocity, 0);   
@@ -2364,13 +2362,13 @@ function setCycles(aNewCycleCount) {
     if (debugLevel[6]) { post("                               --setCycles--\n"); }
     
     if (0 < aNewCycleCount) {
-        cycles = aNewCycleCount;
-        sendToHud("cycles", cycles, 0);
+        parameter.cycles.value = aNewCycleCount;
+        sendToHud("cycles", parameter.cycles.value, 0);
         onScaleVariableChange();
     }
     else { post("invalid cycle count"); }
 
-    this.patcher.getnamed("cyclesGsCssPattr").message(cycles);
+    this.patcher.getnamed("cyclesGsCssPattr").message(parameter.cycles.value);
 }
 
 //                                  ---===rootNote accessors===---
@@ -2483,15 +2481,15 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
     switch (symbolFromPatcher) {
     
         case majorScale.name:
-            setCurrentScale(generateFullScaleList(majorScale, rootNote, cycles), majorScale.name);
+            setCurrentScale(generateFullScaleList(majorScale, rootNote, parameter.cycles.value), majorScale.name);
             break;
             
         case "NaturalMinor":
-            setCurrentScale(generateFullScaleList(naturalMinorScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(naturalMinorScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "HarmonicMinor":
-            setCurrentScale(generateFullScaleList(harmonicMinorScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(harmonicMinorScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Drums":
@@ -2499,75 +2497,75 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
             break;
             
         case "Chromatic":
-            setCurrentScale(generateFullScaleList(chromaticScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(chromaticScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "MinorPentatonic":
-            setCurrentScale(generateFullScaleList(minorPentatonicScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(minorPentatonicScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "MajorPentatonic":
-            setCurrentScale(generateFullScaleList(majorPentatonicScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(majorPentatonicScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "BluesPentatonic":
-            setCurrentScale(generateFullScaleList(bluesPentatonicScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(bluesPentatonicScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Ionian":
-            setCurrentScale(generateFullScaleList(ionianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(ionianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Dorian":
-            setCurrentScale(generateFullScaleList(dorianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(dorianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Phrygian":
-            setCurrentScale(generateFullScaleList(phrygianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(phrygianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Lydian":
-            setCurrentScale(generateFullScaleList(lydianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(lydianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Mixolydian":
-            setCurrentScale(generateFullScaleList(mixolydianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(mixolydianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Aeolian":
-            setCurrentScale(generateFullScaleList(aeolianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(aeolianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Locrian":
-            setCurrentScale(generateFullScaleList(locrianMode, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(locrianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "WholeTone":
-            setCurrentScale(generateFullScaleList(wholeToneScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(wholeToneScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "WholeHalfDiminished":
-            setCurrentScale(generateFullScaleList(wholeHalfdiminishedScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(wholeHalfdiminishedScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "HalfWholeDiminished":
-            setCurrentScale(generateFullScaleList(halfWholeDiminishedScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(halfWholeDiminishedScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "SymmetricalAugmented":
-            setCurrentScale(generateFullScaleList(symmetricalAugmentedScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(symmetricalAugmentedScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Tritone":
-            setCurrentScale(generateFullScaleList(tritoneScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(tritoneScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
 
         case "MajorQuartal":
-            setCurrentScale(generateFullScaleList(majorQuartalScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(majorQuartalScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "MinorQuartal":
-            setCurrentScale(generateFullScaleList(minorQuartalScale, rootNote, cycles), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(minorQuartalScale, rootNote, parameter.cycles.value), symbolFromPatcher);
             break;
             
         default:
