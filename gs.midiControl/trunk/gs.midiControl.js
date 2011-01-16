@@ -511,14 +511,9 @@ function setParameterProperty(aPropertyString, aValue) {
     
 }
 
-function incrementParameterProperty(aPropertyString) {
-    var lValue = parameter[aPropertyString].value + 1;
+function changeParameterProperty(aPropertyString, aAmount) {
+    var lValue = parameter[aPropertyString].value + aAmount;
     setParameterProperty(aPropertyString, lValue);    
-}
-
-function decrementParameterProperty(aPropertyString) {
-    var lValue = parameter[aPropertyString].value - 1;
-    setParameterProperty(aPropertyString, lValue);
 }
 
 function toggleParameterProperty(aPropertyString) {
