@@ -103,7 +103,7 @@ function bang() {
 function initialize() {
     if (debugLevel[1]) { post("                     ---initialize-\n"); }
     if (debugLevel[5]) { postPattrs("start"); }
-    grabPattrValues();
+    grabAllPattrValues();
     buildMonome();
     
     watchSet = new LiveAPI(this.patcher, null, "live_set");
@@ -137,8 +137,8 @@ function initialize() {
 
 }
 
-function grabPattrValues() {
-    if (debugLevel[1]) { post("                     ---grabPattrValues-\n"); }
+function grabAllPattrValues() {
+    if (debugLevel[1]) { post("                     ---grabAllPattrValues-\n"); }
 
     var clipScenePVal = Number(this.patcher.getnamed("clipSceneGsCssPattr").getvalueof());
     var currentScaleNamePVal = this.patcher.getnamed("currentScaleNameGsCssPattr").getvalueof();
@@ -239,22 +239,22 @@ function postPattrs(_text) {
 function updatePattrs() {
     if (debugLevel[1]) { post("                     ---updatePattrs-\n"); }
     
-    this.patcher.getnamed("clipSceneGsCssObject").message("set", clipScene);
+    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(currentScaleName);
-    this.patcher.getnamed("cyclesGsCssObject").message("set", cycles);
-    this.patcher.getnamed("displayWidthGsCssObject").message("set", displayWidth);
-    this.patcher.getnamed("foldingGsCssObject").message("set", folding);
-    this.patcher.getnamed("foldingRowOffsetGsCssObject").message("set", foldingRowOffset);
-    this.patcher.getnamed("functionModeGsCssObject").message("set", functionMode);
-    this.patcher.getnamed("inSuiteGsCssObject").message("set", inSuite);
-    this.patcher.getnamed("monomeHeightGsCssObject").message("set", monomeHeight);
-    this.patcher.getnamed("monomeWidthGsCssObject").message("set", monomeWidth);
-    this.patcher.getnamed("newNoteLengthGsCssObject").message("set", newNoteLength);
-    this.patcher.getnamed("newNoteVelocityGsCssObject").message("set", newNoteVelocity);
-    this.patcher.getnamed("rootNoteGsCssObject").message("set", rootNote);
-    this.patcher.getnamed("rowOffsetGsCssObject").message("set", rowOffset);
-    this.patcher.getnamed("timeOffsetGsCssObject").message("set", timeOffset);
-    this.patcher.getnamed("trackIndexGsCssObject").message("set", trackIndex);
+    this.patcher.getnamed("cyclesGsCssPattr").message(cycles);
+    this.patcher.getnamed("displayWidthGsCssPattr").message(displayWidth);
+    this.patcher.getnamed("foldingGsCssPattr").message(folding);
+    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
+    this.patcher.getnamed("functionModeGsCssPattr").message(functionMode);
+    this.patcher.getnamed("inSuiteGsCssPattr").message(inSuite);
+    this.patcher.getnamed("monomeHeightGsCssPattr").message(monomeHeight);
+    this.patcher.getnamed("monomeWidthGsCssPattr").message(monomeWidth);
+    this.patcher.getnamed("newNoteLengthGsCssPattr").message(newNoteLength);
+    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(newNoteVelocity);
+    this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
+    this.patcher.getnamed("rowOffsetGsCssPattr").message(rowOffset);
+    this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
+    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
 }
 
 function setClipFromGlobal(aTrack, aScene) {
@@ -492,7 +492,7 @@ function setTrackIndex(aNewIndexNumber) {
     trackIndex = aNewIndexNumber;
     focusOnClip();
 
-    this.patcher.getnamed("trackIndexGsCssObject").message("set", trackIndex);
+    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
     
     if (debugLevel[3]) { post("trackIndex after setTrackIndex:", trackIndex, "\n"); }
 }
@@ -510,6 +510,7 @@ function changeTrackIndex(amountOfChange) {
         trackIndex = trackArray.length - 1;
     }
     if (debugLevel[3]) { post("trackIndex after:", trackIndex, "\n"); }
+    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
     return trackIndex;
 }
 function getIndexOfTrack(trackToFind) {
@@ -571,7 +572,7 @@ function setRowOffset(aNewOffsetNumber) {
     rowOffset =        aNewOffsetNumber;
     updateNoteDisplay();
 
-    this.patcher.getnamed("rowOffsetGsCssObject").message("set", rowOffset);
+    this.patcher.getnamed("rowOffsetGsCssPattr").message(rowOffset);
 
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
@@ -579,7 +580,7 @@ function setFoldingRowOffset(aNewOffsetNumber) {
     foldingRowOffset =      aNewOffsetNumber;
     updateNoteDisplay();
     
-    this.patcher.getnamed("foldingRowOffsetGsCssObject").message("set", foldingRowOffset);
+    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
 }
 function getRowOffset() {
     return (folding) ? foldingRowOffset : rowOffset;
@@ -614,7 +615,7 @@ function setClipScene(aNewSceneNumber) {
     clipScene = aNewSceneNumber;
     focusOnClip();
     
-    this.patcher.getnamed("clipSceneGsCssObject").message("set", clipScene);
+    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
 }
 
 function setClipSceneFromPatcher(aNewSceneNumber) {
@@ -647,6 +648,7 @@ function changeClipScene(amountOfChange) {
     }
     
     focusOnClip();
+    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
     return clipScene;
 }
 
@@ -666,7 +668,7 @@ function setTimeOffset(aNewOffset){
     timeOfffset = aNewOffset;
     updateNoteDisplay();
 
-    this.patcher.getnamed("timeOffsetGsCssObject").message("set", timeOffset);
+    this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
 }
 function getTimeOffset() {
     if (debugLevel[6]) { post("                               --getTimeOffset-\n"); }
@@ -688,7 +690,7 @@ function changeTimeOffset(amountOfChange) {
         timeOffset = editClip.get("length") - displayWidth;
     }
 
-    this.patcher.getnamed("timeOffsetGsCssObject").message("set", timeOffset);
+    this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
 }
 
 //                                  ---===newNoteLength accessors===---
@@ -703,7 +705,7 @@ function setNewNoteLength(length) {
     sendToHud("noteLength", newNoteLength, 0);
     updateMultiPurposeLeds();
 
-    this.patcher.getnamed("newNoteLengthGsCssObject").message("set", newNoteLength);
+    this.patcher.getnamed("newNoteLengthGsCssPattr").message(newNoteLength);
 }
 
 //                                  ---===newNoteVelocity===---
@@ -719,7 +721,7 @@ function setNewNoteVelocity(aVelocity) {
         post("invalid velocity");
     }
 
-    this.patcher.getnamed("newNoteVelocityGsCssObject").message("set", newNoteVelocity);
+    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(newNoteVelocity);
 }
 
 //                                  ---===functionMode accessors===---
@@ -729,7 +731,7 @@ function setFunctionMode(aMode) {
 
     updateControlLeds();
 
-    this.patcher.getnamed("functionModeGsCssObject").message("set", functionMode);
+    this.patcher.getnamed("functionModeGsCssPattr").message(functionMode);
 }
 
 function getFunctionMode() {
@@ -790,7 +792,7 @@ function setFolding(newFolding) {
     updateNoteDisplay();
     sendToHud("folding", folding, 0);
 
-    this.patcher.getnamed("foldingGsCssObject").message("set", folding);
+    this.patcher.getnamed("foldingGsCssPattr").message(folding);
 }
 function getFolding() {
     if (debugLevel[6]) { post("                               --getFolding--\n"); }
@@ -835,7 +837,7 @@ function setDisplayWidth(aWidth) {
         updateMultiPurposeLeds();
     }
 
-    this.patcher.getnamed("displayWidthGsCssObject").message("set", displayWidth);
+    this.patcher.getnamed("displayWidthGsCssPattr").message(displayWidth);
 }
 
 function updatePlayhead(aTimeNumber) {
@@ -2045,7 +2047,7 @@ function setMonomeWidth(aWidth) {
 
     if(debugLevel[2]) { post("monomeWidth:", monomeWidth, "\n"); }
 
-    this.patcher.getnamed("monomeWidthGsCssObject").message("set", monomeWidth);
+    this.patcher.getnamed("monomeWidthGsCssPattr").message(monomeWidth);
 }
 function setMonomeHeight(aHeight) {
     if (debugLevel[6]) { post("                               --setMonomeHeight--\n"); }
@@ -2054,7 +2056,7 @@ function setMonomeHeight(aHeight) {
     
     if(debugLevel[2]) { post("monomeHeight:", monomeHeight, "\n"); }
 
-    this.patcher.getnamed("monomeHeightGsCssObject").message("set", monomeHeight);
+    this.patcher.getnamed("monomeHeightGsCssPattr").message(monomeHeight);
 }
 function SingleCell(aCol, aRow, aOutlet) {
     this.outlet = aOutlet;
@@ -2237,7 +2239,7 @@ function setCycles(aNewCycleCount) {
     }
     else { post("invalid cycle count"); }
 
-    this.patcher.getnamed("cyclesGsCssObject").message("set", cycles);
+    this.patcher.getnamed("cyclesGsCssPattr").message(cycles);
 }
 
 //                                  ---===rootNote accessors===---
@@ -2250,7 +2252,7 @@ function setRootNote(aNewRoot) {
         onScaleVariableChange();
     }
     else { post("invalid root note"); }
-    this.patcher.getnamed("rootNoteGsCssObject").message("set", rootNote);
+    this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
 }
 
 //                                  ---===onScaleVariableChange===---
@@ -2448,6 +2450,18 @@ function setInSuite(aNewValue) {
     if (aNewValue == 0) { inSuite = false; }
     else { inSuite = true; }
 }
+
+function store(aNumber) {
+    this.patcher.getnamed("gsClipStep-presetStore").message("store", aNumber);
+}
+
+function recall(aNumber) {
+    this.patcher.getnamed("gsClipStep-presetStore").message(aNumber);
+    grabAllPattrValues();
+    updateMonome();
+    updateHud();
+}
+
 
 
 function freebang() {
