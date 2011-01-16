@@ -2622,7 +2622,18 @@ function grabPattrValue(aProperty) {
     
     if (debugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
     
-    var lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+    var lValue;
+    
+    switch (aProperty.type) {
+        case "number" : 
+            /*jsl:fallthru*/
+        case "toggle" :
+            lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        case "string" :
+            lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+    }
     
     if (debugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
     
