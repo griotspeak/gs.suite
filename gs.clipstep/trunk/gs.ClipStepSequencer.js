@@ -40,8 +40,6 @@ var post;
 var outlet;
 
 
-var newNoteVelocity;
-var newNoteLength;
 var rootNote;
 var currentScale;
 var currentScaleName;
@@ -308,8 +306,8 @@ function grabAllPattrValues() {
     parameter.inSuite.value = (inSuitePVal != null) ? inSuitePVal : 0;
     parameter.monomeHeight.value = ((monomeHeightPVal != NaN) && (monomeHeightPVal > 2)) ? monomeHeightPVal : 8;
     parameter.monomeWidth.value = ((monomeWidthPVal != NaN) && (monomeWidthPVal > 2)) ? monomeWidthPVal : 8;
-    newNoteLength = ((newNoteLengthPVal != NaN) && (newNoteLengthPVal > 0)) ? newNoteLengthPVal : 0.25;
-    newNoteVelocity = ((newNoteVelocityPVal != NaN) && (newNoteVelocityPVal >= 0) && (newNoteVelocityPVal <= 127)) ? newNoteVelocityPVal : 100;
+    parameter.newNoteLength.value = ((newNoteLengthPVal != NaN) && (newNoteLengthPVal > 0)) ? newNoteLengthPVal : 0.25;
+    parameter.newNoteVelocity.value = ((newNoteVelocityPVal != NaN) && (newNoteVelocityPVal >= 0) && (newNoteVelocityPVal <= 127)) ? newNoteVelocityPVal : 100;
     rootNote = ((rootNotePVal != NaN) && (rootNotePVal >= 0) && (rootNotePVal <= 127)) ? rootNotePVal : 60;
     rowOffset = ((rowOffsetPVal != NaN) && (rowOffsetPVal >= 0)) ? rowOffsetPVal : 0;
     timeOffset = ((timeOffset != NaN) && (timeOffset > 0)) ? timeOffset : 0;
@@ -373,8 +371,8 @@ function updatePattrs() {
     this.patcher.getnamed("inSuiteGsCssPattr").message(parameter.inSuite.value);
     this.patcher.getnamed("monomeHeightGsCssPattr").message(parameter.monomeHeight.value);
     this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
-    this.patcher.getnamed("newNoteLengthGsCssPattr").message(newNoteLength);
-    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(newNoteVelocity);
+    this.patcher.getnamed("newNoteLengthGsCssPattr").message(parameter.newNoteLength.value);
+    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(parameter.newNoteVelocity.value);
     this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
     this.patcher.getnamed("rowOffsetGsCssPattr").message(rowOffset);
     this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
@@ -821,12 +819,12 @@ function setNewNoteLength(length) {
         post("invalid length argument was less than 0");
     }
     else {
-        newNoteLength = length;
+        parameter.newNoteLength.value = length;
     }
-    sendToHud("noteLength", newNoteLength, 0);
+    sendToHud("noteLength", parameter.newNoteLength.value, 0);
     updateMultiPurposeLeds();
 
-    this.patcher.getnamed("newNoteLengthGsCssPattr").message(newNoteLength);
+    this.patcher.getnamed("newNoteLengthGsCssPattr").message(parameter.newNoteLength.value);
 }
 
 //                                  ---===newNoteVelocity===---
@@ -835,14 +833,14 @@ function setNewNoteVelocity(aVelocity) {
     if (debugLevel[6]) { post("                     ---setNewNoteVelocity-\n"); }
     
     if ((0 <= aVelocity) && (aVelocity <= 127)) {
-        newNoteVelocity = aVelocity;
-        sendToHud("velocity", newNoteVelocity, 0);
+        parameter.newNoteVelocity.value = aVelocity;
+        sendToHud("velocity", parameter.newNoteVelocity.value, 0);
     }
     else {
         post("invalid velocity");
     }
 
-    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(newNoteVelocity);
+    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(parameter.newNoteVelocity.value);
 }
 
 //                                  ---===functionMode accessors===---
@@ -1281,7 +1279,7 @@ function addNote(addNum, addTime, addVelocity) {
     // Model Controller
     // simply adds one note no need to get and replace every note.
     
-    var tempNoteArray = ["note", addNum, addTime, newNoteLength, addVelocity, 0];
+    var tempNoteArray = ["note", addNum, addTime, parameter.newNoteLength.value, addVelocity, 0];
     var newLength = noteArray.length + 1;
 
     editClip.call("deselect_all_notes"); // CALL
@@ -1345,13 +1343,13 @@ function updateHud() {
     sendToHud("top", (displayNoteList[rowOffset]) ? displayNoteList[rowOffset] : 0, 0 );
     if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), 3); }
     sendToHud("scale", currentScaleName, 2);
-    sendToHud("noteLength", newNoteLength, 0);
+    sendToHud("noteLength", parameter.newNoteLength.value, 0);
     sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
     sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
     sendToHud("cycles", parameter.cycles.value, 0);
     sendToHud("root", rootNote, 0);
     sendToHud("folding", parameter.folding.value, 0);
-    sendToHud("velocity", newNoteVelocity, 0);   
+    sendToHud("velocity", parameter.newNoteVelocity.value, 0);   
 }
 
 
@@ -1480,7 +1478,7 @@ function displayLengthLeds() {
     if (debugLevel[1]) { post("                               --displayLengthLeds--\n"); }
         
     if ((parameter.functionMode.value == FunctionMode.lengthMode) && (!extendedLengthOptions)) {
-        switch(newNoteLength) {
+        switch(parameter.newNoteLength.value) {
             case LengthOption._0:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1499,7 +1497,7 @@ function displayLengthLeds() {
     }
     else if ((parameter.functionMode.value == FunctionMode.lengthMode) && (extendedLengthOptions)) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
-        switch(newNoteLength) {
+        switch(parameter.newNoteLength.value) {
             case LengthOption._4:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1522,7 +1520,7 @@ function displayVelocityLeds() {
     if (debugLevel[1]) { post("                               --displayVelocityLeds--\n"); }
         
     if ((parameter.functionMode.value == FunctionMode.velocityMode) && (!extendedVelocityOptions)) {
-        switch(newNoteVelocity) {
+        switch(parameter.newNoteVelocity.value) {
             case VelocityOption._0:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1541,7 +1539,7 @@ function displayVelocityLeds() {
     }
     else if ((parameter.functionMode.value == FunctionMode.velocityMode) && (extendedVelocityOptions)) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
-        switch(newNoteVelocity) {
+        switch(parameter.newNoteVelocity.value) {
             case VelocityOption._4:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1668,7 +1666,7 @@ function press(mCol, mRow, upDown) {
             }
         
             else if (!isAlreadyInNoteArray[0]) {
-                    addNote(newNoteNote, newNoteTime, newNoteVelocity);
+                    addNote(newNoteNote, newNoteTime, parameter.newNoteVelocity.value);
             }
         }
         sendToHud("latest", newNoteNote, 0);
@@ -1856,7 +1854,7 @@ function lengthButtons(aButtonPressed) {
             }
         }
     }
-    if (debugLevel[4]) { post("new notes will be created with length:", newNoteLength, "\n"); }
+    if (debugLevel[4]) { post("new notes will be created with length:", parameter.newNoteLength.value, "\n"); }
 }
 
 function velocityButtons(aButtonPressed) {
@@ -1907,7 +1905,7 @@ function velocityButtons(aButtonPressed) {
     
     updateMultiPurposeLeds();
 
-    if (debugLevel[4]) { post("new notes will be created with velocity:", newNoteVelocity, "\n"); }
+    if (debugLevel[4]) { post("new notes will be created with velocity:", parameter.newNoteVelocity.value, "\n"); }
 }
 
 function toggleWidthDisplayOptions() {
