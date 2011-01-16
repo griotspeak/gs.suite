@@ -143,9 +143,9 @@ function grabAllPattrValues() {
     var clipScenePVal = Number(this.patcher.getnamed("clipSceneGsCssPattr").getvalueof());
     var currentScaleNamePVal = this.patcher.getnamed("currentScaleNameGsCssPattr").getvalueof();
     var cyclesPVal = Number(this.patcher.getnamed("cyclesGsCssPattr").getvalueof());
-    var displayWidthPVal = Number(this.patcher.getnamed("displayWidthGsCssObject").getvalueof());
-    var foldingPVal = Number(this.patcher.getnamed("foldingGsCssObject").getvalueof());
-    var foldingRowOffsetPVal = Number(this.patcher.getnamed("foldingRowOffsetGsCssObject").getvalueof());    
+    var displayWidthPVal = Number(this.patcher.getnamed("displayWidthGsCssPattr").getvalueof());
+    var foldingPVal = Number(this.patcher.getnamed("foldingGsCssPattr").getvalueof());
+    var foldingRowOffsetPVal = Number(this.patcher.getnamed("foldingRowOffsetGsCssPattr").getvalueof());    
     var functionModePVal = Number(this.patcher.getnamed("functionModeGsCssPattr").getvalueof());
     var inSuitePVal = Number(this.patcher.getnamed("inSuiteGsCssPattr").getvalueof());
     var monomeHeightPVal = Number(this.patcher.getnamed("monomeHeightGsCssPattr").getvalueof());
@@ -154,7 +154,7 @@ function grabAllPattrValues() {
     var newNoteVelocityPVal = Number(this.patcher.getnamed("newNoteVelocityGsCssPattr").getvalueof());
     var rootNotePVal = Number(this.patcher.getnamed("rootNoteGsCssPattr").getvalueof());
     var rowOffsetPVal = Number(this.patcher.getnamed("rowOffsetGsCssPattr").getvalueof());
-    var timeOffsetPVal = Number(this.patcher.getnamed("timeOffsetGsCssObject").getvalueof());
+    var timeOffsetPVal = Number(this.patcher.getnamed("timeOffsetGsCssPattr").getvalueof());
     var trackIndexPVal = Number(this.patcher.getnamed("trackIndexGsCssPattr").getvalueof());
     
     if (debugLevel[3]) { post("clipScenePVal:", clipScenePVal, "\n"); }
@@ -201,9 +201,9 @@ function postPattrs(_text) {
     var clipScenePVal = Number(this.patcher.getnamed("clipSceneGsCssPattr").getvalueof());
     var currentScaleNamePVal = this.patcher.getnamed("currentScaleNameGsCssPattr").getvalueof();
     var cyclesPVal = Number(this.patcher.getnamed("cyclesGsCssPattr").getvalueof());
-    var displayWidthPVal = Number(this.patcher.getnamed("displayWidthGsCssObject").getvalueof());
-    var foldingPVal = Number(this.patcher.getnamed("foldingGsCssObject").getvalueof());
-    var foldingRowOffsetPVal = Number(this.patcher.getnamed("foldingRowOffsetGsCssObject").getvalueof());    
+    var displayWidthPVal = Number(this.patcher.getnamed("displayWidthGsCssPattr").getvalueof());
+    var foldingPVal = Number(this.patcher.getnamed("foldingGsCssPattr").getvalueof());
+    var foldingRowOffsetPVal = Number(this.patcher.getnamed("foldingRowOffsetGsCssPattr").getvalueof());    
     var functionModePVal = Number(this.patcher.getnamed("functionModeGsCssPattr").getvalueof());
     var inSuitePVal = Number(this.patcher.getnamed("inSuiteGsCssPattr").getvalueof());
     var monomeHeightPVal = Number(this.patcher.getnamed("monomeHeightGsCssPattr").getvalueof());
@@ -212,7 +212,7 @@ function postPattrs(_text) {
     var newNoteVelocityPVal = Number(this.patcher.getnamed("newNoteVelocityGsCssPattr").getvalueof());
     var rootNotePVal = Number(this.patcher.getnamed("rootNoteGsCssPattr").getvalueof());
     var rowOffsetPVal = Number(this.patcher.getnamed("rowOffsetGsCssPattr").getvalueof());
-    var timeOffsetPVal = Number(this.patcher.getnamed("timeOffsetGsCssObject").getvalueof());
+    var timeOffsetPVal = Number(this.patcher.getnamed("timeOffsetGsCssPattr").getvalueof());
     var trackIndexPVal = Number(this.patcher.getnamed("trackIndexGsCssPattr").getvalueof());
     
     post("clipScenePVal:", clipScenePVal, "\n");
@@ -2449,6 +2449,56 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
 function setInSuite(aNewValue) {
     if (aNewValue == 0) { inSuite = false; }
     else { inSuite = true; }
+}
+
+function setParameterProperty(aPropertyString, aValue) {
+
+    var lValue;
+
+    post("aValue:", aValue, "\n");
+    if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
+    else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
+    else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
+    else { post("something has gane awry in setParameterProperty!\n"); }
+
+    parameter[aPropertyString].value = lValue;
+
+    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, 0);
+    
+	if (parameter[aPropertyString].saveInPattr) {
+	    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Pattr";
+    	this.patcher.getnamed(patcherObjectNameString).message("set", parameter[aPropertyString].value);
+	}
+}
+
+function changeParameterProperty(aPropertyString, aAmount) {
+    var lValue = parameter[aPropertyString].value + aAmount;
+    setParameterProperty(aPropertyString, lValue);    
+}
+
+function toggleParameterProperty(aPropertyString) {
+    var lValue = Number(!Boolean(parameter[aPropertyString].value));
+    setParameterProperty(aPropertyString, lValue);
+}
+
+function grabPattrValue(aProperty) {
+    if (debugItem.functionName) {
+        post("                     --grabPattrValue--\n");
+    }
+    if (debugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
+    
+    var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
+    
+    if (debugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+    
+    var lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+    
+    if (debugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+    
+    aProperty.value = lValue;
+    sendToHud(aProperty.name, aProperty.value, 0);
+    
+    if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
 
 function store(aNumber) {
