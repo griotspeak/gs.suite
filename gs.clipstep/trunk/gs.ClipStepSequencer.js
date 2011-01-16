@@ -40,8 +40,6 @@ var post;
 var outlet;
 
 
-var monomeWidth;
-var monomeHeight;
 var newNoteVelocity;
 var newNoteLength;
 var rootNote;
@@ -53,7 +51,6 @@ var countAllTracks;
 var trackArray;
 var watchSetPlaying;
 var glob;
-var inSuite;
 var s;
 var indexTrack;
 var mWatchersCreated = false;
@@ -222,8 +219,8 @@ function bang() {
     
     post(currentScale, "\n");
     post("name:", currentScaleName, "\n");
-    post("monomeHeight:", monomeHeight, "\n");
-    post("monomeWidth:", monomeWidth, "\n");
+    post("monomeHeight:", parameter.monomeHeight.value, "\n");
+    post("monomeWidth:", parameter.monomeWidth.value, "\n");
     post("root:", rootNote, "\n");
     post("cycles:", parameter.cycles.value, "\n");
 }
@@ -308,9 +305,9 @@ function grabAllPattrValues() {
     parameter.folding.value = ((parameter.folding.value != NaN) && (parameter.folding.value > 0)) ? parameter.folding.value : 0;
     parameter.foldingRowOffset.value = ((parameter.foldingRowOffset.value != NaN) && (parameter.foldingRowOffset.value > 0)) ? parameter.foldingRowOffset.value : 0;
     parameter.functionMode.value = ((functionModePVal != NaN) && (functionModePVal >= 0) && (functionModePVal <= 4)) ? functionModePVal : 0;
-    inSuite = (inSuitePVal != null) ? inSuitePVal : 0;
-    monomeHeight = ((monomeHeightPVal != NaN) && (monomeHeightPVal > 2)) ? monomeHeightPVal : 8;
-    monomeWidth = ((monomeWidthPVal != NaN) && (monomeWidthPVal > 2)) ? monomeWidthPVal : 8;
+    parameter.inSuite.value = (inSuitePVal != null) ? inSuitePVal : 0;
+    parameter.monomeHeight.value = ((monomeHeightPVal != NaN) && (monomeHeightPVal > 2)) ? monomeHeightPVal : 8;
+    parameter.monomeWidth.value = ((monomeWidthPVal != NaN) && (monomeWidthPVal > 2)) ? monomeWidthPVal : 8;
     newNoteLength = ((newNoteLengthPVal != NaN) && (newNoteLengthPVal > 0)) ? newNoteLengthPVal : 0.25;
     newNoteVelocity = ((newNoteVelocityPVal != NaN) && (newNoteVelocityPVal >= 0) && (newNoteVelocityPVal <= 127)) ? newNoteVelocityPVal : 100;
     rootNote = ((rootNotePVal != NaN) && (rootNotePVal >= 0) && (rootNotePVal <= 127)) ? rootNotePVal : 60;
@@ -373,9 +370,9 @@ function updatePattrs() {
     this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
     this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(parameter.foldingRowOffset.value);
     this.patcher.getnamed("functionModeGsCssPattr").message(parameter.functionMode.value);
-    this.patcher.getnamed("inSuiteGsCssPattr").message(inSuite);
-    this.patcher.getnamed("monomeHeightGsCssPattr").message(monomeHeight);
-    this.patcher.getnamed("monomeWidthGsCssPattr").message(monomeWidth);
+    this.patcher.getnamed("inSuiteGsCssPattr").message(parameter.inSuite.value);
+    this.patcher.getnamed("monomeHeightGsCssPattr").message(parameter.monomeHeight.value);
+    this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
     this.patcher.getnamed("newNoteLengthGsCssPattr").message(newNoteLength);
     this.patcher.getnamed("newNoteVelocityGsCssPattr").message(newNoteVelocity);
     this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
@@ -970,13 +967,13 @@ function updatePlayhead(aTimeNumber) {
     if (playheadVisible) {
         var playheadTimeInt = Math.floor((aTimeNumber[1] - timeOffset) * displayRatioToMonome());
 
-        if((playheadTimeInt == -1) || (playheadTimeInt == monomeWidth)) {
+        if((playheadTimeInt == -1) || (playheadTimeInt == parameter.monomeWidth.value)) {
             Monome[monomeLastCol()][0].tempOff();            
         }
         else if(playheadTimeInt == 0) {                      
             Monome[playheadTimeInt][0].blink();
         }
-        else if((0 < playheadTimeInt) && (playheadTimeInt < monomeWidth)) {
+        else if((0 < playheadTimeInt) && (playheadTimeInt < parameter.monomeWidth.value)) {
             Monome[playheadTimeInt][0].blink();
             Monome[playheadTimeInt -1][0].tempOff();
         }
@@ -1049,10 +1046,10 @@ function roundDisplayOffset() {
 //                                  ---===Dynamic Time/Column Variables===---
 function displayTimeMax() { return parameter.displayWidth.value + timeOffset; }
 function colOffset() { return timeOffset * displayRatioToMonome(); }
-function displayRatioFromMonome() { return parameter.displayWidth.value / monomeWidth; }
-function displayRatioToMonome() { return monomeWidth / parameter.displayWidth.value; }
-function monomeLastRow() { return monomeHeight - 1; }
-function monomeLastCol() { return monomeWidth - 1; }
+function displayRatioFromMonome() { return parameter.displayWidth.value / parameter.monomeWidth.value; }
+function displayRatioToMonome() { return parameter.monomeWidth.value / parameter.displayWidth.value; }
+function monomeLastRow() { return parameter.monomeHeight.value - 1; }
+function monomeLastCol() { return parameter.monomeWidth.value - 1; }
 
 function displayRowMax() {
     var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
@@ -1349,8 +1346,8 @@ function updateHud() {
     if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), 3); }
     sendToHud("scale", currentScaleName, 2);
     sendToHud("noteLength", newNoteLength, 0);
-    sendToHud("monomeHeight", monomeHeight, 0);
-    sendToHud("monomeWidth", monomeWidth, 0);
+    sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
+    sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
     sendToHud("cycles", parameter.cycles.value, 0);
     sendToHud("root", rootNote, 0);
     sendToHud("folding", parameter.folding.value, 0);
@@ -1614,7 +1611,7 @@ function clearMultiPurposeLeds() {
 
 function clearNoteDisplay() {
     if (debugLevel[1]) { post("                               --clearNoteDisplay--\n"); }
-    for (var cCol = 0; cCol < monomeWidth; cCol ++) {
+    for (var cCol = 0; cCol < parameter.monomeWidth.value; cCol ++) {
         for (var cRow = 0; cRow < monomeLastRow(); cRow++) {
             Monome[cCol][cRow].ledOff();
         }
@@ -1626,7 +1623,7 @@ function clearNoteDisplay() {
 function fillInNoteRows() {
     if (debugLevel[1]) { post("                               --fillInNoteRows--\n"); }
 
-    var numberNeeded = (monomeHeight - displayNoteList.length);
+    var numberNeeded = (parameter.monomeHeight.value - displayNoteList.length);
     for (var m = 0; m < currentScale.length; m++) {
         if (!displayNoteList.inArray(currentScale[m]) ) {
             displayNoteList.push(currentScale[m]);
@@ -2166,21 +2163,21 @@ function sendToHud(key, value, format) {
 //                                  ---===Monome Device Methods===---
 function setMonomeWidth(aWidth) {
     if (debugLevel[6]) { post("                               --setMonomeWidth--\n"); }
-    monomeWidth = aWidth;
-    sendToHud("monomeWidth", monomeWidth, 0);
+    parameter.monomeWidth.value = aWidth;
+    sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
 
-    if(debugLevel[2]) { post("monomeWidth:", monomeWidth, "\n"); }
+    if(debugLevel[2]) { post("monomeWidth:", parameter.monomeWidth.value, "\n"); }
 
-    this.patcher.getnamed("monomeWidthGsCssPattr").message(monomeWidth);
+    this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
 }
 function setMonomeHeight(aHeight) {
     if (debugLevel[6]) { post("                               --setMonomeHeight--\n"); }
-    monomeHeight = aHeight;
-    sendToHud("monomeHeight", monomeHeight, 0);
+    parameter.monomeHeight.value = aHeight;
+    sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
     
-    if(debugLevel[2]) { post("monomeHeight:", monomeHeight, "\n"); }
+    if(debugLevel[2]) { post("monomeHeight:", parameter.monomeHeight.value, "\n"); }
 
-    this.patcher.getnamed("monomeHeightGsCssPattr").message(monomeHeight);
+    this.patcher.getnamed("monomeHeightGsCssPattr").message(parameter.monomeHeight.value);
 }
 function SingleCell(aCol, aRow, aOutlet) {
     this.outlet = aOutlet;
@@ -2249,13 +2246,13 @@ function buildMonome() {
     if (debugLevel[1]) { post("                               --buildMonome--\n"); }
     if (debugLevel[2]) { post("buildMonome called\n"); }
     if (debugLevel[4]) {
-        post("monomeWidth:", monomeWidth, "\n");
-        post("monomeHeight:", monomeHeight, "\n");
+        post("monomeWidth:", parameter.monomeWidth.value, "\n");
+        post("monomeHeight:", parameter.monomeHeight.value, "\n");
     }
     
-    for (var iCol = 0; iCol < monomeWidth; iCol++) {
+    for (var iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
         Monome[iCol] = new Array();
-        for (var iRow = 0; iRow < monomeHeight; iRow++) {
+        for (var iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
             Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
         }
         if (debugLevel[4]) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
@@ -2267,32 +2264,32 @@ Monome.row = function(aRow, aMethodToInvoke) {
         switch (aMethodToInvoke) {
             case "ledOn":
                 var iColumn;
-                for (iColumn = 0; iColumn < monomeWidth; iColumn++) {
+                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
                     Monome[iColumn][aRow].ledOn();
                 }
                 break;
             case "ledOff":
-                for (iColumn = 0; iColumn < monomeWidth; iColumn++) {
+                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
                     Monome[iColumn][aRow].ledOff();
                 }
                 break;
             case "tempOn":
-                for (iColumn = 0; iColumn < monomeWidth; iColumn++) {
+                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
                     Monome[iColumn][aRow].tempOn();
                 }
                 break;
             case "tempOff":
-                for (iColumn = 0; iColumn < monomeWidth; iColumn++) {
+                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
                     Monome[iColumn][aRow].tempOff();
                 }
                 break;
             case "blink":
-                for (iColumn = 0; iColumn < monomeWidth; iColumn++) {
+                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
                     Monome[iColumn][aRow].blink();
                 }
                 break;
             case "blinkIfOff":
-                for (iColumn = 0; iColumn < monomeWidth; iColumn++) {
+                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
                     Monome[iColumn][aRow].blinkIfOff();
                 }
                 break;
@@ -2306,32 +2303,32 @@ Monome.column = function(aColumn, aMethodToInvoke) {
         switch (aMethodToInvoke) {
             case "ledOn":
                 var iRow;
-                for (iRow = 0; iRow < monomeHeight; iRow++) {
+                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
                     Monome[aColumn][iRow].ledOn();
                 }
                 break;
             case "ledOff":
-                for (iRow = 0; iRow < monomeHeight; iRow++) {
+                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
                     Monome[aColumn][iRow].ledOff();
                 }
                 break;
             case "tempOn":
-                for (iRow = 0; iRow < monomeHeight; iRow++) {
+                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
                     Monome[aColumn][iRow].tempOn();
                 }
                 break;
             case "tempOff":
-                for (iRow = 0; iRow < monomeHeight; iRow++) {
+                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
                     Monome[aColumn][iRow].tempOff();
                 }
                 break;
             case "blink":
-                for (iRow = 0; iRow < monomeHeight; iRow++) {
+                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
                     Monome[aColumn][iRow].blink();
                 }
                 break;
             case "blinkIfOff":
-                for (iRow = 0; iRow < monomeHeight; iRow++) {
+                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
                     Monome[aColumn][iRow].blinkIfOff();
                 }
                 break;
@@ -2345,8 +2342,8 @@ function refreshMonome() {
     if (debugLevel[1]) { post("                               --refreshMonome--\n"); }
     var iCol;
     var iRow;
-    for (iCol = 0; iCol < monomeWidth; iCol++) {
-        for (iRow = 0; iRow < monomeHeight; iRow++) {
+    for (iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
+        for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
             Monome[iCol][iRow].checkActual();
         }
     }
@@ -2571,8 +2568,8 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
 }
 
 function setInSuite(aNewValue) {
-    if (aNewValue == 0) { inSuite = false; }
-    else { inSuite = true; }
+    if (aNewValue == 0) { parameter.inSuite.value = false; }
+    else { parameter.inSuite.value = true; }
 }
 
 function setParameterProperty(aPropertyString, aValue) {
