@@ -247,8 +247,8 @@ function initialize() {
     countMidiTracks();
         
     if (debugLevel[4]) {
-        post("trackNumber:", trackArray[trackIndex], "\n");
-        post("clipScene:", clipScene, "\n"); 
+        post("trackNumber:", trackArray[parameter.trackIndex.value], "\n");
+        post("clipScene:", parameter.clipScene.value, "\n"); 
     }
     
     // those with callbacks 
@@ -260,7 +260,7 @@ function initialize() {
     glob = new Global("clipStepGlobalController");
     glob.setClip = setClipFromGlobal;
     
-    setTrackIndexAndScene(trackIndex, clipScene);
+    setTrackIndexAndScene(parameter.trackIndex.value, parameter.clipScene.value);
     
     mWatchersCreated = true;
     updateNoteDisplay();
@@ -305,7 +305,7 @@ function grabAllPattrValues() {
     if (debugLevel[3]) { post("timeOffsetPVal:", timeOffsetPVal, "\n"); }
     if (debugLevel[3]) { post("trackIndexPVal:", trackIndexPVal, "\n"); }
     
-    clipScene = ((clipScenePVal != NaN) && (clipScenePVal  >= 0)) ? clipScenePVal : 0;
+    parameter.clipScene.value = ((clipScenePVal != NaN) && (clipScenePVal  >= 0)) ? clipScenePVal : 0;
     currentScaleName = (currentScaleNamePVal != undefined) ? currentScaleNamePVal : "Drums";
     cycles = ((cyclesPVal != NaN) && (cyclesPVal > 0)) ? cyclesPVal : 0;
     displayWidth = ((displayWidth != NaN) && (displayWidth > 0)) ? displayWidth : 0; 
@@ -320,7 +320,7 @@ function grabAllPattrValues() {
     rootNote = ((rootNotePVal != NaN) && (rootNotePVal >= 0) && (rootNotePVal <= 127)) ? rootNotePVal : 60;
     rowOffset = ((rowOffsetPVal != NaN) && (rowOffsetPVal >= 0)) ? rowOffsetPVal : 0;
     timeOffset = ((timeOffset != NaN) && (timeOffset > 0)) ? timeOffset : 0;
-    trackIndex = ((trackIndexPVal != NaN) && (trackIndexPVal >= 0)) ? trackIndexPVal : 0;
+    parameter.trackIndex.value = ((trackIndexPVal != NaN) && (trackIndexPVal >= 0)) ? trackIndexPVal : 0;
         
     updatePattrs();
 }
@@ -370,7 +370,7 @@ function postPattrs(_text) {
 function updatePattrs() {
     if (debugLevel[1]) { post("                     ---updatePattrs-\n"); }
     
-    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
+    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(currentScaleName);
     this.patcher.getnamed("cyclesGsCssPattr").message(cycles);
     this.patcher.getnamed("displayWidthGsCssPattr").message(displayWidth);
@@ -385,7 +385,7 @@ function updatePattrs() {
     this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
     this.patcher.getnamed("rowOffsetGsCssPattr").message(rowOffset);
     this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
-    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
+    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
 }
 
 function setClipFromGlobal(aTrack, aScene) {
@@ -620,29 +620,29 @@ function setTrack(aNewTrackNumber) {
 //                                  ---===trackIndex accessors===---
 function setTrackIndex(aNewIndexNumber) {
     if (debugLevel[6]) { post("                               --setTrackIndex--\n"); }
-    trackIndex = aNewIndexNumber;
+    parameter.trackIndex.value = aNewIndexNumber;
     focusOnClip();
 
-    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
+    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
     
-    if (debugLevel[3]) { post("trackIndex after setTrackIndex:", trackIndex, "\n"); }
+    if (debugLevel[3]) { post("trackIndex after setTrackIndex:", parameter.trackIndex.value, "\n"); }
 }
 function getTrackIndex() {
     if (debugLevel[6]) { post("                               --getTrackIndex--\n"); }
-    return trackIndex;
+    return parameter.trackIndex.value;
 }
 function changeTrackIndex(amountOfChange) {
     if (debugLevel[6]) { post("                               --changeTrackIndex--\n"); }
-    if (debugLevel[4]) { post("trackIndex before:", trackIndex, "amountOfChange", amountOfChange, "\n"); }
-    trackIndex += amountOfChange;
+    if (debugLevel[4]) { post("trackIndex before:", parameter.trackIndex.value, "amountOfChange", amountOfChange, "\n"); }
+    parameter.trackIndex.value += amountOfChange;
     
-    if (trackIndex < 0) { trackIndex = 0; }
-    else if (trackIndex >= trackArray.length) { 
-        trackIndex = trackArray.length - 1;
+    if (parameter.trackIndex.value < 0) { parameter.trackIndex.value = 0; }
+    else if (parameter.trackIndex.value >= trackArray.length) { 
+        parameter.trackIndex.value = trackArray.length - 1;
     }
-    if (debugLevel[3]) { post("trackIndex after:", trackIndex, "\n"); }
-    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
-    return trackIndex;
+    if (debugLevel[3]) { post("trackIndex after:", parameter.trackIndex.value, "\n"); }
+    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
+    return parameter.trackIndex.value;
 }
 function getIndexOfTrack(trackToFind) {
     if (debugLevel[6]) { post("                               --getTrackIndex--\n"); }
@@ -664,7 +664,7 @@ function getIndexOfTrack(trackToFind) {
 
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (debugLevel[6]) { post("                               --setTrackIndex--\n"); }
-    trackIndex = aNewIndexNumber;
+    parameter.trackIndex.value = aNewIndexNumber;
     
     var lCounter;
     
@@ -672,27 +672,27 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 
     if (lLimit != 0) { 
         for (lCounter = aNewSceneNumber; lCounter < lLimit; lCounter++) {
-            clipScene = lCounter;
-            if (debugLevel[6]) { post("clipScene:", clipScene, "\n"); }
+            parameter.clipScene.value = lCounter;
+            if (debugLevel[6]) { post("clipScene:", parameter.clipScene.value, "\n"); }
             if (focusOnClip()) { return true; }
         }
     
         for (lCounter = aNewSceneNumber; lCounter >=0; lCounter--) {
-            clipScene = lCounter;
-            if (debugLevel[6]) { post("clipScene:", clipScene, "\n"); }
+            parameter.clipScene.value = lCounter;
+            if (debugLevel[6]) { post("clipScene:", parameter.clipScene.value, "\n"); }
             if (focusOnClip()) { return true; }
         }
     
-        clipScene = 0;
+        parameter.clipScene.value = 0;
     }
     
     if (debugLevel[4]) { 
-        post("trackIndex after setTrackIndexAndScene:", trackIndex, "\n");
-        post("clipScene after setTrackIndexAndScene:", clipScene, "\n");
+        post("trackIndex after setTrackIndexAndScene:", parameter.trackIndex.value, "\n");
+        post("clipScene after setTrackIndexAndScene:", parameter.clipScene.value, "\n");
     }
     
-    this.patcher.getnamed("trackIndexGsCssPattr").message(trackIndex);
-    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
+    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
+    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
         
     return false;
 }
@@ -743,10 +743,10 @@ function changeRowOffset(amountOfChange) {
 //                                  ---===clipScene accessors===---
 function setClipScene(aNewSceneNumber) {
     if (debugLevel[6]) { post("                               --setClipScene--\n"); }
-    clipScene = aNewSceneNumber;
+    parameter.clipScene.value = aNewSceneNumber;
     focusOnClip();
     
-    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
+    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
 }
 
 function setClipSceneFromPatcher(aNewSceneNumber) {
@@ -755,36 +755,36 @@ function setClipSceneFromPatcher(aNewSceneNumber) {
 }
 function getClipScene() {
     if (debugLevel[6]) { post("                               --getClipScene--\n"); }
-    return clipScene;
+    return parameter.clipScene.value;
 }
 function changeClipScene(amountOfChange) {
     if (debugLevel[6]) { post("                               --changeClipScene--\n"); }
-    //var oldClipSceneNumber = clipScene;
-    clipScene += amountOfChange;
+    //var oldClipSceneNumber = parameter.clipScene.value;
+    parameter.clipScene.value += amountOfChange;
     
-//    if (amountOfChange == 0) { return clipScene; }
+//    if (amountOfChange == 0) { return parameter.clipScene.value; }
 //    else {
 //        while (!focusOnClip()) {
-//            setClipScene(clipScene + (amountOfChange / Math.abs(amountOfChange)));
-//            if (debugLevel[5]) { post("clipScene:", clipScene, "\n"); }
+//            setClipScene(parameter.clipScene.value + (amountOfChange / Math.abs(amountOfChange)));
+//            if (debugLevel[5]) { post("clipScene:", parameter.clipScene.value, "\n"); }
 //        }
 //    }    
-//    if (!isValidClipSceneNumber(clipScene)) { setClipScene(oldClipSceneNumber); }
+//    if (!isValidClipSceneNumber(parameter.clipScene.value)) { setClipScene(oldClipSceneNumber); }
     
-    if (clipScene < 0) {
-        clipScene = 0;
+    if (parameter.clipScene.value < 0) {
+        parameter.clipScene.value = 0;
     }
-    else if (clipScene >= watchSet.getcount("scenes")) {
-        clipScene = watchSet.getcount("scenes") - 1; 
+    else if (parameter.clipScene.value >= watchSet.getcount("scenes")) {
+        parameter.clipScene.value = watchSet.getcount("scenes") - 1; 
     }
     
     focusOnClip();
-    this.patcher.getnamed("clipSceneGsCssPattr").message(clipScene);
-    return clipScene;
+    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
+    return parameter.clipScene.value;
 }
 
 function isValidClipSceneNumber() {
-    if ((clipScene >= 0) || (clipScene < watchSet.getcount("scenes"))) { 
+    if ((parameter.clipScene.value >= 0) || (parameter.clipScene.value < watchSet.getcount("scenes"))) { 
         return true;
     }
     else {
@@ -1025,8 +1025,8 @@ function countScenesWithClip() {
     sceneArray = [];
     sceneCount = countAllTracks.getcount("scenes");
     for (var k = 0; k < sceneCount; k++) {
-        if (indexTrack) { indexTrack.goto("live_set tracks " + trackArray[trackIndex] + "clip_slots" + k); }
-        else { indexTrack = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[trackIndex] + "clip_slots" + k); }
+        if (indexTrack) { indexTrack.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + "clip_slots" + k); }
+        else { indexTrack = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[parameter.trackIndex.value] + "clip_slots" + k); }
         
         if (indexTrack.get("has_midi_input") == 1 ) {
             sceneCount.push(k);                      
@@ -1070,10 +1070,10 @@ function displayRowMax() {
 function focusOnClip() {
     if (debugLevel[1]) { post("                               --focusOnClip--\n"); }          
     
-    if (debugLevel[4]) { post("trackArray[" + trackIndex + "]:", trackArray[trackIndex], "\n"); }
+    if (debugLevel[4]) { post("trackArray[" + parameter.trackIndex.value + "]:", trackArray[parameter.trackIndex.value], "\n"); }
 
-    if (checkForClip) { checkForClip.goto("live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene); }
-    else { checkForClip = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene); }
+    if (checkForClip) { checkForClip.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value); }
+    else { checkForClip = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value); }
     
     thereIsAClipInSlot = (checkForClip.get("has_clip") == 1) ? true: false;
     
@@ -1081,33 +1081,33 @@ function focusOnClip() {
 
     if (!thereIsAClipInSlot) { return false; }
 
-    if (editClip) { editClip.goto("live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
-    else { editClip = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
+    if (editClip) { editClip.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
+    else { editClip = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
     
-    if (watchTrack) { watchTrack.goto("live_set tracks " + trackArray[trackIndex]); }
-    else { watchTrack = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[trackIndex]); }
+    if (watchTrack) { watchTrack.goto("live_set tracks " + trackArray[parameter.trackIndex.value]); }
+    else { watchTrack = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[parameter.trackIndex.value]); }
 
-    if (watchTrackForPlayingClip) { watchTrackForPlayingClip.goto("live_set tracks " + trackArray[trackIndex]); }
-    else { watchTrackForPlayingClip = new LiveAPI(this.patcher, onNewSlotPlaying, "live_set tracks " + trackArray[trackIndex]); }
+    if (watchTrackForPlayingClip) { watchTrackForPlayingClip.goto("live_set tracks " + trackArray[parameter.trackIndex.value]); }
+    else { watchTrackForPlayingClip = new LiveAPI(this.patcher, onNewSlotPlaying, "live_set tracks " + trackArray[parameter.trackIndex.value]); }
     watchTrackForPlayingClip.mode = 0; // in case the track is moved
 //              watchTrackForPlayingClip.property = "playing_slot_index";
 
-    if (watchClipNotes) { watchClipNotes.goto("live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); } 
-    else { watchClipNotes = new LiveAPI(this.patcher, updateNoteDisplay,  "live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
+    if (watchClipNotes) { watchClipNotes.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); } 
+    else { watchClipNotes = new LiveAPI(this.patcher, updateNoteDisplay,  "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
     watchClipNotes.mode = 0; // in case the track is moved
     watchClipNotes.property = "notes";
 
-    if (watchClipPlayingStatus) { watchClipPlayingStatus.goto("live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
-    else { watchClipPlayingStatus = new LiveAPI(this.patcher, setPlayheadVisible, "live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
+    if (watchClipPlayingStatus) { watchClipPlayingStatus.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
+    else { watchClipPlayingStatus = new LiveAPI(this.patcher, setPlayheadVisible, "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
     watchClipPlayingStatus.mode = 0; // in case the track is moved
     watchClipPlayingStatus.property = "playing_status";
 
-    if (watchClipIsPlaying) { watchClipIsPlaying.goto("live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
-    else { watchClipIsPlaying = new LiveAPI(this.patcher, null,  "live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
+    if (watchClipIsPlaying) { watchClipIsPlaying.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
+    else { watchClipIsPlaying = new LiveAPI(this.patcher, null,  "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
     watchClipIsPlaying.mode = 0; // in case the track is moved
 
-    if (watchClipPlayhead) { watchClipPlayhead.goto("live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
-    else { watchClipPlayhead = new LiveAPI(this.patcher, updatePlayhead,  "live_set tracks " + trackArray[trackIndex] + " clip_slots " + clipScene + " clip"); }
+    if (watchClipPlayhead) { watchClipPlayhead.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
+    else { watchClipPlayhead = new LiveAPI(this.patcher, updatePlayhead,  "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value + " clip"); }
     watchClipPlayhead.mode = 0; // in case the track is moved
     watchClipPlayhead.property = "playing_position";
 
@@ -1124,21 +1124,21 @@ function getCurrentPosition() {
     var currentPathArray = watchClipNotes.path.split(" ");
     // Get current track number
     var currentTrackNumber = parseInt(currentPathArray[2], 10);
-    trackIndex = trackArray.indexOf(currentTrackNumber);
+    parameter.trackIndex.value = trackArray.indexOf(currentTrackNumber);
     
     // Debugging is Fun!
     if (debugLevel[2]) { post("current track number is:", currentTrackNumber, "\n"); }
-    if (debugLevel[4]) { post("trackIndex is:", trackIndex, "\n"); }
+    if (debugLevel[4]) { post("trackIndex is:", parameter.trackIndex.value, "\n"); }
     
     // Get current scene number
     var currentSceneNumber = parseInt(currentPathArray[4], 10);
     post("currentSceneNumber = ", currentSceneNumber, "\n");
-    if (clipScene != currentSceneNumber) {
-        if (debugLevel[3]) { post("clipScene changed from:", clipScene, "to:", currentSceneNumber, "\n"); }
-        clipScene = currentSceneNumber;
+    if (parameter.clipScene.value != currentSceneNumber) {
+        if (debugLevel[3]) { post("clipScene changed from:", parameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
+        parameter.clipScene.value = currentSceneNumber;
     }
-    sendToHud("track", trackArray[trackIndex] + 1, 0);
-    sendToHud("scene", Number(clipScene) + 1, 0);
+    sendToHud("track", trackArray[parameter.trackIndex.value] + 1, 0);
+    sendToHud("scene", Number(parameter.clipScene.value) + 1, 0);
 }
 
 function playCurrentClip() {
@@ -1348,8 +1348,8 @@ Array.prototype.diff = function(a) {
 */
 
 function updateHud() {
-    sendToHud("track", (trackArray[trackIndex] + 1), 0);
-    sendToHud("scene", (Number(clipScene) + 1), 0);
+    sendToHud("track", (trackArray[parameter.trackIndex.value] + 1), 0);
+    sendToHud("scene", (Number(parameter.clipScene.value) + 1), 0);
     sendToHud("time", timeOffset / 4, 0);
     sendToHud("width", displayWidth / 4, 0);
     sendToHud("top", (displayNoteList[rowOffset]) ? displayNoteList[rowOffset] : 0, 0 );
@@ -2101,7 +2101,7 @@ function upInSet(aHowMuch) {
     if (debugLevel[3]) { post("clipScene before upInSet:", getClipScene(), "\n"); }
     
     changeClipScene(-aHowMuch);
-    if (debugLevel[2]) { post("clipScene after upInSet:", clipScene, "\n"); }
+    if (debugLevel[2]) { post("clipScene after upInSet:", parameter.clipScene.value, "\n"); }
 }
 
 function downInSet(aHowMuch) {
@@ -2112,7 +2112,7 @@ function downInSet(aHowMuch) {
 
     changeClipScene(aHowMuch);
 
-    if (debugLevel[2]) { post("clipScene after downInSet:", clipScene, "\n"); }
+    if (debugLevel[2]) { post("clipScene after downInSet:", parameter.clipScene.value, "\n"); }
 }
 
 function rightInSet(aHowMuch) {
@@ -2122,13 +2122,13 @@ function rightInSet(aHowMuch) {
     if (debugLevel[4]) {
         post("trackIndex before rightInSet:", getTrackIndex(), "\n");
     }
-    if (debugLevel[4]) {    post("track before rightInSet:", trackArray[trackIndex], "\n"); }
+    if (debugLevel[4]) {    post("track before rightInSet:", trackArray[parameter.trackIndex.value], "\n"); }
     
     changeTrackIndex(aHowMuch);
     focusOnClip();
     
-    if (debugLevel[3]) { post("trackIndex after rightInSet:", trackIndex, "\n"); }
-    if (debugLevel[4]) {    post("track after rightInSet:", trackArray[trackIndex], "\n"); }
+    if (debugLevel[3]) { post("trackIndex after rightInSet:", parameter.trackIndex.value, "\n"); }
+    if (debugLevel[4]) {    post("track after rightInSet:", trackArray[parameter.trackIndex.value], "\n"); }
 }
 function leftInSet(aHowMuch) {
     if (debugLevel[1]) { post("                               --leftInSet--\n"); }
@@ -2136,13 +2136,13 @@ function leftInSet(aHowMuch) {
     if (debugLevel[4]) {
         post("trackIndex before leftInSet:", getTrackIndex(), "\n");
     }
-    if (debugLevel[4]) {    post("track before leftInSet:", trackArray[trackIndex], "\n"); }
+    if (debugLevel[4]) {    post("track before leftInSet:", trackArray[parameter.trackIndex.value], "\n"); }
 
     changeTrackIndex(-aHowMuch);
     focusOnClip();
 
-    if (debugLevel[3]) { post("trackIndex after leftInSet:", trackIndex, "\n"); }
-    if (debugLevel[4]) {    post("track after leftInSet:", trackArray[trackIndex], "\n"); }
+    if (debugLevel[3]) { post("trackIndex after leftInSet:", parameter.trackIndex.value, "\n"); }
+    if (debugLevel[4]) {    post("track after leftInSet:", trackArray[parameter.trackIndex.value], "\n"); }
 }
 
 //                                  ---===Communicate with Patcher===---
