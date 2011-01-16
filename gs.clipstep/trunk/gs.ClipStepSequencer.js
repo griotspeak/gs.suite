@@ -48,7 +48,6 @@ var rootNote;
 var currentScale;
 var currentScaleName;
 var rowOffset;
-var functionMode;
 var watchSet;
 var countAllTracks;
 var trackArray;
@@ -307,8 +306,8 @@ function grabAllPattrValues() {
     parameter.cycles.value = ((cyclesPVal != NaN) && (cyclesPVal > 0)) ? cyclesPVal : 0;
     parameter.displayWidth.value = ((parameter.displayWidth.value != NaN) && (parameter.displayWidth.value > 0)) ? parameter.displayWidth.value : 0; 
     parameter.folding.value = ((parameter.folding.value != NaN) && (parameter.folding.value > 0)) ? parameter.folding.value : 0;
-    foldingRowOffset = ((foldingRowOffset != NaN) && (foldingRowOffset > 0)) ? foldingRowOffset : 0;
-    functionMode = ((functionModePVal != NaN) && (functionModePVal >= 0) && (functionModePVal <= 4)) ? functionModePVal : 0;
+    parameter.foldingRowOffset.value = ((parameter.foldingRowOffset.value != NaN) && (parameter.foldingRowOffset.value > 0)) ? parameter.foldingRowOffset.value : 0;
+    parameter.functionMode.value = ((functionModePVal != NaN) && (functionModePVal >= 0) && (functionModePVal <= 4)) ? functionModePVal : 0;
     inSuite = (inSuitePVal != null) ? inSuitePVal : 0;
     monomeHeight = ((monomeHeightPVal != NaN) && (monomeHeightPVal > 2)) ? monomeHeightPVal : 8;
     monomeWidth = ((monomeWidthPVal != NaN) && (monomeWidthPVal > 2)) ? monomeWidthPVal : 8;
@@ -372,8 +371,8 @@ function updatePattrs() {
     this.patcher.getnamed("cyclesGsCssPattr").message(parameter.cycles.value);
     this.patcher.getnamed("displayWidthGsCssPattr").message(parameter.displayWidth.value);
     this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
-    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
-    this.patcher.getnamed("functionModeGsCssPattr").message(functionMode);
+    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(parameter.foldingRowOffset.value);
+    this.patcher.getnamed("functionModeGsCssPattr").message(parameter.functionMode.value);
     this.patcher.getnamed("inSuiteGsCssPattr").message(inSuite);
     this.patcher.getnamed("monomeHeightGsCssPattr").message(monomeHeight);
     this.patcher.getnamed("monomeWidthGsCssPattr").message(monomeWidth);
@@ -587,7 +586,6 @@ var extendedVelocityOptions = false;
         
 //                                  ---===Variables===---
 var timeOffset = 0;
-var foldingRowOffset = 0;
 
 //                                  ---===LiveAPI placeholders===---
 var checkForClip = false;
@@ -703,19 +701,19 @@ function setRowOffset(aNewOffsetNumber) {
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
     if (debugLevel[6]) { post("                               --setRowOffset--\n"); }
-    foldingRowOffset =      aNewOffsetNumber;
+    parameter.foldingRowOffset.value =      aNewOffsetNumber;
     updateNoteDisplay();
     
-    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
+    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(parameter.foldingRowOffset.value);
 }
 function getRowOffset() {
-    return (parameter.folding.value) ? foldingRowOffset : rowOffset;
+    return (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
 }
 function changeRowOffset(amountOfChange) {
     if (debugLevel[6]) { post("                               --changeRowOffset--\n"); }
     
     if(!amountOfChange) { amountOfChange = 1; }
-    var offsetHolder = (parameter.folding.value) ? foldingRowOffset : rowOffset;
+    var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
     
     if (debugLevel[8]) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
     
@@ -728,7 +726,7 @@ function changeRowOffset(amountOfChange) {
         offsetHolder = 0;
     }
     
-    if (parameter.folding.value) { foldingRowOffset = offsetHolder; }
+    if (parameter.folding.value) { parameter.foldingRowOffset.value = offsetHolder; }
     else { rowOffset = offsetHolder; }
     
     if (debugLevel[7]) { post("offsetHolder after downInClip:", offsetHolder, "\n"); }
@@ -853,15 +851,15 @@ function setNewNoteVelocity(aVelocity) {
 //                                  ---===functionMode accessors===---
 function setFunctionMode(aMode) {
     if (debugLevel[6]) { post("                               --setFunctionMode--\n"); }
-    functionMode = aMode;
+    parameter.functionMode.value = aMode;
 
     updateControlLeds();
 
-    this.patcher.getnamed("functionModeGsCssPattr").message(functionMode);
+    this.patcher.getnamed("functionModeGsCssPattr").message(parameter.functionMode.value);
 }
 
 function getFunctionMode() {
-    return functionMode;
+    return parameter.functionMode.value;
 }
 
 function decrementFunctionMode() {
@@ -959,7 +957,7 @@ function setDisplayWidth(aWidth) {
     parameter.displayWidth.value = aWidth;
     roundDisplayOffset();
     updateNoteDisplay();
-    if (functionMode == 2) {
+    if (parameter.functionMode.value == 2) {
         updateMultiPurposeLeds();
     }
 
@@ -1057,7 +1055,7 @@ function monomeLastRow() { return monomeHeight - 1; }
 function monomeLastCol() { return monomeWidth - 1; }
 
 function displayRowMax() {
-    var currentOffset = (parameter.folding.value) ? foldingRowOffset : rowOffset;
+    var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
     return monomeLastRow() + currentOffset;
 }
 
@@ -1154,7 +1152,7 @@ function timeIsDisplayed(timeInQuestion) {
 
 function rowIsDisplayed(rowInQuestion) {
     if (debugLevel[5]) { post("                               --rowIsDisplayed--\n"); }
-    var currentOffset = (parameter.folding.value) ? foldingRowOffset : rowOffset;
+    var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
     if (currentOffset <= rowInQuestion && (rowInQuestion < displayRowMax())) {
         return true;
     }
@@ -1364,7 +1362,7 @@ function updateFunctionModeLeds() {
     if (debugLevel[1]) { post("                               --updateFunctionModeLeds--\n"); }
     clearFunctionModeLeds();
     
-    switch(functionMode) {
+    switch(parameter.functionMode.value) {
         case FunctionMode.moveMode:
             //      00
             break;
@@ -1385,7 +1383,7 @@ function updateFunctionModeLeds() {
             Monome[FunctionButton.bit1][monomeLastRow()].ledOn();
             break;
         default : {
-            post("error in updateFunctionModeLeds functionMode:", functionMode, "\n");
+            post("error in updateFunctionModeLeds functionMode:", parameter.functionMode.value, "\n");
             break;
         }
     }
@@ -1400,7 +1398,7 @@ function updateMultiPurposeLeds() {
     if (debugLevel[1]) { post("                               --updateMultiPurposeLeds--\n"); }
     
     clearMultiPurposeLeds();
-    switch(functionMode) {
+    switch(parameter.functionMode.value) {
         case FunctionMode.moveMode:
             // Arrows
             if (shiftIsHeld()) {
@@ -1423,7 +1421,7 @@ function updateMultiPurposeLeds() {
             displayLengthLeds();
             break;
         default : {
-            post("error in updateMultiPurposeLeds, functionMode:", functionMode, "\n");
+            post("error in updateMultiPurposeLeds, functionMode:", parameter.functionMode.value, "\n");
             break;
         }
     }
@@ -1442,7 +1440,7 @@ function updateControlLeds() {
 //                                  ---===Display Methods===---
 function displayDisplayWidthLeds() {
     if (debugLevel[1]) { post("                               --displayDisplayWidthLeds--\n"); }
-    if ((functionMode == FunctionMode.widthMode) && (!extendedWidthOptions)) {
+    if ((parameter.functionMode.value == FunctionMode.widthMode) && (!extendedWidthOptions)) {
         switch(parameter.displayWidth.value) {
             case DisplayWidthOption._0:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1460,7 +1458,7 @@ function displayDisplayWidthLeds() {
                 break;
         }
     }
-    else if ((functionMode == FunctionMode.widthMode) && (extendedWidthOptions)) {
+    else if ((parameter.functionMode.value == FunctionMode.widthMode) && (extendedWidthOptions)) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
         switch(parameter.displayWidth.value) {
             case DisplayWidthOption._4:
@@ -1484,7 +1482,7 @@ function displayDisplayWidthLeds() {
 function displayLengthLeds() {
     if (debugLevel[1]) { post("                               --displayLengthLeds--\n"); }
         
-    if ((functionMode == FunctionMode.lengthMode) && (!extendedLengthOptions)) {
+    if ((parameter.functionMode.value == FunctionMode.lengthMode) && (!extendedLengthOptions)) {
         switch(newNoteLength) {
             case LengthOption._0:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1502,7 +1500,7 @@ function displayLengthLeds() {
                 break;
         }
     }
-    else if ((functionMode == FunctionMode.lengthMode) && (extendedLengthOptions)) {
+    else if ((parameter.functionMode.value == FunctionMode.lengthMode) && (extendedLengthOptions)) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
         switch(newNoteLength) {
             case LengthOption._4:
@@ -1526,7 +1524,7 @@ function displayLengthLeds() {
 function displayVelocityLeds() {
     if (debugLevel[1]) { post("                               --displayVelocityLeds--\n"); }
         
-    if ((functionMode == FunctionMode.velocityMode) && (!extendedVelocityOptions)) {
+    if ((parameter.functionMode.value == FunctionMode.velocityMode) && (!extendedVelocityOptions)) {
         switch(newNoteVelocity) {
             case VelocityOption._0:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1544,7 +1542,7 @@ function displayVelocityLeds() {
                 break;
         }
     }
-    else if ((functionMode == FunctionMode.velocityMode) && (extendedVelocityOptions)) {
+    else if ((parameter.functionMode.value == FunctionMode.velocityMode) && (extendedVelocityOptions)) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
         switch(newNoteVelocity) {
             case VelocityOption._4:
@@ -1576,10 +1574,10 @@ function displayNote(aNoteToDisplay) {
     
     // Formatted Notes for Monome
     var rowIndex = displayNoteList.indexOf(aNoteToDisplay[1]);
-    var rowOnMonome = rowIndex - ((parameter.folding.value) ? foldingRowOffset : rowOffset);
+    var rowOnMonome = rowIndex - ((parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset);
     if(debugLevel[4]) {
         post("rowIndex:", rowIndex, "\n");
-        post("rowOnMonome:", rowOnMonome, "rowOffset:", rowOffset, "foldingRowOffset", foldingRowOffset, "\n");
+        post("rowOnMonome:", rowOnMonome, "rowOffset:", rowOffset, "foldingRowOffset", parameter.foldingRowOffset.value, "\n");
         post("colOnMonome:", colOnMonome, "colOffset:", colOffset(), "\n");
     }
     
@@ -1657,7 +1655,7 @@ function press(mCol, mRow, upDown) {
     
     if (mRow < monomeLastRow()) {
         var newNoteTime = ( mCol + colOffset() ) * displayRatioFromMonome();
-        var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? foldingRowOffset:rowOffset)];
+        var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? parameter.foldingRowOffset.value:rowOffset)];
 
         // Debugging is fun!
         if (debugLevel[2]) {
@@ -1681,7 +1679,7 @@ function press(mCol, mRow, upDown) {
     // Arrow keys
     else if ((mRow == monomeLastRow()) && (upDown == 1) && (mCol >= 0) && (mCol <= 3)) {
 
-        switch (functionMode) {
+        switch (parameter.functionMode.value) {
             case FunctionMode.moveMode:
                 if (shiftIsHeld()) { liveSetArrows(mCol); }
                 else { clipArrows(mCol); }
@@ -1696,7 +1694,7 @@ function press(mCol, mRow, upDown) {
                 widthButtons(mCol);
                 break;
             default : {
-                post("error in press, functionMode:", functionMode, "\n");
+                post("error in press, functionMode:", parameter.functionMode.value, "\n");
                 break;
             }
         }
@@ -1707,7 +1705,7 @@ function press(mCol, mRow, upDown) {
         switch (mCol) {
             case FunctionButton.shift: {
     
-                switch(functionMode) {    
+                switch(parameter.functionMode.value) {    
                     case FunctionMode.moveMode: {
                         updateControlLeds();
                         break;
@@ -1726,7 +1724,7 @@ function press(mCol, mRow, upDown) {
                     }
 
                     default: {
-                        post("error in FunctionButton.shift. functionMode:", functionMode, "\n");
+                        post("error in FunctionButton.shift. functionMode:", parameter.functionMode.value, "\n");
                         post("mCol:", mCol, "\n");
                         break;
                     }
@@ -1752,7 +1750,7 @@ function press(mCol, mRow, upDown) {
                 break;
             }
             default: {
-                post("error in press. functionMode:", functionMode, "\n");
+                post("error in press. functionMode:", parameter.functionMode.value, "\n");
                 post("mCol:", mCol, "\n");
                 break;
             }
