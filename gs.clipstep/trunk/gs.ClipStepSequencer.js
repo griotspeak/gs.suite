@@ -44,7 +44,6 @@ var monomeWidth;
 var monomeHeight;
 var newNoteVelocity;
 var newNoteLength;
-var cycles;
 var rootNote;
 var currentScale;
 var currentScaleName;
@@ -306,8 +305,8 @@ function grabAllPattrValues() {
     parameter.clipScene.value = ((clipScenePVal != NaN) && (clipScenePVal  >= 0)) ? clipScenePVal : 0;
     currentScaleName = (currentScaleNamePVal != undefined) ? currentScaleNamePVal : "Drums";
     parameter.cycles.value = ((cyclesPVal != NaN) && (cyclesPVal > 0)) ? cyclesPVal : 0;
-    displayWidth = ((displayWidth != NaN) && (displayWidth > 0)) ? displayWidth : 0; 
-    folding = ((folding != NaN) && (folding > 0)) ? folding : 0;
+    parameter.displayWidth.value = ((parameter.displayWidth.value != NaN) && (parameter.displayWidth.value > 0)) ? parameter.displayWidth.value : 0; 
+    parameter.folding.value = ((parameter.folding.value != NaN) && (parameter.folding.value > 0)) ? parameter.folding.value : 0;
     foldingRowOffset = ((foldingRowOffset != NaN) && (foldingRowOffset > 0)) ? foldingRowOffset : 0;
     functionMode = ((functionModePVal != NaN) && (functionModePVal >= 0) && (functionModePVal <= 4)) ? functionModePVal : 0;
     inSuite = (inSuitePVal != null) ? inSuitePVal : 0;
@@ -371,8 +370,8 @@ function updatePattrs() {
     this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(currentScaleName);
     this.patcher.getnamed("cyclesGsCssPattr").message(parameter.cycles.value);
-    this.patcher.getnamed("displayWidthGsCssPattr").message(displayWidth);
-    this.patcher.getnamed("foldingGsCssPattr").message(folding);
+    this.patcher.getnamed("displayWidthGsCssPattr").message(parameter.displayWidth.value);
+    this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
     this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
     this.patcher.getnamed("functionModeGsCssPattr").message(functionMode);
     this.patcher.getnamed("inSuiteGsCssPattr").message(inSuite);
@@ -580,7 +579,6 @@ var clipNotes = new Array();
 
 
 //                                  ---===conditions===---
-var folding = false;
 var playheadVisible = false;
 var followingPlayingClip = false;
 var extendedWidthOptions = false;
@@ -589,7 +587,6 @@ var extendedVelocityOptions = false;
         
 //                                  ---===Variables===---
 var timeOffset = 0;
-var displayWidth = 2;
 var foldingRowOffset = 0;
 
 //                                  ---===LiveAPI placeholders===---
@@ -712,13 +709,13 @@ function setFoldingRowOffset(aNewOffsetNumber) {
     this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(foldingRowOffset);
 }
 function getRowOffset() {
-    return (folding) ? foldingRowOffset : rowOffset;
+    return (parameter.folding.value) ? foldingRowOffset : rowOffset;
 }
 function changeRowOffset(amountOfChange) {
     if (debugLevel[6]) { post("                               --changeRowOffset--\n"); }
     
     if(!amountOfChange) { amountOfChange = 1; }
-    var offsetHolder = (folding) ? foldingRowOffset : rowOffset;
+    var offsetHolder = (parameter.folding.value) ? foldingRowOffset : rowOffset;
     
     if (debugLevel[8]) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
     
@@ -731,7 +728,7 @@ function changeRowOffset(amountOfChange) {
         offsetHolder = 0;
     }
     
-    if (folding) { foldingRowOffset = offsetHolder; }
+    if (parameter.folding.value) { foldingRowOffset = offsetHolder; }
     else { rowOffset = offsetHolder; }
     
     if (debugLevel[7]) { post("offsetHolder after downInClip:", offsetHolder, "\n"); }
@@ -807,8 +804,8 @@ function getTimeOffset() {
 function changeTimeOffset(amountOfChange) {
     if (debugLevel[6]) { post("                               --changeTimeOffset-\n"); }
     
-    if(!amountOfChange) { amountOfChange = displayWidth; }
-    else { amountOfChange *= displayWidth; }
+    if(!amountOfChange) { amountOfChange = parameter.displayWidth.value; }
+    else { amountOfChange *= parameter.displayWidth.value; }
     
     timeOffset += amountOfChange;
     
@@ -816,7 +813,7 @@ function changeTimeOffset(amountOfChange) {
         timeOffset = 0;
     }
     else if (timeOffset >= editClip.get("length")) {
-        timeOffset = editClip.get("length") - displayWidth;
+        timeOffset = editClip.get("length") - parameter.displayWidth.value;
     }
 
     this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
@@ -916,16 +913,16 @@ function toggleFolding() {
 function setFolding(newFolding) {
     if (debugLevel[6]) { post("                               --setFolding--\n"); }
     
-    folding = newFolding;
+    parameter.folding.value = newFolding;
     updateFunctionModeLeds();
     updateNoteDisplay();
-    sendToHud("folding", folding, 0);
+    sendToHud("folding", parameter.folding.value, 0);
 
-    this.patcher.getnamed("foldingGsCssPattr").message(folding);
+    this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
 }
 function getFolding() {
     if (debugLevel[6]) { post("                               --getFolding--\n"); }
-    return folding;
+    return parameter.folding.value;
 }
                     
 //                                  ---===Callbacks===---
@@ -959,14 +956,14 @@ function setPlayheadVisible() {
 
 function setDisplayWidth(aWidth) {
     if (debugLevel[6]) { post("                               --setDisplayWidth--\n"); }
-    displayWidth = aWidth;
+    parameter.displayWidth.value = aWidth;
     roundDisplayOffset();
     updateNoteDisplay();
     if (functionMode == 2) {
         updateMultiPurposeLeds();
     }
 
-    this.patcher.getnamed("displayWidthGsCssPattr").message(displayWidth);
+    this.patcher.getnamed("displayWidthGsCssPattr").message(parameter.displayWidth.value);
 }
 
 function updatePlayhead(aTimeNumber) {
@@ -1046,21 +1043,21 @@ function compareNumbers(a, b) {
 function roundDisplayOffset() {
     if (debugLevel[1]) { post("                               --roundDisplayOffset--\n"); }
     if(debugLevel[4]) { post("before round", timeOffset,  "\n"); }
-    var a = Math.round(timeOffset / displayWidth);
-    timeOffset = a * displayWidth;
+    var a = Math.round(timeOffset / parameter.displayWidth.value);
+    timeOffset = a * parameter.displayWidth.value;
     if(debugLevel[3]) {post("after round", timeOffset,                   "\n"); }
 }
 
 //                                  ---===Dynamic Time/Column Variables===---
-function displayTimeMax() { return displayWidth + timeOffset; }
+function displayTimeMax() { return parameter.displayWidth.value + timeOffset; }
 function colOffset() { return timeOffset * displayRatioToMonome(); }
-function displayRatioFromMonome() { return displayWidth / monomeWidth; }
-function displayRatioToMonome() { return monomeWidth / displayWidth; }
+function displayRatioFromMonome() { return parameter.displayWidth.value / monomeWidth; }
+function displayRatioToMonome() { return monomeWidth / parameter.displayWidth.value; }
 function monomeLastRow() { return monomeHeight - 1; }
 function monomeLastCol() { return monomeWidth - 1; }
 
 function displayRowMax() {
-    var currentOffset = (folding) ? foldingRowOffset : rowOffset;
+    var currentOffset = (parameter.folding.value) ? foldingRowOffset : rowOffset;
     return monomeLastRow() + currentOffset;
 }
 
@@ -1157,7 +1154,7 @@ function timeIsDisplayed(timeInQuestion) {
 
 function rowIsDisplayed(rowInQuestion) {
     if (debugLevel[5]) { post("                               --rowIsDisplayed--\n"); }
-    var currentOffset = (folding) ? foldingRowOffset : rowOffset;
+    var currentOffset = (parameter.folding.value) ? foldingRowOffset : rowOffset;
     if (currentOffset <= rowInQuestion && (rowInQuestion < displayRowMax())) {
         return true;
     }
@@ -1254,7 +1251,7 @@ function getClipNotes() {
     }
 
     if (debugLevel[4]) { post("displayNoteList before padding =", displayNoteList, '\n'); }
-    if (!folding) { fillInNoteRows(); }
+    if (!parameter.folding.value) { fillInNoteRows(); }
     displayNoteList.sort(compareNumbers);
     if (debugLevel[3]) { post("displayNoteList after padding =", displayNoteList, '\n'); }
     clipNotes = editClip.call("deselect_all_notes");
@@ -1349,7 +1346,7 @@ function updateHud() {
     sendToHud("track", (trackArray[parameter.trackIndex.value] + 1), 0);
     sendToHud("scene", (Number(parameter.clipScene.value) + 1), 0);
     sendToHud("time", timeOffset / 4, 0);
-    sendToHud("width", displayWidth / 4, 0);
+    sendToHud("width", parameter.displayWidth.value / 4, 0);
     sendToHud("top", (displayNoteList[rowOffset]) ? displayNoteList[rowOffset] : 0, 0 );
     if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), 3); }
     sendToHud("scale", currentScaleName, 2);
@@ -1358,7 +1355,7 @@ function updateHud() {
     sendToHud("monomeWidth", monomeWidth, 0);
     sendToHud("cycles", parameter.cycles.value, 0);
     sendToHud("root", rootNote, 0);
-    sendToHud("folding", folding, 0);
+    sendToHud("folding", parameter.folding.value, 0);
     sendToHud("velocity", newNoteVelocity, 0);   
 }
 
@@ -1396,7 +1393,7 @@ function updateFunctionModeLeds() {
     if (shiftIsHeld()) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
     }
-    if (folding){ Monome[FunctionButton.fold][monomeLastRow()].ledOn(); }
+    if (parameter.folding.value){ Monome[FunctionButton.fold][monomeLastRow()].ledOn(); }
 }
 
 function updateMultiPurposeLeds() {
@@ -1446,7 +1443,7 @@ function updateControlLeds() {
 function displayDisplayWidthLeds() {
     if (debugLevel[1]) { post("                               --displayDisplayWidthLeds--\n"); }
     if ((functionMode == FunctionMode.widthMode) && (!extendedWidthOptions)) {
-        switch(displayWidth) {
+        switch(parameter.displayWidth.value) {
             case DisplayWidthOption._0:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1465,7 +1462,7 @@ function displayDisplayWidthLeds() {
     }
     else if ((functionMode == FunctionMode.widthMode) && (extendedWidthOptions)) {
         Monome[FunctionButton.shift][monomeLastRow()].ledOn();
-        switch(displayWidth) {
+        switch(parameter.displayWidth.value) {
             case DisplayWidthOption._4:
                 Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1579,7 +1576,7 @@ function displayNote(aNoteToDisplay) {
     
     // Formatted Notes for Monome
     var rowIndex = displayNoteList.indexOf(aNoteToDisplay[1]);
-    var rowOnMonome = rowIndex - ((folding) ? foldingRowOffset : rowOffset);
+    var rowOnMonome = rowIndex - ((parameter.folding.value) ? foldingRowOffset : rowOffset);
     if(debugLevel[4]) {
         post("rowIndex:", rowIndex, "\n");
         post("rowOnMonome:", rowOnMonome, "rowOffset:", rowOffset, "foldingRowOffset", foldingRowOffset, "\n");
@@ -1660,7 +1657,7 @@ function press(mCol, mRow, upDown) {
     
     if (mRow < monomeLastRow()) {
         var newNoteTime = ( mCol + colOffset() ) * displayRatioFromMonome();
-        var newNoteNote = displayNoteList[mRow + ((folding) ? foldingRowOffset:rowOffset)];
+        var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? foldingRowOffset:rowOffset)];
 
         // Debugging is fun!
         if (debugLevel[2]) {
@@ -1817,7 +1814,7 @@ function widthButtons(aButtonPressed) {
             }
         }
     }
-    if (debugLevel[4]) { post("dWidth = ", displayWidth, "\n"); }
+    if (debugLevel[4]) { post("dWidth = ", parameter.displayWidth.value, "\n"); }
 }
 function lengthButtons(aButtonPressed) {
     if (debugLevel[1]) { post("                               --lengthButtons--\n"); }
