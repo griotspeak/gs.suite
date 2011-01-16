@@ -458,14 +458,9 @@ function setParameterProperty(aPropertyString, aVoice, aValue) {
     }
 }
 
-function incrementParameterProperty(aPropertyString, aVoice) {
-    var lValue = parameter[aPropertyString].value[aVoice] + 1;
+function changeParameterProperty(aPropertyString, aVoice, aAmount) {
+    var lValue = parameter[aPropertyString].value[aVoice] + aAmount;
     setParameterProperty(aPropertyString, aVoice, lValue);    
-}
-
-function decrementParameterProperty(aPropertyString, aVoice) {
-    var lValue = parameter[aPropertyString].value[aVoice] - 1;
-    setParameterProperty(aPropertyString, aVoice, lValue);
 }
 
 function toggleParameterProperty(aPropertyString, aVoice) {
@@ -645,7 +640,7 @@ function press(aCol, aRow, aPress) {
         case (VoiceButton.accidental_0) : {
             if (aPress == 1) { 
                 (Monome[aCol][VoiceButton.accidental_1].isHeld) ?
-                incrementParameterProperty("degree", aCol) : incrementParameterProperty("accidental", aCol);
+                changeParameterProperty("degree", aCol, 1) : changeParameterProperty("accidental", aCol, 1);
             }
             break;
         }
@@ -656,24 +651,24 @@ function press(aCol, aRow, aPress) {
         case (VoiceButton.accidental_2) : {
             if (aPress == 1) { 
                 (Monome[aCol][VoiceButton.accidental_1].isHeld) ?
-                decrementParameterProperty("degree", aCol) : decrementParameterProperty("accidental", aCol);
+                changeParameterProperty("degree", aCol, -1) : changeParameterProperty("accidental", aCol, -1);
             }
             break;
         }
         case (VoiceButton.octaveUp) : {
-            if (aPress == 1) { incrementParameterProperty("octave", aCol); }
+            if (aPress == 1) { changeParameterProperty("octave", aCol, 1); }
             break;
         }
         case (VoiceButton.octaveDown) : {
-            if (aPress == 1) { decrementParameterProperty("octave", aCol); }
+            if (aPress == 1) { changeParameterProperty("octave", aCol, -1); }
             break;
         }
         case (VoiceButton.channelUp) : {
-            if (aPress == 1) { incrementParameterProperty("split", aCol); }
+            if (aPress == 1) { changeParameterProperty("split", aCol, 1); }
             break;
         }
         case (VoiceButton.channelDown) : {
-            if (aPress == 1) { decrementParameterProperty("split", aCol); }
+            if (aPress == 1) { changeParameterProperty("split", aCol, -1); }
             break;
         }
         case (VoiceButton.onOff) : {
