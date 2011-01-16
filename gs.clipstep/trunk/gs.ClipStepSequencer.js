@@ -40,10 +40,7 @@ var post;
 var outlet;
 
 
-var rootNote;
 var currentScale;
-var currentScaleName;
-var rowOffset;
 var watchSet;
 var countAllTracks;
 var trackArray;
@@ -216,10 +213,10 @@ function bang() {
     if (debugLevel[1]) { post("                     ---bang-\n"); }
     
     post(currentScale, "\n");
-    post("name:", currentScaleName, "\n");
+    post("name:", parameter.currentScaleName.value, "\n");
     post("monomeHeight:", parameter.monomeHeight.value, "\n");
     post("monomeWidth:", parameter.monomeWidth.value, "\n");
-    post("root:", rootNote, "\n");
+    post("root:", parameter.rootNote.value, "\n");
     post("cycles:", parameter.cycles.value, "\n");
 }
 
@@ -297,20 +294,20 @@ function grabAllPattrValues() {
     if (debugLevel[3]) { post("trackIndexPVal:", trackIndexPVal, "\n"); }
     
     parameter.clipScene.value = ((clipScenePVal != NaN) && (clipScenePVal  >= 0)) ? clipScenePVal : 0;
-    currentScaleName = (currentScaleNamePVal != undefined) ? currentScaleNamePVal : "Drums";
+    parameter.currentScaleName.value = (currentScaleNamePVal != undefined) ? currentScaleNamePVal : "Drums";
     parameter.cycles.value = ((cyclesPVal != NaN) && (cyclesPVal > 0)) ? cyclesPVal : 0;
-    parameter.displayWidth.value = ((parameter.displayWidth.value != NaN) && (parameter.displayWidth.value > 0)) ? parameter.displayWidth.value : 0; 
-    parameter.folding.value = ((parameter.folding.value != NaN) && (parameter.folding.value > 0)) ? parameter.folding.value : 0;
-    parameter.foldingRowOffset.value = ((parameter.foldingRowOffset.value != NaN) && (parameter.foldingRowOffset.value > 0)) ? parameter.foldingRowOffset.value : 0;
+    parameter.displayWidth.value = ((displayWidthPVal != NaN) && (displayWidthPVal > 0)) ? displayWidthPVal : 0; 
+    parameter.folding.value = ((foldingPVal != NaN) && (foldingPVal > 0)) ? foldingPVal : 0;
+    parameter.foldingRowOffset.value = ((foldingRowOffsetPVal != NaN) && (foldingRowOffsetPVal > 0)) ? foldingRowOffsetPVal : 0;
     parameter.functionMode.value = ((functionModePVal != NaN) && (functionModePVal >= 0) && (functionModePVal <= 4)) ? functionModePVal : 0;
     parameter.inSuite.value = (inSuitePVal != null) ? inSuitePVal : 0;
     parameter.monomeHeight.value = ((monomeHeightPVal != NaN) && (monomeHeightPVal > 2)) ? monomeHeightPVal : 8;
     parameter.monomeWidth.value = ((monomeWidthPVal != NaN) && (monomeWidthPVal > 2)) ? monomeWidthPVal : 8;
     parameter.newNoteLength.value = ((newNoteLengthPVal != NaN) && (newNoteLengthPVal > 0)) ? newNoteLengthPVal : 0.25;
     parameter.newNoteVelocity.value = ((newNoteVelocityPVal != NaN) && (newNoteVelocityPVal >= 0) && (newNoteVelocityPVal <= 127)) ? newNoteVelocityPVal : 100;
-    rootNote = ((rootNotePVal != NaN) && (rootNotePVal >= 0) && (rootNotePVal <= 127)) ? rootNotePVal : 60;
-    rowOffset = ((rowOffsetPVal != NaN) && (rowOffsetPVal >= 0)) ? rowOffsetPVal : 0;
-    timeOffset = ((timeOffset != NaN) && (timeOffset > 0)) ? timeOffset : 0;
+    parameter.rootNote.value = ((rootNotePVal != NaN) && (rootNotePVal >= 0) && (rootNotePVal <= 127)) ? rootNotePVal : 60;
+    parameter.rowOffset.value = ((rowOffsetPVal != NaN) && (rowOffsetPVal >= 0)) ? rowOffsetPVal : 0;
+    parameter.timeOffset.value = ((timeOffsetPVal != NaN) && (timeOffsetPVal > 0)) ? timeOffsetPVal : 0;
     parameter.trackIndex.value = ((trackIndexPVal != NaN) && (trackIndexPVal >= 0)) ? trackIndexPVal : 0;
         
     updatePattrs();
@@ -362,7 +359,7 @@ function updatePattrs() {
     if (debugLevel[1]) { post("                     ---updatePattrs-\n"); }
     
     this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
-    this.patcher.getnamed("currentScaleNameGsCssPattr").message(currentScaleName);
+    this.patcher.getnamed("currentScaleNameGsCssPattr").message(parameter.currentScaleName.value);
     this.patcher.getnamed("cyclesGsCssPattr").message(parameter.cycles.value);
     this.patcher.getnamed("displayWidthGsCssPattr").message(parameter.displayWidth.value);
     this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
@@ -373,8 +370,8 @@ function updatePattrs() {
     this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
     this.patcher.getnamed("newNoteLengthGsCssPattr").message(parameter.newNoteLength.value);
     this.patcher.getnamed("newNoteVelocityGsCssPattr").message(parameter.newNoteVelocity.value);
-    this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
-    this.patcher.getnamed("rowOffsetGsCssPattr").message(rowOffset);
+    this.patcher.getnamed("rootNoteGsCssPattr").message(parameter.rootNote.value);
+    this.patcher.getnamed("rowOffsetGsCssPattr").message(parameter.rowOffset.value);
     this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
     this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
 }
@@ -564,7 +561,7 @@ var defaultDrumScale            =    [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53
 defaultDrumScale.name = "Drums";
 
 currentScale =    defaultDrumScale;
-currentScaleName = "Drums";
+parameter.currentScaleName.value = "Drums";
 
 //                                  ---===Create Empty Arrays===---
 var noteArray = [];
@@ -688,10 +685,10 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 //                                  ---===rowOffset accessors===---
 function setRowOffset(aNewOffsetNumber) {
     if (debugLevel[6]) { post("                               --setRowOffset--\n"); }
-    rowOffset =        aNewOffsetNumber;
+    parameter.rowOffset.value =        aNewOffsetNumber;
     updateNoteDisplay();
 
-    this.patcher.getnamed("rowOffsetGsCssPattr").message(rowOffset);
+    this.patcher.getnamed("rowOffsetGsCssPattr").message(parameter.rowOffset.value);
 
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
@@ -702,13 +699,13 @@ function setFoldingRowOffset(aNewOffsetNumber) {
     this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(parameter.foldingRowOffset.value);
 }
 function getRowOffset() {
-    return (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
+    return (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
 }
 function changeRowOffset(amountOfChange) {
     if (debugLevel[6]) { post("                               --changeRowOffset--\n"); }
     
     if(!amountOfChange) { amountOfChange = 1; }
-    var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
+    var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
     
     if (debugLevel[8]) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
     
@@ -722,7 +719,7 @@ function changeRowOffset(amountOfChange) {
     }
     
     if (parameter.folding.value) { parameter.foldingRowOffset.value = offsetHolder; }
-    else { rowOffset = offsetHolder; }
+    else { parameter.rowOffset.value = offsetHolder; }
     
     if (debugLevel[7]) { post("offsetHolder after downInClip:", offsetHolder, "\n"); }
     updateNoteDisplay();
@@ -1050,7 +1047,7 @@ function monomeLastRow() { return parameter.monomeHeight.value - 1; }
 function monomeLastCol() { return parameter.monomeWidth.value - 1; }
 
 function displayRowMax() {
-    var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
+    var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
     return monomeLastRow() + currentOffset;
 }
 
@@ -1147,7 +1144,7 @@ function timeIsDisplayed(timeInQuestion) {
 
 function rowIsDisplayed(rowInQuestion) {
     if (debugLevel[5]) { post("                               --rowIsDisplayed--\n"); }
-    var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset;
+    var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
     if (currentOffset <= rowInQuestion && (rowInQuestion < displayRowMax())) {
         return true;
     }
@@ -1340,14 +1337,14 @@ function updateHud() {
     sendToHud("scene", (Number(parameter.clipScene.value) + 1), 0);
     sendToHud("time", timeOffset / 4, 0);
     sendToHud("width", parameter.displayWidth.value / 4, 0);
-    sendToHud("top", (displayNoteList[rowOffset]) ? displayNoteList[rowOffset] : 0, 0 );
+    sendToHud("top", (displayNoteList[parameter.rowOffset.value]) ? displayNoteList[parameter.rowOffset.value] : 0, 0 );
     if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), 3); }
-    sendToHud("scale", currentScaleName, 2);
+    sendToHud("scale", parameter.currentScaleName.value, 2);
     sendToHud("noteLength", parameter.newNoteLength.value, 0);
     sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
     sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
     sendToHud("cycles", parameter.cycles.value, 0);
-    sendToHud("root", rootNote, 0);
+    sendToHud("root", parameter.rootNote.value, 0);
     sendToHud("folding", parameter.folding.value, 0);
     sendToHud("velocity", parameter.newNoteVelocity.value, 0);   
 }
@@ -1569,10 +1566,10 @@ function displayNote(aNoteToDisplay) {
     
     // Formatted Notes for Monome
     var rowIndex = displayNoteList.indexOf(aNoteToDisplay[1]);
-    var rowOnMonome = rowIndex - ((parameter.folding.value) ? parameter.foldingRowOffset.value : rowOffset);
+    var rowOnMonome = rowIndex - ((parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value);
     if(debugLevel[4]) {
         post("rowIndex:", rowIndex, "\n");
-        post("rowOnMonome:", rowOnMonome, "rowOffset:", rowOffset, "foldingRowOffset", parameter.foldingRowOffset.value, "\n");
+        post("rowOnMonome:", rowOnMonome, "rowOffset:", parameter.rowOffset.value, "foldingRowOffset", parameter.foldingRowOffset.value, "\n");
         post("colOnMonome:", colOnMonome, "colOffset:", colOffset(), "\n");
     }
     
@@ -1650,7 +1647,7 @@ function press(mCol, mRow, upDown) {
     
     if (mRow < monomeLastRow()) {
         var newNoteTime = ( mCol + colOffset() ) * displayRatioFromMonome();
-        var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? parameter.foldingRowOffset.value:rowOffset)];
+        var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? parameter.foldingRowOffset.value:parameter.rowOffset.value)];
 
         // Debugging is fun!
         if (debugLevel[2]) {
@@ -2366,22 +2363,22 @@ function setRootNote(aNewRoot) {
     if (debugLevel[6]) { post("                               --setRootNote--\n"); }
 
     if (isValidCCNumber(aNewRoot)) {
-        rootNote = aNewRoot;
-        sendToHud("root", rootNote, 0);
+        parameter.rootNote.value = aNewRoot;
+        sendToHud("root", parameter.rootNote.value, 0);
         onScaleVariableChange();
     }
     else { post("invalid root note"); }
-    this.patcher.getnamed("rootNoteGsCssPattr").message(rootNote);
+    this.patcher.getnamed("rootNoteGsCssPattr").message(parameter.rootNote.value);
 }
 
 //                                  ---===onScaleVariableChange===---
 function onScaleVariableChange () {
     if (debugLevel[6]) { post("                               --onScaleVariableChange--\n"); }
 
-    if (debugLevel[5]) { post("my name is:", currentScaleName, "\n"); }
+    if (debugLevel[5]) { post("my name is:", parameter.currentScaleName.value, "\n"); }
 
-    if(currentScaleName != "Drums") {
-        setCurrentScaleWithSymbol(currentScaleName);
+    if(parameter.currentScaleName.value != "Drums") {
+        setCurrentScaleWithSymbol(parameter.currentScaleName.value);
     }
 }
 //                                  ---===Scale Methods===---
@@ -2448,8 +2445,8 @@ function setCurrentScale(scaleToUse, scaleName) {
 
 function setCurrentScaleName(aNewName) {
     if (debugLevel[6]) { post("                     ---setCurrentScaleName-\n"); }
-    currentScaleName = aNewName;
-    this.patcher.getnamed("currentScaleNameGsCssPattr").message(currentScaleName);
+    parameter.currentScaleName.value = aNewName;
+    this.patcher.getnamed("currentScaleNameGsCssPattr").message(parameter.currentScaleName.value);
 }
 
 function setCurrentScaleFromMap(mapToUse) {
@@ -2471,15 +2468,15 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
     switch (symbolFromPatcher) {
     
         case majorScale.name:
-            setCurrentScale(generateFullScaleList(majorScale, rootNote, parameter.cycles.value), majorScale.name);
+            setCurrentScale(generateFullScaleList(majorScale, parameter.rootNote.value, parameter.cycles.value), majorScale.name);
             break;
             
         case "NaturalMinor":
-            setCurrentScale(generateFullScaleList(naturalMinorScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(naturalMinorScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "HarmonicMinor":
-            setCurrentScale(generateFullScaleList(harmonicMinorScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(harmonicMinorScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Drums":
@@ -2487,75 +2484,75 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
             break;
             
         case "Chromatic":
-            setCurrentScale(generateFullScaleList(chromaticScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(chromaticScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "MinorPentatonic":
-            setCurrentScale(generateFullScaleList(minorPentatonicScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(minorPentatonicScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "MajorPentatonic":
-            setCurrentScale(generateFullScaleList(majorPentatonicScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(majorPentatonicScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "BluesPentatonic":
-            setCurrentScale(generateFullScaleList(bluesPentatonicScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(bluesPentatonicScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Ionian":
-            setCurrentScale(generateFullScaleList(ionianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(ionianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Dorian":
-            setCurrentScale(generateFullScaleList(dorianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(dorianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Phrygian":
-            setCurrentScale(generateFullScaleList(phrygianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(phrygianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Lydian":
-            setCurrentScale(generateFullScaleList(lydianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(lydianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Mixolydian":
-            setCurrentScale(generateFullScaleList(mixolydianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(mixolydianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Aeolian":
-            setCurrentScale(generateFullScaleList(aeolianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(aeolianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Locrian":
-            setCurrentScale(generateFullScaleList(locrianMode, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(locrianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "WholeTone":
-            setCurrentScale(generateFullScaleList(wholeToneScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(wholeToneScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "WholeHalfDiminished":
-            setCurrentScale(generateFullScaleList(wholeHalfdiminishedScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(wholeHalfdiminishedScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "HalfWholeDiminished":
-            setCurrentScale(generateFullScaleList(halfWholeDiminishedScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(halfWholeDiminishedScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "SymmetricalAugmented":
-            setCurrentScale(generateFullScaleList(symmetricalAugmentedScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(symmetricalAugmentedScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "Tritone":
-            setCurrentScale(generateFullScaleList(tritoneScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(tritoneScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
 
         case "MajorQuartal":
-            setCurrentScale(generateFullScaleList(majorQuartalScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(majorQuartalScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         case "MinorQuartal":
-            setCurrentScale(generateFullScaleList(minorQuartalScale, rootNote, parameter.cycles.value), symbolFromPatcher);
+            setCurrentScale(generateFullScaleList(minorQuartalScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
             break;
             
         default:
