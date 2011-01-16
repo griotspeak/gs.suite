@@ -65,6 +65,138 @@ var mWatchersCreated = false;
 var watchSetTracks; //not an attribute
 var thereIsAClipInSlot; // not an attribute
 
+
+var parameter = {
+    clipScene : {
+        name : "clipScene",
+        type : "number",
+        value : 0,
+        minValue : 0,
+        maxValue : 2048,
+        saveInPattr : true
+    },
+    currentScaleName : {
+        name : "currentScaleName",
+        type : "string",
+        value : "Drums",
+        minValue : null,
+        maxValue : null,
+        saveInPattr : true
+    },
+    cycles : {
+        name : "cycles",
+        type : "number",
+        value : 3,
+        minValue : 1,
+        maxValue : 127,
+        saveInPattr : true
+    },
+    displayWidth : {
+        name : "displayWidth",
+        type : "number",
+        value : 1,
+        minValue : 0.00625,
+        maxValue : 127,
+        saveInPattr : true
+    },
+    folding : {
+        name : "folding",
+        type : "toggle",
+        value : 0,
+        minValue : 0,
+        maxValue : 1,
+        saveInPattr : true
+    },
+    foldingRowOffset : {
+        name : "foldingRowOffset",
+        type : "number",
+        value : 0,
+        minValue : 0,
+        maxValue : 2048,
+        saveInPattr : true
+    },
+    functionMode : {
+        name : "functionMode",
+        type : "number",
+        value : 0,
+        minValue : 0,
+        maxValue : 4,
+        saveInPattr : true
+    },
+    inSuite : {
+        name : "inSuite",
+        type : "toggle",
+        value : 0,
+        minValue : 0,
+        maxValue : 1,
+        saveInPattr : true
+    },
+    monomeHeight : {
+        name : "monomeHeight",
+        type : "number",
+        value : 8,
+        minValue : 2,
+        maxValue : 2048,
+        saveInPattr : true
+    },
+    monomeWidth : {
+        name : "monomeWidth",
+        type : "number",
+        value : 8,
+        minValue : 2,
+        maxValue : 2048,
+        saveInPattr : true
+    },
+    newNoteLength : {
+        name : "newNoteLength",
+        type : "number",
+        value : 0.125,
+        minValue : 0.00625,
+        maxValue : 0.000390625,
+        saveInPattr : true
+    },
+    newNoteVelocity : {
+        name : "newNoteVelocity",
+        type : "number",
+        value : 100,
+        minValue : 0,
+        maxValue : 127,
+        saveInPattr : true
+    },
+    trackIndex : {
+        name : "trackIndex",
+        type : "number",
+        value : 0,
+        minValue : 0,
+        maxValue : 2048,
+        saveInPattr : true
+    },
+    rootNote : {
+        name : "rootNote",
+        type : "number",
+        value : 60,
+        minValue : 0,
+        maxValue : 127,
+        saveInPattr : true
+    },
+    rowOffset : {
+        name : "rowOffset",
+        type : "number",
+        value : 0,
+        minValue : 0,
+        maxValue : 2048,
+        saveInPattr : true
+    },
+    timeOffset : {
+        name : "timeOffset",
+        type : "number",
+        value : 0,
+        minValue : 0,
+        maxValue : 2048,
+        saveInPattr : true
+    }
+};
+
 // 
 var debugLevel;
 setDebugLevel(0);
@@ -134,7 +266,6 @@ function initialize() {
     updateNoteDisplay();
     
     post("gs.ClipStepSequencer finished loading\n");
-
 }
 
 function grabAllPattrValues() {
