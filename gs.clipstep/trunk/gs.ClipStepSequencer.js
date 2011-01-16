@@ -2508,6 +2508,7 @@ function store(aNumber) {
 function recall(aNumber) {
     this.patcher.getnamed("gsClipStep-presetStore").message(aNumber);
     grabAllPattrValues();
+    focusOnClip();
     updateMonome();
     updateHud();
 }
