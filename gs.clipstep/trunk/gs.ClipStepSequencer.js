@@ -53,6 +53,16 @@ var mWatchersCreated = false;
 var watchSetTracks; //not an attribute
 var thereIsAClipInSlot; // not an attribute
 
+var debugItem = {
+    endValue : false,
+    frequentItem : false,
+    frequentList: false,
+    functionName : false,
+    list : false,
+    localValue : false,
+    startValue : false,
+    frequentName : false
+};
 
 var parameter = {
     clipScene : {
@@ -182,21 +192,22 @@ var parameter = {
         minValue : 0,
         maxValue : 2048,
         saveInPattr : true
-    }
+    },
+    patchString : "GsCss"
 };
 
 // 
 var mDebugLevel;
 setDebugLevel(0);
 
-//mDebugLevel[1] = true;
-//mDebugLevel[2] = true;
-//mDebugLevel[3] = true;
-//mDebugLevel[4] = true;
-//mDebugLevel[5] = true;
-//mDebugLevel[6] = true;
-//mDebugLevel[7] = true;
-//mDebugLevel[8] = true;
+//debugItem.functionName = true;
+//debugItem.functionEnd = true;
+//debugItem.endValue = true;
+//debugItem.startValue = true;
+//debugItem.list = true;
+//debugItem.getterSetterName = true;
+//debugItem.getterSetterEndValue = true;
+//debugItem.getterSetterStartValue = true;
 //
 
 // 0 - silence
@@ -210,7 +221,7 @@ setDebugLevel(0);
 // 8 - setters and getters - value at beginning
 
 function bang() {
-    if (mDebugLevel[1]) { post("                     ---bang-\n"); }
+    if (debugItem.functionName) { post("                     ---bang-\n"); }
     
     post(currentScale, "\n");
     post("name:", parameter.currentScaleName.value, "\n");
@@ -221,8 +232,8 @@ function bang() {
 }
 
 function initialize() {
-    if (mDebugLevel[1]) { post("                     ---initialize-\n"); }
-    if (mDebugLevel[5]) { postPattrs("start"); }
+    if (debugItem.functionName) { post("                     ---initialize-\n"); }
+    if (debugItem.list) { postPattrs("start"); }
     grabAllPattrValues();
     buildMonome();
     
@@ -234,7 +245,7 @@ function initialize() {
 
     countMidiTracks();
         
-    if (mDebugLevel[4]) {
+    if (debugItem.startValue) {
         post("trackNumber:", trackArray[parameter.trackIndex.value], "\n");
         post("clipScene:", parameter.clipScene.value, "\n"); 
     }
@@ -265,7 +276,7 @@ function grabAllPattrValues() {
 }
 
 function setClipFromGlobal(aTrack, aScene) {
-    if (mDebugLevel[6]) { post("                     ---setClipFromGlobal-\n"); }
+    if (debugItem.getterSetterName) { post("                     ---setClipFromGlobal-\n"); }
     
     var index = getIndexOfTrack(aTrack);
     if (index > -1) {
@@ -289,7 +300,7 @@ function setDebugLevel(level) {
 //                                  ---===Prototype work===---
 
 Array.prototype.inArray = function (numInQuestion) {
-    if (mDebugLevel[6]) { post("                               --inArray-\n"); }
+    if (debugItem.getterSetterName) { post("                               --inArray-\n"); }
     
     // need this later for Folding Logic
     var g;
@@ -300,7 +311,7 @@ Array.prototype.inArray = function (numInQuestion) {
 };
 
 Array.prototype.noteToLiveAPI = function () {
-    if (mDebugLevel[6]) { post("                               --noteToLiveAPI-\n"); }
+    if (debugItem.getterSetterName) { post("                               --noteToLiveAPI-\n"); }
     
     // Typecasting? In javascript? Yessert!
     var timeNumber = Number(this[2]);
@@ -311,7 +322,7 @@ Array.prototype.noteToLiveAPI = function () {
 };
 
 Number.prototype.toLength = function (len) {
-       if (mDebugLevel[6]) { post("                              --toLength--\n"); }
+       if (debugItem.getterSetterName) { post("                              --toLength--\n"); }
 
     s = this.toString();
     if (s.length < len) {
@@ -485,58 +496,58 @@ var functionToggle = [ false, false];
 //                                  ---===track accessors===---
 
 function setTrack(aNewTrackNumber) {
-    if (mDebugLevel[6]) { post("                               --setTrack--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setTrack--\n"); }
 
     setTrackIndex(getIndexOfTrack(aNewTrackNumber -1));    
 }
 
 //                                  ---===trackIndex accessors===---
 function setTrackIndex(aNewIndexNumber) {
-    if (mDebugLevel[6]) { post("                               --setTrackIndex--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setTrackIndex--\n"); }
     parameter.trackIndex.value = aNewIndexNumber;
     focusOnClip();
 
     this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
     
-    if (mDebugLevel[3]) { post("trackIndex after setTrackIndex:", parameter.trackIndex.value, "\n"); }
+    if (debugItem.endValue) { post("trackIndex after setTrackIndex:", parameter.trackIndex.value, "\n"); }
 }
 function getTrackIndex() {
-    if (mDebugLevel[6]) { post("                               --getTrackIndex--\n"); }
+    if (debugItem.getterSetterName) { post("                               --getTrackIndex--\n"); }
     return parameter.trackIndex.value;
 }
 function changeTrackIndex(amountOfChange) {
-    if (mDebugLevel[6]) { post("                               --changeTrackIndex--\n"); }
-    if (mDebugLevel[4]) { post("trackIndex before:", parameter.trackIndex.value, "amountOfChange", amountOfChange, "\n"); }
+    if (debugItem.getterSetterName) { post("                               --changeTrackIndex--\n"); }
+    if (debugItem.startValue) { post("trackIndex before:", parameter.trackIndex.value, "amountOfChange", amountOfChange, "\n"); }
     parameter.trackIndex.value += amountOfChange;
     
     if (parameter.trackIndex.value < 0) { parameter.trackIndex.value = 0; }
     else if (parameter.trackIndex.value >= trackArray.length) { 
         parameter.trackIndex.value = trackArray.length - 1;
     }
-    if (mDebugLevel[3]) { post("trackIndex after:", parameter.trackIndex.value, "\n"); }
+    if (debugItem.endValue) { post("trackIndex after:", parameter.trackIndex.value, "\n"); }
     this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
     return parameter.trackIndex.value;
 }
 function getIndexOfTrack(trackToFind) {
-    if (mDebugLevel[6]) { post("                               --getTrackIndex--\n"); }
+    if (debugItem.getterSetterName) { post("                               --getTrackIndex--\n"); }
 
-    if (mDebugLevel[4]) { post("looking for:", trackToFind, "\n");}
+    if (debugItem.startValue) { post("looking for:", trackToFind, "\n");}
     var index = trackArray.indexOf(trackToFind);
 
     if (index != -1) {
-        if (mDebugLevel[4]) { post(trackToFind, "is a valid midi track\n");}
-        if (mDebugLevel[4]) { post(index, "is it's index\n");}
+        if (debugItem.startValue) { post(trackToFind, "is a valid midi track\n");}
+        if (debugItem.startValue) { post(index, "is it's index\n");}
         return index;
     }
     
     else {
-        if (mDebugLevel[4]) { post(trackToFind, "is not a valid midi track\n");}
+        if (debugItem.startValue) { post(trackToFind, "is not a valid midi track\n");}
         return -1;
     }
 }
 
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
-    if (mDebugLevel[6]) { post("                               --setTrackIndex--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setTrackIndex--\n"); }
     parameter.trackIndex.value = aNewIndexNumber;
     
     var lCounter;
@@ -546,20 +557,20 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (lLimit != 0) { 
         for (lCounter = aNewSceneNumber; lCounter < lLimit; lCounter++) {
             parameter.clipScene.value = lCounter;
-            if (mDebugLevel[6]) { post("clipScene:", parameter.clipScene.value, "\n"); }
+            if (debugItem.getterSetterName) { post("clipScene:", parameter.clipScene.value, "\n"); }
             if (focusOnClip()) { return true; }
         }
     
         for (lCounter = aNewSceneNumber; lCounter >=0; lCounter--) {
             parameter.clipScene.value = lCounter;
-            if (mDebugLevel[6]) { post("clipScene:", parameter.clipScene.value, "\n"); }
+            if (debugItem.getterSetterName) { post("clipScene:", parameter.clipScene.value, "\n"); }
             if (focusOnClip()) { return true; }
         }
     
         parameter.clipScene.value = 0;
     }
     
-    if (mDebugLevel[4]) { 
+    if (debugItem.startValue) { 
         post("trackIndex after setTrackIndexAndScene:", parameter.trackIndex.value, "\n");
         post("clipScene after setTrackIndexAndScene:", parameter.clipScene.value, "\n");
     }
@@ -572,7 +583,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 
 //                                  ---===rowOffset accessors===---
 function setRowOffset(aNewOffsetNumber) {
-    if (mDebugLevel[6]) { post("                               --setRowOffset--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setRowOffset--\n"); }
     parameter.rowOffset.value =        aNewOffsetNumber;
     updateNoteDisplay();
 
@@ -580,7 +591,7 @@ function setRowOffset(aNewOffsetNumber) {
 
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
-    if (mDebugLevel[6]) { post("                               --setRowOffset--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setRowOffset--\n"); }
     parameter.foldingRowOffset.value =      aNewOffsetNumber;
     updateNoteDisplay();
     
@@ -590,12 +601,12 @@ function getRowOffset() {
     return (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
 }
 function changeRowOffset(amountOfChange) {
-    if (mDebugLevel[6]) { post("                               --changeRowOffset--\n"); }
+    if (debugItem.getterSetterName) { post("                               --changeRowOffset--\n"); }
     
     if(!amountOfChange) { amountOfChange = 1; }
     var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
     
-    if (mDebugLevel[8]) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
+    if (debugItem.getterSetterStartValue) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
     
     offsetHolder += amountOfChange;
     
@@ -609,13 +620,13 @@ function changeRowOffset(amountOfChange) {
     if (parameter.folding.value) { parameter.foldingRowOffset.value = offsetHolder; }
     else { parameter.rowOffset.value = offsetHolder; }
     
-    if (mDebugLevel[7]) { post("offsetHolder after downInClip:", offsetHolder, "\n"); }
+    if (debugItem.getterSetterEndValue) { post("offsetHolder after downInClip:", offsetHolder, "\n"); }
     updateNoteDisplay();
 }
 
 //                                  ---===clipScene accessors===---
 function setClipScene(aNewSceneNumber) {
-    if (mDebugLevel[6]) { post("                               --setClipScene--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setClipScene--\n"); }
     parameter.clipScene.value = aNewSceneNumber;
     focusOnClip();
     
@@ -623,15 +634,15 @@ function setClipScene(aNewSceneNumber) {
 }
 
 function setClipSceneFromPatcher(aNewSceneNumber) {
-    if (mDebugLevel[6]) { post("                               --setClipSceneFromPatcher--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setClipSceneFromPatcher--\n"); }
     setClipScene(aNewSceneNumber - 1);
 }
 function getClipScene() {
-    if (mDebugLevel[6]) { post("                               --getClipScene--\n"); }
+    if (debugItem.getterSetterName) { post("                               --getClipScene--\n"); }
     return parameter.clipScene.value;
 }
 function changeClipScene(amountOfChange) {
-    if (mDebugLevel[6]) { post("                               --changeClipScene--\n"); }
+    if (debugItem.getterSetterName) { post("                               --changeClipScene--\n"); }
     //var oldClipSceneNumber = parameter.clipScene.value;
     parameter.clipScene.value += amountOfChange;
     
@@ -639,7 +650,7 @@ function changeClipScene(amountOfChange) {
 //    else {
 //        while (!focusOnClip()) {
 //            setClipScene(parameter.clipScene.value + (amountOfChange / Math.abs(amountOfChange)));
-//            if (mDebugLevel[5]) { post("clipScene:", parameter.clipScene.value, "\n"); }
+//            if (debugItem.list) { post("clipScene:", parameter.clipScene.value, "\n"); }
 //        }
 //    }    
 //    if (!isValidClipSceneNumber(parameter.clipScene.value)) { setClipScene(oldClipSceneNumber); }
@@ -667,7 +678,7 @@ function isValidClipSceneNumber() {
 
 //                                  ---===timeOfffset accessors===---
 function setTimeOffset(aNewOffset){
-    if (mDebugLevel[6]) { post("                               --setTimeOffset--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setTimeOffset--\n"); }
     
     timeOfffset = aNewOffset;
     updateNoteDisplay();
@@ -675,12 +686,12 @@ function setTimeOffset(aNewOffset){
     this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
 }
 function getTimeOffset() {
-    if (mDebugLevel[6]) { post("                               --getTimeOffset-\n"); }
+    if (debugItem.getterSetterName) { post("                               --getTimeOffset-\n"); }
     
     return timeOfffset();
 }
 function changeTimeOffset(amountOfChange) {
-    if (mDebugLevel[6]) { post("                               --changeTimeOffset-\n"); }
+    if (debugItem.getterSetterName) { post("                               --changeTimeOffset-\n"); }
     
     if(!amountOfChange) { amountOfChange = parameter.displayWidth.value; }
     else { amountOfChange *= parameter.displayWidth.value; }
@@ -715,7 +726,7 @@ function setNewNoteLength(length) {
 //                                  ---===newNoteVelocity===---
 
 function setNewNoteVelocity(aVelocity) {
-    if (mDebugLevel[6]) { post("                     ---setNewNoteVelocity-\n"); }
+    if (debugItem.getterSetterName) { post("                     ---setNewNoteVelocity-\n"); }
     
     if ((0 <= aVelocity) && (aVelocity <= 127)) {
         parameter.newNoteVelocity.value = aVelocity;
@@ -730,7 +741,7 @@ function setNewNoteVelocity(aVelocity) {
 
 //                                  ---===functionMode accessors===---
 function setFunctionMode(aMode) {
-    if (mDebugLevel[6]) { post("                               --setFunctionMode--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setFunctionMode--\n"); }
     parameter.functionMode.value = aMode;
 
     updateControlLeds();
@@ -743,7 +754,7 @@ function getFunctionMode() {
 }
 
 function decrementFunctionMode() {
-    if (mDebugLevel[6]) { post("                               --decrementFunctionMode--\n"); }
+    if (debugItem.getterSetterName) { post("                               --decrementFunctionMode--\n"); }
     
     var fN = getFunctionMode();
     
@@ -751,7 +762,7 @@ function decrementFunctionMode() {
 }
 
 function incrementFunctionMode() {
-    if (mDebugLevel[6]) { post("                               --incrementFunctionMode--\n"); }
+    if (debugItem.getterSetterName) { post("                               --incrementFunctionMode--\n"); }
     
     var fN = getFunctionMode();
     
@@ -759,7 +770,7 @@ function incrementFunctionMode() {
 }
 
 function toggleFunctionBitButton(whichButton) {
-    if (mDebugLevel[1]) { post("                               --toggleFunctionBitButton--\n"); }
+    if (debugItem.functionName) { post("                               --toggleFunctionBitButton--\n"); }
 
     functionToggle[whichButton] = (functionToggle[whichButton]) ? false : true;
     
@@ -784,12 +795,12 @@ function toggleFunctionBitButton(whichButton) {
 
 //                                  ---===folding accessors===---
 function toggleFolding() {
-    if (mDebugLevel[1]) { post("                               --toggleFolding--\n"); }
+    if (debugItem.functionName) { post("                               --toggleFolding--\n"); }
     
     (getFolding()) ? setFolding(false) : setFolding(true);
 }
 function setFolding(newFolding) {
-    if (mDebugLevel[6]) { post("                               --setFolding--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setFolding--\n"); }
     
     parameter.folding.value = newFolding;
     updateFunctionModeLeds();
@@ -799,13 +810,13 @@ function setFolding(newFolding) {
     this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
 }
 function getFolding() {
-    if (mDebugLevel[6]) { post("                               --getFolding--\n"); }
+    if (debugItem.getterSetterName) { post("                               --getFolding--\n"); }
     return parameter.folding.value;
 }
                     
 //                                  ---===Callbacks===---
 function onNewSlotPlaying(apiArray) {
-    if (mDebugLevel[1]) { post("                               --onNewSlotPlaying--\n"); }
+    if (debugItem.functionName) { post("                               --onNewSlotPlaying--\n"); }
     var playingClipSlot = parseInt(apiArray[1], 10);
     if ((followingPlayingClip) && (playingClipSlot >= 0)) {
         setClipScene(playingClipSlot);
@@ -814,7 +825,7 @@ function onNewSlotPlaying(apiArray) {
 }
 
 function setPlayheadVisible() {
-    if (mDebugLevel[6]) { post("                               --setPlayheadVisible--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setPlayheadVisible--\n"); }
     if (!thereIsAClipInSlot) { return; }
     
        clipPlaying = watchClipIsPlaying.get("is_playing");
@@ -826,14 +837,14 @@ function setPlayheadVisible() {
         refreshMonome();
     }
 
-    if(mDebugLevel[3]) { 
+    if(debugItem.endValue) { 
         post("playheadVisible:", playheadVisible, "\n");
     }
 
 }
 
 function setDisplayWidth(aWidth) {
-    if (mDebugLevel[6]) { post("                               --setDisplayWidth--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setDisplayWidth--\n"); }
     parameter.displayWidth.value = aWidth;
     roundDisplayOffset();
     updateNoteDisplay();
@@ -845,7 +856,7 @@ function setDisplayWidth(aWidth) {
 }
 
 function updatePlayhead(aTimeNumber) {
-    if (mDebugLevel[9]) { post("                               --updatePlayhead--\n"); }
+    if (debugItem.frequentName) { post("                               --updatePlayhead--\n"); }
     // View
     if (playheadVisible) {
         var playheadTimeInt = Math.floor((aTimeNumber[1] - timeOffset) * displayRatioToMonome());
@@ -870,7 +881,7 @@ updatePlayhead.immediate = 1;
 
 
 function countMidiTracks() {
-    if (mDebugLevel[1]) { post("                               --countMidiTracks--\n"); }
+    if (debugItem.functionName) { post("                               --countMidiTracks--\n"); }
     trackArray = [];
     trackCount = countAllTracks.getcount("tracks");
     for (var j = 0; j < trackCount; j++) {
@@ -882,7 +893,7 @@ function countMidiTracks() {
     }
     
     var c = trackArray.length;
-    if (mDebugLevel[4]) {
+    if (debugItem.startValue) {
         post("there are ", c, " midi tracks\n");
         post("they are:", trackArray, "\n");
     }
@@ -894,7 +905,7 @@ function countScenesWithClip() {
     // TODO - i can't implement this unless i figure out a way to observe a TRACK for an added clip.
     // or i can observe every slot in the current track, but that won't scale. at all.
     
-    if (mDebugLevel[1]) { post("                               --countScenesWithClip--\n"); }
+    if (debugItem.functionName) { post("                               --countScenesWithClip--\n"); }
     sceneArray = [];
     sceneCount = countAllTracks.getcount("scenes");
     for (var k = 0; k < sceneCount; k++) {
@@ -907,7 +918,7 @@ function countScenesWithClip() {
     }
     
     var c = sceneArray.length;
-    if (mDebugLevel[4]) {
+    if (debugItem.startValue) {
         post("there are ", c, " scenes with clips in current track\n");
         post("they are:", sceneArray, "\n");
     }
@@ -919,11 +930,11 @@ function compareNumbers(a, b) {
 }
 
 function roundDisplayOffset() {
-    if (mDebugLevel[1]) { post("                               --roundDisplayOffset--\n"); }
-    if(mDebugLevel[4]) { post("before round", timeOffset,  "\n"); }
+    if (debugItem.functionName) { post("                               --roundDisplayOffset--\n"); }
+    if(debugItem.startValue) { post("before round", timeOffset,  "\n"); }
     var a = Math.round(timeOffset / parameter.displayWidth.value);
     timeOffset = a * parameter.displayWidth.value;
-    if(mDebugLevel[3]) {post("after round", timeOffset,                   "\n"); }
+    if(debugItem.endValue) {post("after round", timeOffset,                   "\n"); }
 }
 
 //                                  ---===Dynamic Time/Column Variables===---
@@ -941,16 +952,16 @@ function displayRowMax() {
 
 //                                  ---===LiveApi Calls===---
 function focusOnClip() {
-    if (mDebugLevel[1]) { post("                               --focusOnClip--\n"); }          
+    if (debugItem.functionName) { post("                               --focusOnClip--\n"); }          
     
-    if (mDebugLevel[4]) { post("trackArray[" + parameter.trackIndex.value + "]:", trackArray[parameter.trackIndex.value], "\n"); }
+    if (debugItem.startValue) { post("trackArray[" + parameter.trackIndex.value + "]:", trackArray[parameter.trackIndex.value], "\n"); }
 
     if (checkForClip) { checkForClip.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value); }
     else { checkForClip = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[parameter.trackIndex.value] + " clip_slots " + parameter.clipScene.value); }
     
     thereIsAClipInSlot = (checkForClip.get("has_clip") == 1) ? true: false;
     
-    if (mDebugLevel[5]) { post("thereIsAClipInSlot:", thereIsAClipInSlot, "\n"); }
+    if (debugItem.list) { post("thereIsAClipInSlot:", thereIsAClipInSlot, "\n"); }
 
     if (!thereIsAClipInSlot) { return false; }
 
@@ -986,12 +997,12 @@ function focusOnClip() {
 
     setPlayheadVisible();
 
-    if (mDebugLevel[2]) { post("focused on clip:", watchClipNotes.path, "\n"); }
+    if (debugItem.functionEnd) { post("focused on clip:", watchClipNotes.path, "\n"); }
     return true;
 }
 
 function getCurrentPosition() {
-    if (mDebugLevel[1]) { post("                               --getCurrentPosition--\n"); }
+    if (debugItem.functionName) { post("                               --getCurrentPosition--\n"); }
     post("watchClipNotes.path = ", watchClipNotes.path, "\n");
     post("clipScene = ", getClipScene(), "\n");
     var currentPathArray = watchClipNotes.path.split(" ");
@@ -1000,14 +1011,14 @@ function getCurrentPosition() {
     parameter.trackIndex.value = trackArray.indexOf(currentTrackNumber);
     
     // Debugging is Fun!
-    if (mDebugLevel[2]) { post("current track number is:", currentTrackNumber, "\n"); }
-    if (mDebugLevel[4]) { post("trackIndex is:", parameter.trackIndex.value, "\n"); }
+    if (debugItem.functionEnd) { post("current track number is:", currentTrackNumber, "\n"); }
+    if (debugItem.startValue) { post("trackIndex is:", parameter.trackIndex.value, "\n"); }
     
     // Get current scene number
     var currentSceneNumber = parseInt(currentPathArray[4], 10);
     post("currentSceneNumber = ", currentSceneNumber, "\n");
     if (parameter.clipScene.value != currentSceneNumber) {
-        if (mDebugLevel[3]) { post("clipScene changed from:", parameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
+        if (debugItem.endValue) { post("clipScene changed from:", parameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
         parameter.clipScene.value = currentSceneNumber;
     }
     sendToHud("track", trackArray[parameter.trackIndex.value] + 1, 0);
@@ -1021,7 +1032,7 @@ function playCurrentClip() {
 
 //                                  ---===Check Notes===---
 function timeIsDisplayed(timeInQuestion) {
-    if (mDebugLevel[5]) { post("                               --timeIsDisplayed--\n"); }
+    if (debugItem.list) { post("                               --timeIsDisplayed--\n"); }
     if ((timeOffset <= timeInQuestion) && (timeInQuestion < displayTimeMax())) {
         return true;
     }
@@ -1031,7 +1042,7 @@ function timeIsDisplayed(timeInQuestion) {
 }
 
 function rowIsDisplayed(rowInQuestion) {
-    if (mDebugLevel[5]) { post("                               --rowIsDisplayed--\n"); }
+    if (debugItem.list) { post("                               --rowIsDisplayed--\n"); }
     var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
     if (currentOffset <= rowInQuestion && (rowInQuestion < displayRowMax())) {
         return true;
@@ -1042,24 +1053,24 @@ function rowIsDisplayed(rowInQuestion) {
 }
 
 function doesCoincide(nArray, nTone, nTime) {
-    if (mDebugLevel[1]) { post("                               --doesCoincide--\n"); }
+    if (debugItem.functionName) { post("                               --doesCoincide--\n"); }
     var x, l;
     var a = [];
     for ( x = 0, l = nArray.length; x < l; x++) {
         
         // Debug
-        if (mDebugLevel[4]) {
+        if (debugItem.startValue) {
             post("checked note:", x, "in noteArray\n");
             post("for nTone:", nTone, " and nTime:", nTime, "\n");
         }
         
         if ((nArray[x][1] == nTone) && (nArray[x][2] == nTime)) {
-            if (mDebugLevel[2]) { post("found! note:", x, "in noteArray\n"); }
+            if (debugItem.functionEnd) { post("found! note:", x, "in noteArray\n"); }
             a = [true, x];
             return a;
         }
         
-        if (mDebugLevel[4]) {
+        if (debugItem.startValue) {
             post("nope\n");
         }
         
@@ -1071,7 +1082,7 @@ function doesCoincide(nArray, nTone, nTime) {
 
 //                                  ---===LiveAPI Note Manipulation===---
 function getClipNotes() {
-    if (mDebugLevel[1]) { post("                               --getClipNotes--\n"); }
+    if (debugItem.functionName) { post("                               --getClipNotes--\n"); }
     
     if(!thereIsAClipInSlot) { return; }
     
@@ -1095,7 +1106,7 @@ function getClipNotes() {
     noteArray.length = 0;
 
     // Debugging!
-    if (mDebugLevel[3] == true) { post("there are:", numberOfNotesInClip, " notes\n"); }
+    if (debugItem.endValue == true) { post("there are:", numberOfNotesInClip, " notes\n"); }
     
     var a, b;
     
@@ -1109,17 +1120,17 @@ function getClipNotes() {
             displayNoteList.push(noteArray[a][1]);
             
             // Debug
-            if (mDebugLevel[5]) { post(noteArray[a][1] + " added to displayNoteList \n"); }
+            if (debugItem.list) { post(noteArray[a][1] + " added to displayNoteList \n"); }
         }
         
-        if (mDebugLevel[5]) {
+        if (debugItem.list) {
             post( "displayNoteList.inArray(noteArray[" + a + "][1]) = " + displayNoteList.inArray(noteArray[a][1]) + "\n" );
         }
         
         // Debug statements
-        if (mDebugLevel[5]) {
+        if (debugItem.list) {
             post(a);
-            //if (mDebugLevel[5]) {
+            //if (debugItem.list) {
                 post("timeNumber is:" + noteArray[a][2], "\n");
                 post("durationNumber is:" + noteArray[a][3], "\n");
                 post("sliceIndex is:", sliceIndexLeft, "\n");
@@ -1128,18 +1139,18 @@ function getClipNotes() {
         }
     }
 
-    if (mDebugLevel[4]) { post("displayNoteList before padding =", displayNoteList, '\n'); }
+    if (debugItem.startValue) { post("displayNoteList before padding =", displayNoteList, '\n'); }
     if (!parameter.folding.value) { fillInNoteRows(); }
     displayNoteList.sort(compareNumbers);
-    if (mDebugLevel[3]) { post("displayNoteList after padding =", displayNoteList, '\n'); }
+    if (debugItem.endValue) { post("displayNoteList after padding =", displayNoteList, '\n'); }
     clipNotes = editClip.call("deselect_all_notes");
     noteArrayChecked = true;
     
-    if (mDebugLevel[2]) { post("           /getClipNotes\n"); }
+    if (debugItem.functionEnd) { post("           /getClipNotes\n"); }
 }
 
 function publishNoteArray() {
-    if (mDebugLevel[1]) { post("                               --publishNoteArray--\n"); }
+    if (debugItem.functionName) { post("                               --publishNoteArray--\n"); }
     // Model Controller
     var newLength = noteArray.length;
     
@@ -1147,12 +1158,12 @@ function publishNoteArray() {
     editClip.call("replace_selected_notes");//CALL
     editClip.call("notes", newLength); //CALL
     
-    if (mDebugLevel[4]) { post("newLength:", newLength, "\n"); }
-    if (mDebugLevel[4]) { post("replace_selected_notes\n"); }
+    if (debugItem.startValue) { post("newLength:", newLength, "\n"); }
+    if (debugItem.startValue) { post("replace_selected_notes\n"); }
     
     var l, j;
     for (l = noteArray.length , j = 0; j < l; j++) {
-        if (mDebugLevel[4]) { post(j.toLength(2), noteArray[j], "\n"); }
+        if (debugItem.startValue) { post(j.toLength(2), noteArray[j], "\n"); }
         editClip.call( noteArray[j].noteToLiveAPI() ); //CALL
     }
     
@@ -1160,7 +1171,7 @@ function publishNoteArray() {
 }
 
 function addNote(addNum, addTime, addVelocity) {
-    if (mDebugLevel[1]) { post("                               --addNote--\n"); }
+    if (debugItem.functionName) { post("                               --addNote--\n"); }
     // Model Controller
     // simply adds one note no need to get and replace every note.
     
@@ -1169,8 +1180,8 @@ function addNote(addNum, addTime, addVelocity) {
 
     editClip.call("deselect_all_notes"); // CALL
     editClip.call("replace_selected_notes"); // CALL
-    if (mDebugLevel[2]) { post("replace_selected_notes\n"); }
-    if (mDebugLevel[4]) {
+    if (debugItem.functionEnd) { post("replace_selected_notes\n"); }
+    if (debugItem.startValue) {
         post("tempNoteArray:", tempNoteArray, "\n");
         post("newLength:", newLength, "\n");
         post("notes", 1, "\n");
@@ -1180,7 +1191,7 @@ function addNote(addNum, addTime, addVelocity) {
     editClip.call(tempNoteArray.noteToLiveAPI()); // CALL
 
     
-    if (mDebugLevel[4]) {
+    if (debugItem.startValue) {
         post(tempNoteArray, "\n");
         post("done\n");
     }
@@ -1188,23 +1199,23 @@ function addNote(addNum, addTime, addVelocity) {
 }
 
 function removeNote(indexOfNote) {
-    if (mDebugLevel[1]) { post("                               --removeNote--\n"); }
+    if (debugItem.functionName) { post("                               --removeNote--\n"); }
     var noteRemoved = noteArray.splice(indexOfNote, 1);
     var noteRemovedIndex = indexOfNote;
-    if (mDebugLevel[2]) { post("noteRemoved:" + noteRemoved + "\n"); }
+    if (debugItem.functionEnd) { post("noteRemoved:" + noteRemoved + "\n"); }
     publishNoteArray();
 }
 
 //                                  ---===View Controller Methods===---
 function updateMonome() {
-    if (mDebugLevel[1]) { post("                               --updateMonome--\n"); }
+    if (debugItem.functionName) { post("                               --updateMonome--\n"); }
     updateNoteDisplay();
     updateFunctionModeLeds();
     updateMultiPurposeLeds();
 }
 
 function updateNoteDisplay() {
-    if (mDebugLevel[1]) { post("                               --updateNoteDisplay--\n"); }
+    if (debugItem.functionName) { post("                               --updateNoteDisplay--\n"); }
 
     if (mWatchersCreated) {     clearNoteDisplay();
         getClipNotes();
@@ -1239,7 +1250,7 @@ function updateHud() {
 
 
 function updateFunctionModeLeds() {
-    if (mDebugLevel[1]) { post("                               --updateFunctionModeLeds--\n"); }
+    if (debugItem.functionName) { post("                               --updateFunctionModeLeds--\n"); }
     clearFunctionModeLeds();
     
     switch(parameter.functionMode.value) {
@@ -1275,7 +1286,7 @@ function updateFunctionModeLeds() {
 }
 
 function updateMultiPurposeLeds() {
-    if (mDebugLevel[1]) { post("                               --updateMultiPurposeLeds--\n"); }
+    if (debugItem.functionName) { post("                               --updateMultiPurposeLeds--\n"); }
     
     clearMultiPurposeLeds();
     switch(parameter.functionMode.value) {
@@ -1309,7 +1320,7 @@ function updateMultiPurposeLeds() {
 }
 
 function updateControlLeds() {
-    if (mDebugLevel[1]) { post("                     ---updateControlLeds-\n"); }
+    if (debugItem.functionName) { post("                     ---updateControlLeds-\n"); }
     
     updateFunctionModeLeds();
     updateMultiPurposeLeds();
@@ -1319,7 +1330,7 @@ function updateControlLeds() {
 
 //                                  ---===Display Methods===---
 function displayDisplayWidthLeds() {
-    if (mDebugLevel[1]) { post("                               --displayDisplayWidthLeds--\n"); }
+    if (debugItem.functionName) { post("                               --displayDisplayWidthLeds--\n"); }
     if ((parameter.functionMode.value == FunctionMode.widthMode) && (!extendedWidthOptions)) {
         switch(parameter.displayWidth.value) {
             case DisplayWidthOption._0:
@@ -1360,7 +1371,7 @@ function displayDisplayWidthLeds() {
 }
 
 function displayLengthLeds() {
-    if (mDebugLevel[1]) { post("                               --displayLengthLeds--\n"); }
+    if (debugItem.functionName) { post("                               --displayLengthLeds--\n"); }
         
     if ((parameter.functionMode.value == FunctionMode.lengthMode) && (!extendedLengthOptions)) {
         switch(parameter.newNoteLength.value) {
@@ -1402,7 +1413,7 @@ function displayLengthLeds() {
 }
 
 function displayVelocityLeds() {
-    if (mDebugLevel[1]) { post("                               --displayVelocityLeds--\n"); }
+    if (debugItem.functionName) { post("                               --displayVelocityLeds--\n"); }
         
     if ((parameter.functionMode.value == FunctionMode.velocityMode) && (!extendedVelocityOptions)) {
         switch(parameter.newNoteVelocity.value) {
@@ -1444,7 +1455,7 @@ function displayVelocityLeds() {
 }
 
 function displayNote(aNoteToDisplay) {
-    if (mDebugLevel[5]) { post("                               --displayNote--\n"); }
+    if (debugItem.list) { post("                               --displayNote--\n"); }
     // View
     // 1 = a quarter note. 4 equals a measure.
     
@@ -1455,7 +1466,7 @@ function displayNote(aNoteToDisplay) {
     // Formatted Notes for Monome
     var rowIndex = displayNoteList.indexOf(aNoteToDisplay[1]);
     var rowOnMonome = rowIndex - ((parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value);
-    if(mDebugLevel[4]) {
+    if(debugItem.startValue) {
         post("rowIndex:", rowIndex, "\n");
         post("rowOnMonome:", rowOnMonome, "rowOffset:", parameter.rowOffset.value, "foldingRowOffset", parameter.foldingRowOffset.value, "\n");
         post("colOnMonome:", colOnMonome, "colOffset:", colOffset(), "\n");
@@ -1465,7 +1476,7 @@ function displayNote(aNoteToDisplay) {
         Monome[colOnMonome][rowOnMonome].ledOn();
         
         // Debug Statements
-        if (mDebugLevel[4]) {
+        if (debugItem.startValue) {
             post("col:", colOnMonome, "row:", rowOnMonome, "\n");
             post("absoluteTime is:", absoluteTime, "\n");
             post("colOnMonome is:", colOnMonome, "\n");
@@ -1477,7 +1488,7 @@ function displayNote(aNoteToDisplay) {
 
 //                                  ---===Clear Methods===---
 function clearFunctionModeLeds() {
-    if (mDebugLevel[1]) { post("                               --clearFunctionModeLeds--\n"); }
+    if (debugItem.functionName) { post("                               --clearFunctionModeLeds--\n"); }
     
     //TODO Use Min and Max
     for (var o = 4; o <= 7; o++) {
@@ -1486,46 +1497,46 @@ function clearFunctionModeLeds() {
 }
 
 function clearMultiPurposeLeds() {
-    if (mDebugLevel[1]) { post("                               --clearMultiPurposeLeds--\n"); }
+    if (debugItem.functionName) { post("                               --clearMultiPurposeLeds--\n"); }
     for (var p = 0; p < 4; p++) {
         Monome[p][monomeLastRow()].ledOff();
     }
 }
 
 function clearNoteDisplay() {
-    if (mDebugLevel[1]) { post("                               --clearNoteDisplay--\n"); }
+    if (debugItem.functionName) { post("                               --clearNoteDisplay--\n"); }
     for (var cCol = 0; cCol < parameter.monomeWidth.value; cCol ++) {
         for (var cRow = 0; cRow < monomeLastRow(); cRow++) {
             Monome[cCol][cRow].ledOff();
         }
     }
-    if (mDebugLevel[2]) { post("           /clearNoteDisplay\n"); }
+    if (debugItem.functionEnd) { post("           /clearNoteDisplay\n"); }
 }
 
 //                                  ---===NoteList===---
 function fillInNoteRows() {
-    if (mDebugLevel[1]) { post("                               --fillInNoteRows--\n"); }
+    if (debugItem.functionName) { post("                               --fillInNoteRows--\n"); }
 
     var numberNeeded = (parameter.monomeHeight.value - displayNoteList.length);
     for (var m = 0; m < currentScale.length; m++) {
         if (!displayNoteList.inArray(currentScale[m]) ) {
             displayNoteList.push(currentScale[m]);
-            if (mDebugLevel[4]) {
+            if (debugItem.startValue) {
                 post("added row for note:", currentScale[m], "\n");
             }
         }
     }
     
-    if (mDebugLevel[2]) {
+    if (debugItem.functionEnd) {
         post("displayNoteList after fillInNoteRows:", displayNoteList, "\n");
     }
 }
 
 //                                  ---===Controller Methods===---
 function press(mCol, mRow, upDown) {
-    if (mDebugLevel[1]) { post("                               --press--\n"); }
+    if (debugItem.functionName) { post("                               --press--\n"); }
     
-    if (mDebugLevel[2]) {
+    if (debugItem.functionEnd) {
         post("press called.\n mCol:", mCol, "mRow", mRow, "upDown", upDown, "\n");
     }
     
@@ -1538,7 +1549,7 @@ function press(mCol, mRow, upDown) {
         var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? parameter.foldingRowOffset.value:parameter.rowOffset.value)];
 
         // Debugging is fun!
-        if (mDebugLevel[2]) {
+        if (debugItem.functionEnd) {
             post("newNoteTime:", newNoteTime, " newNoteNote:", newNoteNote, "\n");
         }
     
@@ -1639,7 +1650,7 @@ function press(mCol, mRow, upDown) {
 }
 
 function shiftIsHeld() {
-    if (mDebugLevel[1]) { post("                     --shiftIsHeld--\n"); }
+    if (debugItem.functionName) { post("                     --shiftIsHeld--\n"); }
 
     if (Monome[FunctionButton.shift][monomeLastRow()].isHeld == 1) {
         return true;
@@ -1648,7 +1659,7 @@ function shiftIsHeld() {
 }
 
 function widthButtons(aButtonPressed) {
-    if (mDebugLevel[1]) { post("                               --widthButtons--\n"); }
+    if (debugItem.functionName) { post("                               --widthButtons--\n"); }
     
     if (!extendedWidthOptions) {
         switch (aButtonPressed) {
@@ -1692,10 +1703,10 @@ function widthButtons(aButtonPressed) {
             }
         }
     }
-    if (mDebugLevel[4]) { post("dWidth = ", parameter.displayWidth.value, "\n"); }
+    if (debugItem.startValue) { post("dWidth = ", parameter.displayWidth.value, "\n"); }
 }
 function lengthButtons(aButtonPressed) {
-    if (mDebugLevel[1]) { post("                               --lengthButtons--\n"); }
+    if (debugItem.functionName) { post("                               --lengthButtons--\n"); }
     
     if (!extendedLengthOptions) {
         switch (aButtonPressed) {
@@ -1739,11 +1750,11 @@ function lengthButtons(aButtonPressed) {
             }
         }
     }
-    if (mDebugLevel[4]) { post("new notes will be created with length:", parameter.newNoteLength.value, "\n"); }
+    if (debugItem.startValue) { post("new notes will be created with length:", parameter.newNoteLength.value, "\n"); }
 }
 
 function velocityButtons(aButtonPressed) {
-    if (mDebugLevel[1]) { post("                               --velocityButtons--\n"); }
+    if (debugItem.functionName) { post("                               --velocityButtons--\n"); }
     
     if (!extendedVelocityOptions) {
         switch (aButtonPressed) {
@@ -1790,71 +1801,71 @@ function velocityButtons(aButtonPressed) {
     
     updateMultiPurposeLeds();
 
-    if (mDebugLevel[4]) { post("new notes will be created with velocity:", parameter.newNoteVelocity.value, "\n"); }
+    if (debugItem.startValue) { post("new notes will be created with velocity:", parameter.newNoteVelocity.value, "\n"); }
 }
 
 function toggleWidthDisplayOptions() {
-    if (mDebugLevel[1]) { post("                               --toggleWidthDisplayOptions--\n"); }
+    if (debugItem.functionName) { post("                               --toggleWidthDisplayOptions--\n"); }
     
     extendedWidthOptions = (extendedWidthOptions) ? false : true;
     updateControlLeds();
     
-    if(mDebugLevel[2]) { post("extendedWidthOptions:", extendedWidthOptions, "\n"); }
+    if(debugItem.functionEnd) { post("extendedWidthOptions:", extendedWidthOptions, "\n"); }
 }
 function toggleLengthOptions() {
-    if (mDebugLevel[1]) { post("                               --toggleLengthOptions--\n"); }
+    if (debugItem.functionName) { post("                               --toggleLengthOptions--\n"); }
     
     extendedLengthOptions = (extendedLengthOptions) ? false : true;
     updateControlLeds();
     
-    if(mDebugLevel[3]) { post("extendedWidthOptions:", extendedWidthOptions, "\n"); }
+    if(debugItem.endValue) { post("extendedWidthOptions:", extendedWidthOptions, "\n"); }
 }
 
 function toggleVelocityOptions() {
-    if (mDebugLevel[1]) { post("                               --toggleVelocityOptions--\n"); }
+    if (debugItem.functionName) { post("                               --toggleVelocityOptions--\n"); }
     
     extendedVelocityOptions = (extendedVelocityOptions) ? false : true;
     updateControlLeds();
     
-    if(mDebugLevel[3]) { post("extendedVelocityOptions:", extendedVelocityOptions, "\n"); }
+    if(debugItem.endValue) { post("extendedVelocityOptions:", extendedVelocityOptions, "\n"); }
 }
 
 function showVelocityOptions(aWhichOptions) {
-    if (mDebugLevel[1]) { post("                               --showVelocityOptions--\n"); }
+    if (debugItem.functionName) { post("                               --showVelocityOptions--\n"); }
     
     extendedVelocityOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(mDebugLevel[3]) { post("extendedVelocityOptions:", extendedVelocityOptions, "\n"); }
+    if(debugItem.endValue) { post("extendedVelocityOptions:", extendedVelocityOptions, "\n"); }
 }
 
 function showWidthOptions(aWhichOptions) {
-    if (mDebugLevel[1]) { post("                               --showWidthOptions--\n"); }
+    if (debugItem.functionName) { post("                               --showWidthOptions--\n"); }
     
     extendedWidthOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(mDebugLevel[3]) { post("extendedWidthOptions:", extendedWidthOptions, "\n"); }
+    if(debugItem.endValue) { post("extendedWidthOptions:", extendedWidthOptions, "\n"); }
 }
 
 function showLengthOptions(aWhichOptions) {
-    if (mDebugLevel[1]) { post("                               --showLengthOptions--\n"); }
+    if (debugItem.functionName) { post("                               --showLengthOptions--\n"); }
     
     extendedLengthOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(mDebugLevel[3]) { post("extendedLengthOptions:", extendedLengthOptions, "\n"); }
+    if(debugItem.endValue) { post("extendedLengthOptions:", extendedLengthOptions, "\n"); }
 }
 
 function toggleFollowingPlayingClip() {
-    if (mDebugLevel[1]) { post("                               --toggleFollowingPlayingClip--\n"); }
+    if (debugItem.functionName) { post("                               --toggleFollowingPlayingClip--\n"); }
     followingPlayingClip = (followingPlayingClip == true) ? false : true;
     updateFunctionModeLeds();
     getPlayingSlotNumber();
     sendToHud("following", followingPlayingClip, 0);
 }
 function getPlayingSlotNumber() {
-    if (mDebugLevel[1]) { post("--getPlayingSlotNumber--\n"); }
+    if (debugItem.functionName) { post("--getPlayingSlotNumber--\n"); }
     var pc = parseInt(watchTrack.get("playing_slot_index"), 10);
     if (pc >= 0) {
         setClipScene(pc);
@@ -1866,7 +1877,7 @@ function getPlayingSlotNumber() {
 
 //                                  ---===Clip Navigation===---
 function clipArrows(aWhichArrow) {
-    if (mDebugLevel[1]) { post("                               --clipArrows--\n"); }
+    if (debugItem.functionName) { post("                               --clipArrows--\n"); }
     switch (aWhichArrow) {
         
         case FunctionButton.dynamic_0:
@@ -1894,68 +1905,68 @@ function clipArrows(aWhichArrow) {
 }
 
 function leftInClip(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --leftInClip--\n"); }
+    if (debugItem.functionName) { post("                               --leftInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     
-    if (mDebugLevel[4]) { post("timeOffset before leftInClip:", timeOffset, "\n"); }
+    if (debugItem.startValue) { post("timeOffset before leftInClip:", timeOffset, "\n"); }
     changeTimeOffset(-aHowMuch);
-    if (mDebugLevel[3]) { post("timeOffset after leftInClip:", timeOffset, "\n"); }
+    if (debugItem.endValue) { post("timeOffset after leftInClip:", timeOffset, "\n"); }
     
 }
 
 
 function rightInClip(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --rightInClip--\n"); }
+    if (debugItem.functionName) { post("                               --rightInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     
-    if (mDebugLevel[4]) { post("timeOffset before rightInClip:", timeOffset, "\n"); }
+    if (debugItem.startValue) { post("timeOffset before rightInClip:", timeOffset, "\n"); }
     changeTimeOffset(aHowMuch);
-    if (mDebugLevel[2]) { post("timeOffset after rightInClip:", timeOffset, "\n"); }
+    if (debugItem.functionEnd) { post("timeOffset after rightInClip:", timeOffset, "\n"); }
 }
 function upInClip(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --upInClip--\n"); }
+    if (debugItem.functionName) { post("                               --upInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
-    if (mDebugLevel[4]) { post("offsetHolder before upInClip:", getRowOffset(), "\n"); }
+    if (debugItem.startValue) { post("offsetHolder before upInClip:", getRowOffset(), "\n"); }
     changeRowOffset(-aHowMuch);
-    if (mDebugLevel[3]) { post("offsetHolder after upInClip:", getRowOffset(), "\n"); }
+    if (debugItem.endValue) { post("offsetHolder after upInClip:", getRowOffset(), "\n"); }
 
 }
 function downInClip(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --downInClip--\n"); }
+    if (debugItem.functionName) { post("                               --downInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
-    if (mDebugLevel[4]) { post("offsetHolder before downInClip:", getRowOffset(), "\n"); }
+    if (debugItem.startValue) { post("offsetHolder before downInClip:", getRowOffset(), "\n"); }
     changeRowOffset(aHowMuch);
-    if (mDebugLevel[3]) { post("offsetHolder after downInClip:", getRowOffset(), "\n"); }
+    if (debugItem.endValue) { post("offsetHolder after downInClip:", getRowOffset(), "\n"); }
 
 }
 
 //                                  ---===Set Navigation===---
 function liveSetArrows(aWhichArrow) {
-    if (mDebugLevel[1]) { post("                               --liveSetArrows--\n"); }
+    if (debugItem.functionName) { post("                               --liveSetArrows--\n"); }
     switch (aWhichArrow) {
         
         case FunctionButton.dynamic_0: {
-            if (mDebugLevel[2]) { post("upInSet\n"); }
+            if (debugItem.functionEnd) { post("upInSet\n"); }
             upInSet();
             break;
         }
             
         case FunctionButton.dynamic_1: {
-            if (mDebugLevel[2]) { post("downInSet\n"); }
+            if (debugItem.functionEnd) { post("downInSet\n"); }
             downInSet();
             break;
         }
         case FunctionButton.dynamic_2: {
-            if (mDebugLevel[2]) { post("leftInSet\n"); }
+            if (debugItem.functionEnd) { post("leftInSet\n"); }
             leftInSet();
             break;
         }
         case FunctionButton.dynamic_3: {
-            if (mDebugLevel[2]) { post("rightInSet\n"); }
+            if (debugItem.functionEnd) { post("rightInSet\n"); }
             rightInSet();
             break;
         }
@@ -1968,60 +1979,60 @@ function liveSetArrows(aWhichArrow) {
 }
 
 function upInSet(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --upInSet--\n"); }
+    if (debugItem.functionName) { post("                               --upInSet--\n"); }
     if(!aHowMuch) { aHowMuch = 1; }
 
-    if (mDebugLevel[3]) { post("clipScene before upInSet:", getClipScene(), "\n"); }
+    if (debugItem.endValue) { post("clipScene before upInSet:", getClipScene(), "\n"); }
     
     changeClipScene(-aHowMuch);
-    if (mDebugLevel[2]) { post("clipScene after upInSet:", parameter.clipScene.value, "\n"); }
+    if (debugItem.functionEnd) { post("clipScene after upInSet:", parameter.clipScene.value, "\n"); }
 }
 
 function downInSet(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --downInSet--\n"); }
+    if (debugItem.functionName) { post("                               --downInSet--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
-    if (mDebugLevel[2]) { post("clipScene before downInSet:", getClipScene(), "\n"); }
+    if (debugItem.functionEnd) { post("clipScene before downInSet:", getClipScene(), "\n"); }
 
     changeClipScene(aHowMuch);
 
-    if (mDebugLevel[2]) { post("clipScene after downInSet:", parameter.clipScene.value, "\n"); }
+    if (debugItem.functionEnd) { post("clipScene after downInSet:", parameter.clipScene.value, "\n"); }
 }
 
 function rightInSet(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --rightInSet--\n"); }
+    if (debugItem.functionName) { post("                               --rightInSet--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
-    if (mDebugLevel[4]) {
+    if (debugItem.startValue) {
         post("trackIndex before rightInSet:", getTrackIndex(), "\n");
     }
-    if (mDebugLevel[4]) {    post("track before rightInSet:", trackArray[parameter.trackIndex.value], "\n"); }
+    if (debugItem.startValue) {    post("track before rightInSet:", trackArray[parameter.trackIndex.value], "\n"); }
     
     changeTrackIndex(aHowMuch);
     focusOnClip();
     
-    if (mDebugLevel[3]) { post("trackIndex after rightInSet:", parameter.trackIndex.value, "\n"); }
-    if (mDebugLevel[4]) {    post("track after rightInSet:", trackArray[parameter.trackIndex.value], "\n"); }
+    if (debugItem.endValue) { post("trackIndex after rightInSet:", parameter.trackIndex.value, "\n"); }
+    if (debugItem.startValue) {    post("track after rightInSet:", trackArray[parameter.trackIndex.value], "\n"); }
 }
 function leftInSet(aHowMuch) {
-    if (mDebugLevel[1]) { post("                               --leftInSet--\n"); }
+    if (debugItem.functionName) { post("                               --leftInSet--\n"); }
     if(!aHowMuch) { aHowMuch = 1; }
-    if (mDebugLevel[4]) {
+    if (debugItem.startValue) {
         post("trackIndex before leftInSet:", getTrackIndex(), "\n");
     }
-    if (mDebugLevel[4]) {    post("track before leftInSet:", trackArray[parameter.trackIndex.value], "\n"); }
+    if (debugItem.startValue) {    post("track before leftInSet:", trackArray[parameter.trackIndex.value], "\n"); }
 
     changeTrackIndex(-aHowMuch);
     focusOnClip();
 
-    if (mDebugLevel[3]) { post("trackIndex after leftInSet:", parameter.trackIndex.value, "\n"); }
-    if (mDebugLevel[4]) {    post("track after leftInSet:", trackArray[parameter.trackIndex.value], "\n"); }
+    if (debugItem.endValue) { post("trackIndex after leftInSet:", parameter.trackIndex.value, "\n"); }
+    if (debugItem.startValue) {    post("track after leftInSet:", trackArray[parameter.trackIndex.value], "\n"); }
 }
 
 //                                  ---===Communicate with Patcher===---
 function sendToHud(key, value, format) {
-    if (mDebugLevel[1]) { post("                               --sendToHud - " + key + " : " + value + " --\n"); }
-    if (mDebugLevel[5]) { post("key:", key, "value:", value, "\n"); }
+    if (debugItem.functionName) { post("                               --sendToHud - " + key + " : " + value + " --\n"); }
+    if (debugItem.list) { post("key:", key, "value:", value, "\n"); }
     
     switch (format) {
         case 0:
@@ -2045,20 +2056,20 @@ function sendToHud(key, value, format) {
 
 //                                  ---===Monome Device Methods===---
 function setMonomeWidth(aWidth) {
-    if (mDebugLevel[6]) { post("                               --setMonomeWidth--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setMonomeWidth--\n"); }
     parameter.monomeWidth.value = aWidth;
     sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
 
-    if(mDebugLevel[2]) { post("monomeWidth:", parameter.monomeWidth.value, "\n"); }
+    if(debugItem.functionEnd) { post("monomeWidth:", parameter.monomeWidth.value, "\n"); }
 
     this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
 }
 function setMonomeHeight(aHeight) {
-    if (mDebugLevel[6]) { post("                               --setMonomeHeight--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setMonomeHeight--\n"); }
     parameter.monomeHeight.value = aHeight;
     sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
     
-    if(mDebugLevel[2]) { post("monomeHeight:", parameter.monomeHeight.value, "\n"); }
+    if(debugItem.functionEnd) { post("monomeHeight:", parameter.monomeHeight.value, "\n"); }
 
     this.patcher.getnamed("monomeHeightGsCssPattr").message(parameter.monomeHeight.value);
 }
@@ -2126,9 +2137,9 @@ function SingleCell(aCol, aRow, aOutlet) {
 }
 
 function buildMonome() {    
-    if (mDebugLevel[1]) { post("                               --buildMonome--\n"); }
-    if (mDebugLevel[2]) { post("buildMonome called\n"); }
-    if (mDebugLevel[4]) {
+    if (debugItem.functionName) { post("                               --buildMonome--\n"); }
+    if (debugItem.functionEnd) { post("buildMonome called\n"); }
+    if (debugItem.startValue) {
         post("monomeWidth:", parameter.monomeWidth.value, "\n");
         post("monomeHeight:", parameter.monomeHeight.value, "\n");
     }
@@ -2138,9 +2149,9 @@ function buildMonome() {
         for (var iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
             Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
         }
-        if (mDebugLevel[4]) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
+        if (debugItem.startValue) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
     }
-    if (mDebugLevel[4]) { post("Monome.length (width):", Monome.length, "\n"); }
+    if (debugItem.startValue) { post("Monome.length (width):", Monome.length, "\n"); }
 }
 
 Monome.row = function(aRow, aMethodToInvoke) {
@@ -2222,7 +2233,7 @@ Monome.column = function(aColumn, aMethodToInvoke) {
 };
 
 function refreshMonome() {
-    if (mDebugLevel[1]) { post("                               --refreshMonome--\n"); }
+    if (debugItem.functionName) { post("                               --refreshMonome--\n"); }
     var iCol;
     var iRow;
     for (iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
@@ -2234,7 +2245,7 @@ function refreshMonome() {
 
 //                                  ---===cycles accessors===---
 function setCycles(aNewCycleCount) {
-    if (mDebugLevel[6]) { post("                               --setCycles--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setCycles--\n"); }
     
     if (0 < aNewCycleCount) {
         parameter.cycles.value = aNewCycleCount;
@@ -2248,7 +2259,7 @@ function setCycles(aNewCycleCount) {
 
 //                                  ---===rootNote accessors===---
 function setRootNote(aNewRoot) {
-    if (mDebugLevel[6]) { post("                               --setRootNote--\n"); }
+    if (debugItem.getterSetterName) { post("                               --setRootNote--\n"); }
 
     if (isValidCCNumber(aNewRoot)) {
         parameter.rootNote.value = aNewRoot;
@@ -2261,9 +2272,9 @@ function setRootNote(aNewRoot) {
 
 //                                  ---===onScaleVariableChange===---
 function onScaleVariableChange () {
-    if (mDebugLevel[6]) { post("                               --onScaleVariableChange--\n"); }
+    if (debugItem.getterSetterName) { post("                               --onScaleVariableChange--\n"); }
 
-    if (mDebugLevel[5]) { post("my name is:", parameter.currentScaleName.value, "\n"); }
+    if (debugItem.list) { post("my name is:", parameter.currentScaleName.value, "\n"); }
 
     if(parameter.currentScaleName.value != "Drums") {
         setCurrentScaleWithSymbol(parameter.currentScaleName.value);
@@ -2272,40 +2283,40 @@ function onScaleVariableChange () {
 //                                  ---===Scale Methods===---
 
 function generateFullScaleList(scaleArray, localRootNote, localCycles) {
-    if (mDebugLevel[1]) { post("                               --generateFullScaleList--\n"); }
+    if (debugItem.functionName) { post("                               --generateFullScaleList--\n"); }
     
-    if (mDebugLevel[5]) { post("scaleArray:", scaleArray, "\n"); }     
+    if (debugItem.list) { post("scaleArray:", scaleArray, "\n"); }     
 
     var scaleMap = scaleArray.slice(0); //because i will manipulate this array
     var distanceToSecondRoot = scaleMap.pop(); // the last note is only needed for distance calculation
-    if (mDebugLevel[5]) { post("distanceToSecondRoot:", distanceToSecondRoot, "\n");       }
+    if (debugItem.list) { post("distanceToSecondRoot:", distanceToSecondRoot, "\n");       }
     
     
     var scaleLength = scaleMap.length;
-    if (mDebugLevel[3]) { post("scaleLength:", scaleLength, "\n"); }
+    if (debugItem.endValue) { post("scaleLength:", scaleLength, "\n"); }
     
     var numberOfNotesInScale = scaleLength * localCycles + 1; //root on top
-    if(mDebugLevel[4]) { post("numberOfNotesInScale:", numberOfNotesInScale, "\n"); }
+    if(debugItem.startValue) { post("numberOfNotesInScale:", numberOfNotesInScale, "\n"); }
     //i assume the scale starts at 0.
     // the distance to the root is needed more than 0
     scaleMap[0] = distanceToSecondRoot; 
 
-    if (mDebugLevel[5]) { post("scaleMap:", scaleMap, "\n"); }
+    if (debugItem.list) { post("scaleMap:", scaleMap, "\n"); }
     
     var scaleNoteList = new Array();
     
     scaleNoteList.push(parseInt(localRootNote, 10));
-    if (mDebugLevel[5]) { post("root", localRootNote, "\n"); }
+    if (debugItem.list) { post("root", localRootNote, "\n"); }
     
     for (var n = 1; n < numberOfNotesInScale; n++) {
         var noteNumberInQuestion = scaleNoteList[(n - 1)] + scaleMap[(n % scaleLength)];
         
-        if (mDebugLevel[5]) { post("noteNumberInQuestion:", noteNumberInQuestion, "\n"); }
+        if (debugItem.list) { post("noteNumberInQuestion:", noteNumberInQuestion, "\n"); }
         
         if (isValidCCNumber(noteNumberInQuestion)) { 
             scaleNoteList.push(noteNumberInQuestion);
             
-            if (mDebugLevel[5]) { 
+            if (debugItem.list) { 
                 post("n", n);
                 if (n % scaleLength == 0) {
                     post("root", noteNumberInQuestion, "\n");
@@ -2317,12 +2328,12 @@ function generateFullScaleList(scaleArray, localRootNote, localCycles) {
             
         }
     }
-    if(mDebugLevel[4]) { post("scaleNoteList:" + scaleNoteList, "\n"); }
+    if(debugItem.startValue) { post("scaleNoteList:" + scaleNoteList, "\n"); }
     return scaleNoteList;
 }
 
 function setCurrentScale(scaleToUse, scaleName) {
-    if (mDebugLevel[6]) { post("                     --setCurrentScale--\n"); }
+    if (debugItem.getterSetterName) { post("                     --setCurrentScale--\n"); }
     
     if (currentScale != scaleToUse) {
         currentScale = scaleToUse;
@@ -2332,7 +2343,7 @@ function setCurrentScale(scaleToUse, scaleName) {
 }
 
 function setCurrentScaleName(aNewName) {
-    if (mDebugLevel[6]) { post("                     ---setCurrentScaleName-\n"); }
+    if (debugItem.getterSetterName) { post("                     ---setCurrentScaleName-\n"); }
     parameter.currentScaleName.value = aNewName;
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(parameter.currentScaleName.value);
 }
@@ -2349,8 +2360,8 @@ function isValidCCNumber (numberInQuestion) {
 }
 
 function setCurrentScaleWithSymbol(symbolFromPatcher) {
-    if (mDebugLevel[1]) { post("                               --setCurrentScaleWithSymbol--\n"); }
-    if (mDebugLevel[4]) { post("           symbolFromPatcher:", symbolFromPatcher, "\n"); }
+    if (debugItem.functionName) { post("                               --setCurrentScaleWithSymbol--\n"); }
+    if (debugItem.startValue) { post("           symbolFromPatcher:", symbolFromPatcher, "\n"); }
     if (!thereIsAClipInSlot) { return; }
     
     switch (symbolFromPatcher) {
@@ -2447,7 +2458,7 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
             updateNoteDisplay();
             break;
     }
-    if (mDebugLevel[4]) { post("symbolFromPatcher at end:", symbolFromPatcher, "\n"); }
+    if (debugItem.startValue) { post("symbolFromPatcher at end:", symbolFromPatcher, "\n"); }
 }
 
 function setInSuite(aNewValue) {
@@ -2531,9 +2542,9 @@ function recall(aNumber) {
 
 
 function freebang() {
-    if (mDebugLevel[1]) { post("                               --freebang--\n"); }
+    if (debugItem.functionName) { post("                               --freebang--\n"); }
     updatePattrs();
-    if (mDebugLevel[5]) { postPattrs("end"); }
+    if (debugItem.list) { postPattrs("end"); }
     if (watchSet) { watchSet = null; }
     if (countAllTracks) { countAllTracks = null; }
     if (watchSetTracks) { watchSetTracks = null; }
