@@ -466,13 +466,13 @@ function setClipFromGlobal(aTrack, aScene) {
 
 //                                  ---===Prototype work===---
 
-Array.prototype.inArray = function (numInQuestion) {
+Array.prototype.inArray = function (aNumber) {
     if (debugItem.getSetName) { post("                               --inArray-\n"); }
     
     // need this later for Folding Logic
     var g;
-    if (this.indexOf( numInQuestion ) > -1) { g = true; }
-    else if (this.indexOf( numInQuestion ) == -1) { g = false; }
+    if (this.indexOf( aNumber ) > -1) { g = true; }
+    else if (this.indexOf( aNumber ) == -1) { g = false; }
     else { g = NaN; }
     return g;
 };
@@ -488,12 +488,12 @@ Array.prototype.noteToLiveAPI = function () {
     return this;
 };
 
-Number.prototype.toLength = function (len) {
+Number.prototype.toLength = function (aLength) {
        if (debugItem.getSetName) { post("                              --toLength--\n"); }
 
     var lString = this.toString();
-    if (lString.length < len) {
-        lString = ('0000' + this.toString()).slice(-len);
+    if (lString.length < aLength) {
+        lString = ('0000' + this.toString()).slice(-aLength);
     }
 
     return lString;
@@ -519,30 +519,30 @@ function setTrackIndex(aNewIndexNumber) {
     focusOnClip();
 }
 
-function changeTrackIndex(amountOfChange) {
+function changeTrackIndex(aAmount) {
     if (debugItem.getSetName) { post("                               --changeTrackIndex--\n"); }
     
-    var lValue = parameter.trackIndex.value + amountOfChange;
+    var lValue = parameter.trackIndex.value + aAmount;
     if (lValue >= trackArray.length) { lValue = trackArray.length - 1; }
     
     setParameterProperty("trackIndex", lValue);
     focusOnClip();
 }
 
-function getIndexOfTrack(trackToFind) {
+function getIndexOfTrack(aTrackToFind) {
     if (debugItem.getSetName) { post("                               --getTrackIndex--\n"); }
 
-    if (debugItem.startValue) { post("looking for:", trackToFind, "\n");}
-    var lIndex = trackArray.indexOf(trackToFind);
+    if (debugItem.startValue) { post("looking for:", aTrackToFind, "\n");}
+    var lIndex = trackArray.indexOf(aTrackToFind);
 
     if (lIndex != -1) {
-        if (debugItem.startValue) { post(trackToFind, "is a valid midi track\n");}
+        if (debugItem.startValue) { post(aTrackToFind, "is a valid midi track\n");}
         if (debugItem.startValue) { post(lIndex, "is it's index\n");}
         return lIndex;
     }
     
     else {
-        if (debugItem.startValue) { post(trackToFind, "is not a valid midi track\n");}
+        if (debugItem.startValue) { post(aTrackToFind, "is not a valid midi track\n");}
         return -1;
     }
 }
@@ -590,15 +590,15 @@ function setFoldingRowOffset(aNewOffsetNumber) {
 function getRowOffset() {
     return (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
 }
-function changeRowOffset(amountOfChange) {
+function changeRowOffset(aAmount) {
     if (debugItem.getSetName) { post("                               --changeRowOffset--\n"); }
     
-    if(!amountOfChange) { amountOfChange = 1; }
+    if(!aAmount) { aAmount = 1; }
     var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
     
     if (debugItem.getterSetterStartValue) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
     
-    offsetHolder += amountOfChange;
+    offsetHolder += aAmount;
     
     if (offsetHolder + monomeLastRow() >= displayNoteList.length) {
         offsetHolder = displayNoteList.length - monomeLastRow();
@@ -628,10 +628,10 @@ function setClipSceneFromPatcher(aNewSceneNumber) {
     setClipScene(aNewSceneNumber - 1);
 }
 
-function changeClipScene(amountOfChange) {
+function changeClipScene(aAmount) {
     if (debugItem.getSetName) { post("                               --changeClipScene--\n"); }
     
-    var lValue = parameter.clipScene.value + amountOfChange;
+    var lValue = parameter.clipScene.value + aAmount;
     
     if (lValue >= watchSet.getcount("scenes")) {
         lValue = watchSet.getcount("scenes") - 1; 
@@ -659,16 +659,16 @@ function setTimeOffset(aNewOffset){
 
 }
 
-function changeTimeOffset(amountOfChange) {
+function changeTimeOffset(aAmount) {
     if (debugItem.getSetName) { post("                               --changeTimeOffset-\n"); }
     
     
     var lValue;
     
-    if(!amountOfChange) { amountOfChange = parameter.displayWidth.value; }
-    else { amountOfChange *= parameter.displayWidth.value; }
+    if(!aAmount) { aAmount = parameter.displayWidth.value; }
+    else { aAmount *= parameter.displayWidth.value; }
     
-    lValue = parameter.timeOffset.value + amountOfChange;
+    lValue = parameter.timeOffset.value + aAmount;
     
     if (parameter.timeOffset.value >= editClip.get("length")) { parameter.timeOffset.value = editClip.get("length") - parameter.displayWidth.value; }
 
@@ -720,10 +720,10 @@ function incrementFunctionMode() {
     changeParameterProperty("functionMode", 1);
 }
 
-function toggleFunctionBitButton(whichButton) {
+function toggleFunctionBitButton(aButton) {
     if (debugItem.functionName) { post("                               --toggleFunctionBitButton--\n"); }
 
-    functionToggle[whichButton] = (functionToggle[whichButton]) ? false : true;
+    functionToggle[aButton] = (functionToggle[aButton]) ? false : true;
     
     // Little endian
     if ((!functionToggle[0]) && (!functionToggle[1]) ) {
@@ -760,9 +760,9 @@ function setFolding(aValue) {
 }
                     
 //                                  ---===Callbacks===---
-function onNewSlotPlaying(apiArray) {
+function onNewSlotPlaying(aApiArray) {
     if (debugItem.functionName) { post("                               --onNewSlotPlaying--\n"); }
-    var playingClipSlot = parseInt(apiArray[1], 10);
+    var playingClipSlot = parseInt(aApiArray[1], 10);
     if ((followingPlayingClip) && (playingClipSlot >= 0)) {
         setClipScene(playingClipSlot);
         post("onNewSlotPlaying", playingClipSlot, "\n");
@@ -977,9 +977,9 @@ function playCurrentClip() {
 
 
 //                                  ---===Check Notes===---
-function timeIsDisplayed(timeInQuestion) {
+function timeIsDisplayed(aTimeInQuestion) {
     if (debugItem.list) { post("                               --timeIsDisplayed--\n"); }
-    if ((parameter.timeOffset.value <= timeInQuestion) && (timeInQuestion < displayTimeMax())) {
+    if ((parameter.timeOffset.value <= aTimeInQuestion) && (aTimeInQuestion < displayTimeMax())) {
         return true;
     }
     else {
@@ -987,10 +987,10 @@ function timeIsDisplayed(timeInQuestion) {
     }
 }
 
-function rowIsDisplayed(rowInQuestion) {
+function rowIsDisplayed(aRowInQuestion) {
     if (debugItem.list) { post("                               --rowIsDisplayed--\n"); }
     var currentOffset = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
-    if (currentOffset <= rowInQuestion && (rowInQuestion < displayRowMax())) {
+    if (currentOffset <= aRowInQuestion && (aRowInQuestion < displayRowMax())) {
         return true;
     }
     else {
@@ -998,19 +998,19 @@ function rowIsDisplayed(rowInQuestion) {
     }
 }
 
-function doesCoincide(nArray, nTone, nTime) {
+function doesCoincide(aArray, aTone, aTime) {
     if (debugItem.functionName) { post("                               --doesCoincide--\n"); }
     var x, l;
     var a = [];
-    for ( x = 0, l = nArray.length; x < l; x++) {
+    for ( x = 0, l = aArray.length; x < l; x++) {
         
         // Debug
         if (debugItem.startValue) {
             post("checked note:", x, "in noteArray\n");
-            post("for nTone:", nTone, " and nTime:", nTime, "\n");
+            post("for aTone:", aTone, " and aTime:", aTime, "\n");
         }
         
-        if ((nArray[x][1] == nTone) && (nArray[x][2] == nTime)) {
+        if ((aArray[x][1] == aTone) && (aArray[x][2] == aTime)) {
             if (debugItem.functionEnd) { post("found! note:", x, "in noteArray\n"); }
             a = [true, x];
             return a;
@@ -1116,12 +1116,12 @@ function publishNoteArray() {
     editClip.call("done");
 }
 
-function addNote(addNum, addTime, addVelocity) {
+function addNote(aPitch, aTime, aVelocity) {
     if (debugItem.functionName) { post("                               --addNote--\n"); }
     // Model Controller
     // simply adds one note no need to get and replace every note.
     
-    var tempNoteArray = ["note", addNum, addTime, parameter.newNoteLength.value, addVelocity, 0];
+    var tempNoteArray = ["note", aPitch, aTime, parameter.newNoteLength.value, aVelocity, 0];
     var newLength = noteArray.length + 1;
 
     editClip.call("deselect_all_notes"); // CALL
@@ -1144,10 +1144,10 @@ function addNote(addNum, addTime, addVelocity) {
     editClip.call("done"); // CALL
 }
 
-function removeNote(indexOfNote) {
+function removeNote(aIndex) {
     if (debugItem.functionName) { post("                               --removeNote--\n"); }
-    var noteRemoved = noteArray.splice(indexOfNote, 1);
-    var noteRemovedIndex = indexOfNote;
+    var noteRemoved = noteArray.splice(aIndex, 1);
+    var noteRemovedIndex = aIndex;
     if (debugItem.functionEnd) { post("noteRemoved:" + noteRemoved + "\n"); }
     publishNoteArray();
 }
@@ -1478,28 +1478,28 @@ function fillInNoteRows() {
 }
 
 //                                  ---===Controller Methods===---
-function press(mCol, mRow, upDown) {
+function press(aCol, aRow, aPress) {
     if (debugItem.functionName) { post("                               --press--\n"); }
     var lOutlet = 1;
     
     if (debugItem.functionEnd) {
-        post("press called.\n mCol:", mCol, "mRow", mRow, "upDown", upDown, "\n");
+        post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n");
     }
     
-    if (upDown == 1) { Monome[mCol][mRow].push(); }
-    else if (upDown == 0) { Monome[mCol][mRow].release(); }
+    if (aPress == 1) { Monome[aCol][aRow].push(); }
+    else if (aPress == 0) { Monome[aCol][aRow].release(); }
     
     
-    if (mRow < monomeLastRow()) {
-        var newNoteTime = ( mCol + colOffset() ) * displayRatioFromMonome();
-        var newNoteNote = displayNoteList[mRow + ((parameter.folding.value) ? parameter.foldingRowOffset.value:parameter.rowOffset.value)];
+    if (aRow < monomeLastRow()) {
+        var newNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
+        var newNoteNote = displayNoteList[aRow + ((parameter.folding.value) ? parameter.foldingRowOffset.value:parameter.rowOffset.value)];
 
         // Debugging is fun!
         if (debugItem.functionEnd) {
             post("newNoteTime:", newNoteTime, " newNoteNote:", newNoteNote, "\n");
         }
     
-        if (upDown == 1) {
+        if (aPress == 1) {
             // check for note in array
             var isAlreadyInNoteArray = doesCoincide(noteArray, newNoteNote, newNoteTime);
     
@@ -1514,21 +1514,21 @@ function press(mCol, mRow, upDown) {
         sendToHud("latest", newNoteNote, 0);
     }
     // Arrow keys
-    else if ((mRow == monomeLastRow()) && (upDown == 1) && (mCol >= 0) && (mCol <= 3)) {
+    else if ((aRow == monomeLastRow()) && (aPress == 1) && (aCol >= 0) && (aCol <= 3)) {
 
         switch (parameter.functionMode.value) {
             case FunctionMode.moveMode:
-                if (shiftIsHeld()) { liveSetArrows(mCol); }
-                else { clipArrows(mCol); }
+                if (shiftIsHeld()) { liveSetArrows(aCol); }
+                else { clipArrows(aCol); }
                 break;
             case FunctionMode.lengthMode:
-                lengthButtons(mCol);
+                lengthButtons(aCol);
                 break;
             case FunctionMode.velocityMode:
-                velocityButtons(mCol);
+                velocityButtons(aCol);
                 break;
             case FunctionMode.widthMode:
-                widthButtons(mCol);
+                widthButtons(aCol);
                 break;
             default :
                 post("error in press, functionMode:", parameter.functionMode.value, "\n");
@@ -1536,51 +1536,51 @@ function press(mCol, mRow, upDown) {
         }
     }
 
-    else if ((mRow == monomeLastRow()) && (mCol >= 4) && (mCol <= 7)) {
+    else if ((aRow == monomeLastRow()) && (aCol >= 4) && (aCol <= 7)) {
         // Change arrow mode
-        switch (mCol) {
+        switch (aCol) {
             case FunctionButton.shift:
                 switch(parameter.functionMode.value) {    
                     case FunctionMode.moveMode:
                         updateControlLeds();
                         break;
                     case FunctionMode.lengthMode:
-                        showLengthOptions(upDown);
+                        showLengthOptions(aPress);
                         break;
                     case FunctionMode.velocityMode:
-                        showVelocityOptions(upDown);
+                        showVelocityOptions(aPress);
                         break;               
                     case FunctionMode.widthMode:
-                        showWidthOptions(upDown);
+                        showWidthOptions(aPress);
                         break;
                     default:
                         post("error in FunctionButton.shift. functionMode:", parameter.functionMode.value, "\n");
-                        post("mCol:", mCol, "\n");
+                        post("aCol:", aCol, "\n");
                         break;
                 }
             break;
         
             case FunctionButton.bit0:
                 // 0X
-                if (upDown == 1) { toggleFunctionBitButton(0); }
+                if (aPress == 1) { toggleFunctionBitButton(0); }
                 break;
 
             case FunctionButton.bit1:
                // X0
-                if (upDown == 1) { toggleFunctionBitButton(1); }
+                if (aPress == 1) { toggleFunctionBitButton(1); }
                 break;
 
             case FunctionButton.fold:
-                if (upDown == 1) { toggleFolding(); }
+                if (aPress == 1) { toggleFolding(); }
                 break;
             default:
                 post("error in press. functionMode:", parameter.functionMode.value, "\n");
-                post("mCol:", mCol, "\n");
+                post("aCol:", aCol, "\n");
                 break;
         }
     }
-    else if ((mRow == monomeLastRow()) && (mCol >= 8) && (mCol <= 15) && (upDown == 1)) {
-        switch (mCol) {
+    else if ((aRow == monomeLastRow()) && (aCol >= 8) && (aCol <= 15) && (aPress == 1)) {
+        switch (aCol) {
             case FunctionButton.store_0:
                 outlet(lOutlet, 1);
                 break;
@@ -2259,12 +2259,12 @@ function generateFullScaleList(aMapString) {
     return scaleNoteList;
 }
 
-function setCurrentScale(scaleToUse, scaleName) {
+function setCurrentScale(aScaleToUse, aScaleName) {
     if (debugItem.getSetName) { post("                     --setCurrentScale--\n"); }
     
-    if (parameter.currentScale.value != scaleToUse) {
-        parameter.currentScale.value = scaleToUse;
-        setCurrentScaleName(scaleName);
+    if (parameter.currentScale.value != aScaleToUse) {
+        parameter.currentScale.value = aScaleToUse;
+        setCurrentScaleName(aScaleName);
         updateNoteDisplay();
     }
 }
@@ -2275,29 +2275,29 @@ function setCurrentScaleName(aNewName) {
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(parameter.currentScaleName.value);
 }
 
-function setCurrentScaleFromMap(mapToUse) {
-    setCurrentScale(generateFullScaleList(mapToUse, 48, 4) );
+function setCurrentScaleFromMap(aMapToUse) {
+    setCurrentScale(generateFullScaleList(aMapToUse, 48, 4) );
 }
 
-function isValidCCNumber (numberInQuestion) {
-    if ((0 <= numberInQuestion) && (numberInQuestion <= 127) && (numberInQuestion % 1 == 0)) {
+function isValidCCNumber (aNumberInQuestion) {
+    if ((0 <= aNumberInQuestion) && (aNumberInQuestion <= 127) && (aNumberInQuestion % 1 == 0)) {
         return true;
     }
     else { return false;}
 }
 
-function setCurrentScaleWithSymbol(symbolFromPatcher) {
+function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
     if (debugItem.functionName) { post("                               --setCurrentScaleWithSymbol--\n"); }
-    if (debugItem.startValue) { post("           symbolFromPatcher:", symbolFromPatcher, "\n"); }
+    if (debugItem.startValue) { post("           aSymbolFromPatcher:", aSymbolFromPatcher, "\n"); }
     if (!thereIsAClipInSlot) { return; }
 
-    if (symbolFromPatcher == "Drums") {
-        setCurrentScale(defaultDrumScale, symbolFromPatcher);
+    if (aSymbolFromPatcher == "Drums") {
+        setCurrentScale(defaultDrumScale, aSymbolFromPatcher);
     }
     
-    setCurrentScale(generateFullScaleList(symbolFromPatcher), symbolFromPatcher);
+    setCurrentScale(generateFullScaleList(aSymbolFromPatcher), aSymbolFromPatcher);
 
-    if (debugItem.startValue) { post("symbolFromPatcher at end:", symbolFromPatcher, "\n"); }
+    if (debugItem.startValue) { post("aSymbolFromPatcher at end:", aSymbolFromPatcher, "\n"); }
 }
 
 function setInSuite(aNewValue) {
