@@ -31,11 +31,17 @@ have taken inspiration/insight from.
 
 */
 
+
+/*jslint white:false */
+/*globals Global, LiveAPI, buildMonome, changeParameterProperty, clearFunctionModeLeds, clearMultiPurposeLeds, clearNoteDisplay, clipArrows, clipPlaying, countMidiTracks, defaultDrumScale, displayDisplayWidthLeds, displayLengthLeds, displayNote, displayRatioToMonome, displayVelocityLeds, downInClip, downInSet, elementsInNoteList, fillInNoteRows, focusOnClip, getClipScene, getIndexOfTrack, getPlayingSlotNumber, getTrackIndex, grabAllPattrValues, grabPattrValue, iProperty, isValidCCNumber, leftInClip, leftInSet, lengthButtons, liveSetArrows, monomeLastCol, monomeLastRow, noteArrayChecked, numberOfNotesInClip, onScaleVariableChange, postPattrs, refreshMonome, rightInClip, rightInSet, roundDisplayOffset, sceneArray, sceneCount, sendToHud, setClipFromGlobal, setCurrentScaleName, setCurrentScaleWithSymbol, setParameterProperty, setPlayheadVisible, setPlaying, setTrackIndex, setTrackIndexAndScene, shiftIsHeld, showLengthOptions, showVelocityOptions, showWidthOptions, toggleParameterProperty, trackCount, upInClip, upInSet, updateControlLeds, updateFunctionModeLeds, updateHud, updateMultiPurposeLeds, updateNoteDisplay, velocityButtons, widthButtons */
+
+post("begin loading gs.clipStepSequencer\n");
+
 //                                  ---===Patcher/MaxMSP Stuff===---
 var autowatch = 1;
 
 var inlets = 1;
-var outlets = 2;
+var outlets = 3;
 var post;
 var outlet;
 
@@ -63,8 +69,8 @@ var debugItem = {
     loading : false
 };
 
-maps = {
-    Major: {
+var maps = {
+    Major : {
         value: [0, 2, 2, 1, 2, 2, 2, 1],
         name: "Major"
     },
@@ -361,7 +367,7 @@ var FunctionMode = {
 //                                  ---===Create Empty Arrays===---
 var noteArray = [];
 var displayNoteList = [];
-var clipNotes = new Array();
+var clipNotes = [];
 
 
 //                                  ---===conditions===---
@@ -440,6 +446,8 @@ function initialize() {
 }
 
 function grabAllPattrValues() {
+    var iProperty;
+    
     for (iProperty in parameter) {
         if (parameter[iProperty].saveInPattr) {
             grabPattrValue(parameter[iProperty]);
@@ -1212,10 +1220,9 @@ function updateFunctionModeLeds() {
             Monome[FunctionButton.bit0][monomeLastRow()].ledOn();
             Monome[FunctionButton.bit1][monomeLastRow()].ledOn();
             break;
-        default : {
+        default :
             post("error in updateFunctionModeLeds functionMode:", parameter.functionMode.value, "\n");
             break;
-        }
     }
 
     if (shiftIsHeld()) {
@@ -1250,10 +1257,9 @@ function updateMultiPurposeLeds() {
         // Note Length
             displayLengthLeds();
             break;
-        default : {
+        default :
             post("error in updateMultiPurposeLeds, functionMode:", parameter.functionMode.value, "\n");
             break;
-        }
     }
     
 }
@@ -1523,67 +1529,53 @@ function press(mCol, mRow, upDown) {
             case FunctionMode.widthMode:
                 widthButtons(mCol);
                 break;
-            default : {
+            default :
                 post("error in press, functionMode:", parameter.functionMode.value, "\n");
                 break;
-            }
         }
     }
 
     else if ((mRow == monomeLastRow()) && (mCol >= 4) && (mCol <= 7)) {
         // Change arrow mode
         switch (mCol) {
-            case FunctionButton.shift: {
-    
+            case FunctionButton.shift:
                 switch(parameter.functionMode.value) {    
-                    case FunctionMode.moveMode: {
+                    case FunctionMode.moveMode:
                         updateControlLeds();
                         break;
-                    }
-                    case FunctionMode.lengthMode: {
+                    case FunctionMode.lengthMode:
                         showLengthOptions(upDown);
                         break;
-                    }
-                    case FunctionMode.velocityMode: {
+                    case FunctionMode.velocityMode:
                         showVelocityOptions(upDown);
-                        break;
-                    }                        
-                    case FunctionMode.widthMode: {
+                        break;               
+                    case FunctionMode.widthMode:
                         showWidthOptions(upDown);
                         break;
-                    }
-
-                    default: {
+                    default:
                         post("error in FunctionButton.shift. functionMode:", parameter.functionMode.value, "\n");
                         post("mCol:", mCol, "\n");
                         break;
-                    }
                 }
             break;
-            }
-            
-
-            case FunctionButton.bit0: {
+        
+            case FunctionButton.bit0:
                 // 0X
                 if (upDown == 1) { toggleFunctionBitButton(0); }
                 break;
-            }
 
-            case FunctionButton.bit1: {
+            case FunctionButton.bit1:
                // X0
                 if (upDown == 1) { toggleFunctionBitButton(1); }
                 break;
-            }
 
-            case FunctionButton.fold: {
+            case FunctionButton.fold:
                 if (upDown == 1) { toggleFolding(); }
                 break;
-            }
-            default: {
+            default:
                 post("error in press. functionMode:", parameter.functionMode.value, "\n");
                 post("mCol:", mCol, "\n");
                 break;
-            }
         }
     }
     else if ((mRow == monomeLastRow()) && (mCol >= 8) && (mCol <= 15)) {
@@ -1605,6 +1597,7 @@ function press(mCol, mRow, upDown) {
             case FunctionButton.store_7:
                 break;
         }
+    }
     
 }
 
@@ -1635,10 +1628,9 @@ function widthButtons(aButtonPressed) {
             case FunctionButton.dynamic_3:
                 setDisplayWidth(DisplayWidthOption._3);
                 break;
-            default: {
+            default:
                 post("error in widthButtons(no extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
-            }
         }
     }
     else if (extendedWidthOptions) {
@@ -1656,10 +1648,9 @@ function widthButtons(aButtonPressed) {
             case FunctionButton.dynamic_3:
                 setDisplayWidth(DisplayWidthOption._7);
                 break;
-            default: {
+            default:
                 post("error in widthButtons(with extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
-            }
         }
     }
     if (debugItem.startValue) { post("dWidth = ", parameter.displayWidth.value, "\n"); }
@@ -1682,10 +1673,9 @@ function lengthButtons(aButtonPressed) {
             case FunctionButton.dynamic_3:
                 setNewNoteLength(LengthOption._3);
                 break;
-            default: {
+            default:
                 post("error in lengthButtons(no extendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
-            }
         }
     }
     else if (extendedLengthOptions) {
@@ -1703,10 +1693,9 @@ function lengthButtons(aButtonPressed) {
             case FunctionButton.dynamic_3:
                 setNewNoteLength(LengthOption._7);
                 break;
-            default: {
+            default:
                 post("error in lengthButtons(with extendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
-            }
         }
     }
     if (debugItem.startValue) { post("new notes will be created with length:", parameter.newNoteLength.value, "\n"); }
@@ -1730,10 +1719,9 @@ function velocityButtons(aButtonPressed) {
             case 3:
                 setNewNoteVelocity(VelocityOption._3);
                 break;
-            default: {
+            default:
                 post("error in velocityButtons(no extendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
-            }
         }
     }
     else if (extendedVelocityOptions) {
@@ -1751,10 +1739,9 @@ function velocityButtons(aButtonPressed) {
             case FunctionButton.dynamic_3:
                 setNewNoteVelocity(VelocityOption._7);
                 break;
-            default: {
+            default:
                 post("error in velocityButtons(with extendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
-            }
         }
     }
     
@@ -1854,10 +1841,9 @@ function clipArrows(aWhichArrow) {
         case FunctionButton.dynamic_3:
             rightInClip();
             break;
-        default: {
+        default:
             post("error in clipArrows. whichArrow:", aWhichArrow, "\n");
             break;
-        }
     }
     // Future Delete this
     updateNoteDisplay();
@@ -1899,31 +1885,26 @@ function liveSetArrows(aWhichArrow) {
     if (debugItem.functionName) { post("                               --liveSetArrows--\n"); }
     switch (aWhichArrow) {
         
-        case FunctionButton.dynamic_0: {
+        case FunctionButton.dynamic_0:
             if (debugItem.functionEnd) { post("upInSet\n"); }
             upInSet();
             break;
-        }
             
-        case FunctionButton.dynamic_1: {
+        case FunctionButton.dynamic_1:
             if (debugItem.functionEnd) { post("downInSet\n"); }
             downInSet();
             break;
-        }
-        case FunctionButton.dynamic_2: {
+        case FunctionButton.dynamic_2:
             if (debugItem.functionEnd) { post("leftInSet\n"); }
             leftInSet();
             break;
-        }
-        case FunctionButton.dynamic_3: {
+        case FunctionButton.dynamic_3:
             if (debugItem.functionEnd) { post("rightInSet\n"); }
             rightInSet();
             break;
-        }
-        default: {
+        default:
             post("error in liveSetArrows. whichArrow:", aWhichArrow, "\n");
             break;
-        }
     }
     updateNoteDisplay();
 }
@@ -1980,25 +1961,26 @@ function leftInSet(aHowMuch) {
 }
 
 //                                  ---===Communicate with Patcher===---
-function sendToHud(key, value, format) {
-    if (debugItem.functionName) { post("                               --sendToHud - " + key + " : " + value + " --\n"); }
-    if (debugItem.list) { post("key:", key, "value:", value, "\n"); }
+function sendToHud(aKey, aValue, aFormat) {
+    if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
+    var lOutlet = 2;
     
-    switch (format) {
+    switch (aFormat) {
         case 0:
-            outlet(1, key, "set", value);
+            outlet(lOutlet, aKey, "set", aValue);
             break;
         case 1:
-            outlet(1, key, value);
+            outlet(lOutlet, aKey, aValue);
             break;
         case 2:
-            outlet(1, key, "setsymbol", value);
+            outlet(lOutlet, aKey, "setsymbol", aValue);
             break;
         case 3:
-            outlet(1, key, "set", value, (value == 1) ? "measure" : "measures");
+            outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
             break;
         default: {
-            post("error in sendToHud. format:", format, "\n");
+            post("error in sendToHud. aFormat:", aFormat, "\n");
             break;
         }
     }
@@ -2090,7 +2072,7 @@ function buildMonome() {
     }
     
     for (var iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
-        Monome[iCol] = new Array();
+        Monome[iCol] = [];
         for (var iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
             Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
         }
@@ -2132,9 +2114,8 @@ Monome.row = function(aRow, aMethodToInvoke) {
                     Monome[iColumn][aRow].blinkIfOff();
                 }
                 break;
-            default : {
+            default :
                 break;
-            }
         }
 };
 
@@ -2171,9 +2152,8 @@ Monome.column = function(aColumn, aMethodToInvoke) {
                     Monome[aColumn][iRow].blinkIfOff();
                 }
                 break;
-            default : {
+            default :
                 break;
-            }
         }
 };
 
@@ -2239,7 +2219,7 @@ function generateFullScaleList(aMapString) {
 
     if (debugItem.list) { post("scaleMap:", scaleMap, "\n"); }
     
-    var scaleNoteList = new Array();
+    var scaleNoteList = [];
     
     scaleNoteList.push(parseInt(parameter.rootNote.value, 10));
     if (debugItem.list) { post("root", parameter.rootNote.value, "\n"); }
@@ -2331,7 +2311,7 @@ function setParameterProperty(aPropertyString, aValue) {
     
 	if (parameter[aPropertyString].saveInPattr) {
 	    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Pattr";
-    	this.patcher.getnamed(patcherObjectNameString).message(parameter[aPropertyString].value);
+	    this.patcher.getnamed(patcherObjectNameString).message(parameter[aPropertyString].value);
 	}
 }
 
