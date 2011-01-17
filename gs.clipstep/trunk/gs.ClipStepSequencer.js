@@ -476,11 +476,6 @@ function setTrackIndex(aNewIndexNumber) {
     focusOnClip();
 }
 
-function getTrackIndex() {
-    if (debugItem.getSetName) { post("                               --getTrackIndex--\n"); }
-    return parameter.trackIndex.value;
-}
-
 function changeTrackIndex(amountOfChange) {
     if (debugItem.getSetName) { post("                               --changeTrackIndex--\n"); }
     
@@ -590,11 +585,6 @@ function setClipSceneFromPatcher(aNewSceneNumber) {
     setClipScene(aNewSceneNumber - 1);
 }
 
-function getClipScene() {
-    if (debugItem.getSetName) { post("                               --getClipScene--\n"); }
-    return parameter.clipScene.value;
-}
-
 function changeClipScene(amountOfChange) {
     if (debugItem.getSetName) { post("                               --changeClipScene--\n"); }
     
@@ -635,9 +625,9 @@ function changeTimeOffset(amountOfChange) {
     if(!amountOfChange) { amountOfChange = parameter.displayWidth.value; }
     else { amountOfChange *= parameter.displayWidth.value; }
     
-    lValue =timeOffset + amountOfChange;
+    lValue = parameter.timeOffset.value + amountOfChange;
     
-    if (timeOffset >= editClip.get("length")) { timeOffset = editClip.get("length") - parameter.displayWidth.value; }
+    if (parameter.timeOffset.value >= editClip.get("length")) { parameter.timeOffset.value = editClip.get("length") - parameter.displayWidth.value; }
 
     setParameterProperty("timeOffset", lValue);
 }
@@ -670,31 +660,21 @@ function setNewNoteVelocity(aVelocity) {
 //                                  ---===functionMode accessors===---
 function setFunctionMode(aMode) {
     if (debugItem.getSetName) { post("                               --setFunctionMode--\n"); }
-    parameter.functionMode.value = aMode;
 
+    setParameterProperty("functionMode", aMode);
     updateControlLeds();
-
-    this.patcher.getnamed("functionModeGsCssPattr").message(parameter.functionMode.value);
-}
-
-function getFunctionMode() {
-    return parameter.functionMode.value;
 }
 
 function decrementFunctionMode() {
     if (debugItem.getSetName) { post("                               --decrementFunctionMode--\n"); }
     
-    var fN = getFunctionMode();
-    
-    if (fN > 0) { setFunctionMode(fN - 1); }
+    changeParameterProperty("functionMode", -1);
 }
 
 function incrementFunctionMode() {
     if (debugItem.getSetName) { post("                               --incrementFunctionMode--\n"); }
     
-    var fN = getFunctionMode();
-    
-    if (fN < 2) { setFunctionMode(fN + 1); }
+    changeParameterProperty("functionMode", 1);
 }
 
 function toggleFunctionBitButton(whichButton) {
@@ -725,21 +705,15 @@ function toggleFunctionBitButton(whichButton) {
 function toggleFolding() {
     if (debugItem.functionName) { post("                               --toggleFolding--\n"); }
     
-    (getFolding()) ? setFolding(false) : setFolding(true);
+    toggleParameterProperty("folding");
 }
-function setFolding(newFolding) {
+function setFolding(aValue) {
     if (debugItem.getSetName) { post("                               --setFolding--\n"); }
     
-    parameter.folding.value = newFolding;
+    setPlayheadVisible("folding", aValue);
+
     updateFunctionModeLeds();
     updateNoteDisplay();
-    sendToHud("folding", parameter.folding.value, 0);
-
-    this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
-}
-function getFolding() {
-    if (debugItem.getSetName) { post("                               --getFolding--\n"); }
-    return parameter.folding.value;
 }
                     
 //                                  ---===Callbacks===---
@@ -788,7 +762,7 @@ function updatePlayhead(aTimeNumber) {
     if (debugItem.frequentName) { post("                               --updatePlayhead--\n"); }
     // View
     if (playheadVisible) {
-        var playheadTimeInt = Math.floor((aTimeNumber[1] - timeOffset) * displayRatioToMonome());
+        var playheadTimeInt = Math.floor((aTimeNumber[1] - parameter.timeOffset.value) * displayRatioToMonome());
 
         if((playheadTimeInt == -1) || (playheadTimeInt == parameter.monomeWidth.value)) {
             Monome[monomeLastCol()][0].tempOff();            
@@ -860,15 +834,15 @@ function compareNumbers(a, b) {
 
 function roundDisplayOffset() {
     if (debugItem.functionName) { post("                               --roundDisplayOffset--\n"); }
-    if(debugItem.startValue) { post("before round", timeOffset,  "\n"); }
-    var a = Math.round(timeOffset / parameter.displayWidth.value);
-    timeOffset = a * parameter.displayWidth.value;
-    if(debugItem.endValue) {post("after round", timeOffset,                   "\n"); }
+    if(debugItem.startValue) { post("before round", parameter.timeOffset.value,  "\n"); }
+    var a = Math.round(parameter.timeOffset.value / parameter.displayWidth.value);
+    parameter.timeOffset.value = a * parameter.displayWidth.value;
+    if(debugItem.endValue) {post("after round", parameter.timeOffset.value,                   "\n"); }
 }
 
 //                                  ---===Dynamic Time/Column Variables===---
-function displayTimeMax() { return parameter.displayWidth.value + timeOffset; }
-function colOffset() { return timeOffset * displayRatioToMonome(); }
+function displayTimeMax() { return parameter.displayWidth.value + parameter.timeOffset.value; }
+function colOffset() { return parameter.timeOffset.value * displayRatioToMonome(); }
 function displayRatioFromMonome() { return parameter.displayWidth.value / parameter.monomeWidth.value; }
 function displayRatioToMonome() { return parameter.monomeWidth.value / parameter.displayWidth.value; }
 function monomeLastRow() { return parameter.monomeHeight.value - 1; }
@@ -962,7 +936,7 @@ function playCurrentClip() {
 //                                  ---===Check Notes===---
 function timeIsDisplayed(timeInQuestion) {
     if (debugItem.list) { post("                               --timeIsDisplayed--\n"); }
-    if ((timeOffset <= timeInQuestion) && (timeInQuestion < displayTimeMax())) {
+    if ((parameter.timeOffset.value <= timeInQuestion) && (timeInQuestion < displayTimeMax())) {
         return true;
     }
     else {
@@ -1164,7 +1138,7 @@ Array.prototype.diff = function(a) {
 function updateHud() {
     sendToHud("track", (trackArray[parameter.trackIndex.value] + 1), 0);
     sendToHud("scene", (Number(parameter.clipScene.value) + 1), 0);
-    sendToHud("time", timeOffset / 4, 0);
+    sendToHud("time", parameter.timeOffset.value / 4, 0);
     sendToHud("width", parameter.displayWidth.value / 4, 0);
     sendToHud("top", (displayNoteList[parameter.rowOffset.value]) ? displayNoteList[parameter.rowOffset.value] : 0, 0 );
     if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), 3); }
@@ -1978,21 +1952,16 @@ function sendToHud(key, value, format) {
 //                                  ---===Monome Device Methods===---
 function setMonomeWidth(aWidth) {
     if (debugItem.getSetName) { post("                               --setMonomeWidth--\n"); }
-    parameter.monomeWidth.value = aWidth;
-    sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
 
-    if(debugItem.functionEnd) { post("monomeWidth:", parameter.monomeWidth.value, "\n"); }
-
-    this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
+    setParameterProperty("monomeWidth", aWidth);
+    buildMonome();
+    updateMonome();
 }
 function setMonomeHeight(aHeight) {
     if (debugItem.getSetName) { post("                               --setMonomeHeight--\n"); }
-    parameter.monomeHeight.value = aHeight;
-    sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
-    
-    if(debugItem.functionEnd) { post("monomeHeight:", parameter.monomeHeight.value, "\n"); }
-
-    this.patcher.getnamed("monomeHeightGsCssPattr").message(parameter.monomeHeight.value);
+    setParameterProperty("monomeHeight", aHeight);
+    buildMonome();
+    updateMonome();
 }
 function SingleCell(aCol, aRow, aOutlet) {
     this.outlet = aOutlet;
@@ -2168,27 +2137,18 @@ function refreshMonome() {
 function setCycles(aNewCycleCount) {
     if (debugItem.getSetName) { post("                               --setCycles--\n"); }
     
-    if (0 < aNewCycleCount) {
-        parameter.cycles.value = aNewCycleCount;
-        sendToHud("cycles", parameter.cycles.value, 0);
-        onScaleVariableChange();
-    }
-    else { post("invalid cycle count"); }
+    setParameterProperty("cycles", aNewCycleCount);
 
-    this.patcher.getnamed("cyclesGsCssPattr").message(parameter.cycles.value);
+    onScaleVariableChange();
 }
 
 //                                  ---===rootNote accessors===---
 function setRootNote(aNewRoot) {
     if (debugItem.getSetName) { post("                               --setRootNote--\n"); }
 
-    if (isValidCCNumber(aNewRoot)) {
-        parameter.rootNote.value = aNewRoot;
-        sendToHud("root", parameter.rootNote.value, 0);
-        onScaleVariableChange();
-    }
-    else { post("invalid root note"); }
-    this.patcher.getnamed("rootNoteGsCssPattr").message(parameter.rootNote.value);
+    setParameterProperty("rootNote", aNewRoot);
+
+    onScaleVariableChange();
 }
 
 //                                  ---===onScaleVariableChange===---
@@ -2383,18 +2343,20 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
 }
 
 function setInSuite(aNewValue) {
-    if (aNewValue == 0) { parameter.inSuite.value = false; }
-    else { parameter.inSuite.value = true; }
+    setParameterProperty("inSuite", aNewValue);
 }
 
 function setParameterProperty(aPropertyString, aValue) {
 
     var lValue;
     
-    if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
-    else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
-    else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
-    else { post("something has gane awry in setParameterProperty!\n"); }
+    if ((parameter[aPropertyString].type == "number") || (parameter[aPropertyString].type == "toggle")) {
+        if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
+        else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
+        else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
+        else { post("something has gane awry in setParameterProperty!\n"); }
+    }
+    else if (parameter[aPropertyString].type == "string") { lValue = aValue; }
 
     parameter[aPropertyString].value = lValue;
 
@@ -2412,8 +2374,11 @@ function changeParameterProperty(aPropertyString, aAmount) {
 }
 
 function toggleParameterProperty(aPropertyString) {
-    var lValue = Number(!Boolean(parameter[aPropertyString].value));
-    setParameterProperty(aPropertyString, lValue);
+    if (parameter[aPropertyString].type == "toggle") {
+        var lValue = Number(!Boolean(parameter[aPropertyString].value));
+        setParameterProperty(aPropertyString, lValue);
+    }
+    else { post(aPropertyString, "is not a toggle parameter\n");}
 }
 
 function grabPattrValue(aProperty) {
