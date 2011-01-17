@@ -40,13 +40,11 @@ var post;
 var outlet;
 
 
-var currentScale;
 var watchSet;
 var countAllTracks;
 var trackArray;
 var watchSetPlaying;
 var glob;
-var s;
 var indexTrack;
 var mWatchersCreated = false;
 
@@ -64,6 +62,76 @@ var debugItem = {
     frequentName : false
 };
 
+//                                  ---===Scale Maps===---
+                                //    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
+var majorScale =                     [0, 2, 2, 1, 2, 2, 2, 1]; //last note provided for distance
+majorScale.name = "Major";
+
+var naturalMinorScale            =    [0, 2, 1, 2, 2, 1, 2, 2];
+naturalMinorScale.name = "NaturalMinor";
+
+var harmonicMinorScale            =    [0, 2, 1, 2, 2, 1, 3, 1];
+harmonicMinorScale.name = "HarmonicMinor";
+
+var chromaticScale                =    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+chromaticScale.name = "Chromatic";
+
+var minorPentatonicScale        =    [0, 3, 2, 2, 3, 2];
+minorPentatonicScale.name = "MinorPentatonic";
+
+var majorPentatonicScale        =    [0, 2, 2, 3, 2, 3];
+majorPentatonicScale.name = "MajorPentatonic";
+
+var bluesPentatonicScale        =    [0, 3, 2, 1, 1, 3, 2];
+bluesPentatonicScale.name = "BluesPentatonic";
+
+                                //    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
+var ionianMode                     =    [0, 2, 2, 1, 2, 2, 2, 1];
+ionianMode.name = "Ionian";
+
+var dorianMode                    =    [0, 2, 1, 2, 2, 2, 1, 2];
+dorianMode.name = "Dorian";
+
+var phrygianMode                =    [0, 1, 2, 2, 2, 1, 2, 2];
+phrygianMode.name = "Phrygian";
+
+var lydianMode                    =    [0, 2, 2, 2, 1, 2, 2, 1];
+lydianMode.name = "Lydian";
+
+var mixolydianMode                =    [0, 2, 2, 1, 2, 2, 1, 2];
+mixolydianMode.name = "Mixolydian";
+
+var aeolianMode                    =    [0, 2, 1, 2, 2, 1, 2, 2];
+aeolianMode.name = "Aeolian";
+
+var locrianMode                    =    [0, 1, 2, 2, 1, 2, 2, 2];
+locrianMode.name = "Locrian";
+
+var wholeToneScale                =    [0, 2, 2, 2, 2, 2];
+wholeToneScale.name = "WholeTone";
+
+var wholeHalfdiminishedScale    =    [0, 2, 1, 2, 1, 2, 1, 2];
+wholeHalfdiminishedScale.name = "WholeHalfDiminished";
+
+var halfWholeDiminishedScale    =    [0, 1, 2, 1, 2, 1, 2, 1];
+halfWholeDiminishedScale.name = "HalfWholeDiminished";
+
+var symmetricalAugmentedScale    =    [0, 3, 1, 3, 1, 3, 1];
+symmetricalAugmentedScale.name = "SymmetricalAugmented";
+
+var tritoneScale                =    [0, 3, 2, 3, 1, 3, 2];
+tritoneScale.name = "Tritone";
+
+var majorQuartalScale            =    [0, 5, 6, 5, 5, 5, 5, 5];
+majorQuartalScale.name = "MajorQuartal";
+
+var minorQuartalScale            =    [0, 5, 5, 5, 5, 6, 5, 5];
+minorQuartalScale.name = "MinorQuartal";
+
+//                                  ---===Drum Mapping===---
+var defaultDrumScale            =    [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59];
+defaultDrumScale.name = "Drums";
+
 var parameter = {
     clipScene : {
         name : "clipScene",
@@ -72,6 +140,14 @@ var parameter = {
         minValue : 0,
         maxValue : 2048,
         saveInPattr : true
+    },
+    currentScale : {
+        name : "currentScale",
+        type : "array",
+        value : defaultDrumScale,
+        minValue : null,
+        maxValue : null,
+        saveInPattr : false
     },
     currentScaleName : {
         name : "currentScaleName",
@@ -204,7 +280,7 @@ function getLastTrackIndex() {
 function bang() {
     if (debugItem.functionName) { post("                     ---bang-\n"); }
     
-    post(currentScale, "\n");
+    post(parameter.currentScale.value, "\n");
     post("name:", parameter.currentScaleName.value, "\n");
     post("monomeHeight:", parameter.monomeHeight.value, "\n");
     post("monomeWidth:", parameter.monomeWidth.value, "\n");
@@ -292,12 +368,12 @@ Array.prototype.noteToLiveAPI = function () {
 Number.prototype.toLength = function (len) {
        if (debugItem.getSetName) { post("                              --toLength--\n"); }
 
-    s = this.toString();
-    if (s.length < len) {
-        s = ('0000' + this.toString()).slice(-len);
+    var lString = this.toString();
+    if (lString.length < len) {
+        lString = ('0000' + this.toString()).slice(-len);
     }
 
-    return s;
+    return lString;
    
 };
 
@@ -334,7 +410,6 @@ var DisplayWidthOption = {
     _7 : 64
 };
 
-
 //                                  ---===Monome Setup===---
 
 var Monome = [];
@@ -356,79 +431,6 @@ var FunctionMode = {
     velocityMode: 2,
     widthMode: 3
 };
-
-//                                  ---===Scale Maps===---
-                                //    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
-var majorScale =                     [0, 2, 2, 1, 2, 2, 2, 1]; //last note provided for distance
-majorScale.name = "Major";
-
-var naturalMinorScale            =    [0, 2, 1, 2, 2, 1, 2, 2];
-naturalMinorScale.name = "NaturalMinor";
-
-var harmonicMinorScale            =    [0, 2, 1, 2, 2, 1, 3, 1];
-harmonicMinorScale.name = "HarmonicMinor";
-
-var chromaticScale                =    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-chromaticScale.name = "Chromatic";
-
-var minorPentatonicScale        =    [0, 3, 2, 2, 3, 2];
-minorPentatonicScale.name = "MinorPentatonic";
-
-var majorPentatonicScale        =    [0, 2, 2, 3, 2, 3];
-majorPentatonicScale.name = "MajorPentatonic";
-
-var bluesPentatonicScale        =    [0, 3, 2, 1, 1, 3, 2];
-bluesPentatonicScale.name = "BluesPentatonic";
-
-                                //    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
-var ionianMode                     =    [0, 2, 2, 1, 2, 2, 2, 1];
-ionianMode.name = "Ionian";
-
-var dorianMode                    =    [0, 2, 1, 2, 2, 2, 1, 2];
-dorianMode.name = "Dorian";
-
-var phrygianMode                =    [0, 1, 2, 2, 2, 1, 2, 2];
-phrygianMode.name = "Phrygian";
-
-var lydianMode                    =    [0, 2, 2, 2, 1, 2, 2, 1];
-lydianMode.name = "Lydian";
-
-var mixolydianMode                =    [0, 2, 2, 1, 2, 2, 1, 2];
-mixolydianMode.name = "Mixolydian";
-
-var aeolianMode                    =    [0, 2, 1, 2, 2, 1, 2, 2];
-aeolianMode.name = "Aeolian";
-
-var locrianMode                    =    [0, 1, 2, 2, 1, 2, 2, 2];
-locrianMode.name = "Locrian";
-
-var wholeToneScale                =    [0, 2, 2, 2, 2, 2];
-wholeToneScale.name = "WholeTone";
-
-var wholeHalfdiminishedScale    =    [0, 2, 1, 2, 1, 2, 1, 2];
-wholeHalfdiminishedScale.name = "WholeHalfDiminished";
-
-var halfWholeDiminishedScale    =    [0, 1, 2, 1, 2, 1, 2, 1];
-halfWholeDiminishedScale.name = "HalfWholeDiminished";
-
-var symmetricalAugmentedScale    =    [0, 3, 1, 3, 1, 3, 1];
-symmetricalAugmentedScale.name = "SymmetricalAugmented";
-
-var tritoneScale                =    [0, 3, 2, 3, 1, 3, 2];
-tritoneScale.name = "Tritone";
-
-var majorQuartalScale            =    [0, 5, 6, 5, 5, 5, 5, 5];
-majorQuartalScale.name = "MajorQuartal";
-
-var minorQuartalScale            =    [0, 5, 5, 5, 5, 6, 5, 5];
-minorQuartalScale.name = "MinorQuartal";
-
-//                                  ---===Drum Mapping===---
-var defaultDrumScale            =    [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59];
-defaultDrumScale.name = "Drums";
-
-currentScale =    defaultDrumScale;
-parameter.currentScaleName.value = "Drums";
 
 //                                  ---===Create Empty Arrays===---
 var noteArray = [];
@@ -1422,11 +1424,11 @@ function fillInNoteRows() {
     if (debugItem.functionName) { post("                               --fillInNoteRows--\n"); }
 
     var numberNeeded = (parameter.monomeHeight.value - displayNoteList.length);
-    for (var m = 0; m < currentScale.length; m++) {
-        if (!displayNoteList.inArray(currentScale[m]) ) {
-            displayNoteList.push(currentScale[m]);
+    for (var m = 0; m < parameter.currentScale.value.length; m++) {
+        if (!displayNoteList.inArray(parameter.currentScale.value[m]) ) {
+            displayNoteList.push(parameter.currentScale.value[m]);
             if (debugItem.startValue) {
-                post("added row for note:", currentScale[m], "\n");
+                post("added row for note:", parameter.currentScale.value[m], "\n");
             }
         }
     }
@@ -2216,8 +2218,8 @@ function generateFullScaleList(scaleArray, localRootNote, localCycles) {
 function setCurrentScale(scaleToUse, scaleName) {
     if (debugItem.getSetName) { post("                     --setCurrentScale--\n"); }
     
-    if (currentScale != scaleToUse) {
-        currentScale = scaleToUse;
+    if (parameter.currentScale.value != scaleToUse) {
+        parameter.currentScale.value = scaleToUse;
         setCurrentScaleName(scaleName);
         updateNoteDisplay();
     }
@@ -2356,7 +2358,7 @@ function setParameterProperty(aPropertyString, aValue) {
         else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
         else { post("something has gane awry in setParameterProperty!\n"); }
     }
-    else if (parameter[aPropertyString].type == "string") { lValue = aValue; }
+    else { lValue = aValue; }
 
     parameter[aPropertyString].value = lValue;
 
