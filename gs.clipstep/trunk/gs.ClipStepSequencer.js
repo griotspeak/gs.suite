@@ -1480,6 +1480,7 @@ function fillInNoteRows() {
 //                                  ---===Controller Methods===---
 function press(mCol, mRow, upDown) {
     if (debugItem.functionName) { post("                               --press--\n"); }
+    var lOutlet = 1;
     
     if (debugItem.functionEnd) {
         post("press called.\n mCol:", mCol, "mRow", mRow, "upDown", upDown, "\n");
@@ -1578,23 +1579,33 @@ function press(mCol, mRow, upDown) {
                 break;
         }
     }
-    else if ((mRow == monomeLastRow()) && (mCol >= 8) && (mCol <= 15)) {
+    else if ((mRow == monomeLastRow()) && (mCol >= 8) && (mCol <= 15) && (upDown == 1)) {
         switch (mCol) {
             case FunctionButton.store_0:
+                outlet(lOutlet, 1);
                 break;
             case FunctionButton.store_1:
+                outlet(lOutlet, 2);
                 break;
             case FunctionButton.store_2:
+                outlet(lOutlet, 3);
                 break;
             case FunctionButton.store_3:
+                outlet(lOutlet, 4);
                 break;
             case FunctionButton.store_4:
+                outlet(lOutlet, 5);
                 break;
             case FunctionButton.store_5:
+                outlet(lOutlet, 6);
                 break;
             case FunctionButton.store_6:
+                outlet(lOutlet, 7);
                 break;
             case FunctionButton.store_7:
+                outlet(lOutlet, 8);
+                break;
+            default : 
                 break;
         }
     }
@@ -1616,19 +1627,19 @@ function widthButtons(aButtonPressed) {
     if (!extendedWidthOptions) {
         switch (aButtonPressed) {
         
-            case FunctionButton.dynamic_0:
+            case FunctionButton.dynamic_0 :
                 setDisplayWidth(DisplayWidthOption._0);
                 break;
-            case FunctionButton.dynamic_1:
+            case FunctionButton.dynamic_1 :
                 setDisplayWidth(DisplayWidthOption._1);
                 break;
-            case FunctionButton.dynamic_2:
+            case FunctionButton.dynamic_2 :
                 setDisplayWidth(DisplayWidthOption._2);
                 break;
-            case FunctionButton.dynamic_3:
+            case FunctionButton.dynamic_3 :
                 setDisplayWidth(DisplayWidthOption._3);
                 break;
-            default:
+            default :
                 post("error in widthButtons(no extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
@@ -1636,19 +1647,19 @@ function widthButtons(aButtonPressed) {
     else if (extendedWidthOptions) {
         switch (aButtonPressed) {
         
-            case FunctionButton.dynamic_0:
+            case FunctionButton.dynamic_0 :
                 setDisplayWidth(DisplayWidthOption._4);
                 break;
-            case FunctionButton.dynamic_1:
+            case FunctionButton.dynamic_1 :
                 setDisplayWidth(DisplayWidthOption._5);
                 break;
-            case FunctionButton.dynamic_2:
+            case FunctionButton.dynamic_2 :
                 setDisplayWidth(DisplayWidthOption._6);
                 break;
-            case FunctionButton.dynamic_3:
+            case FunctionButton.dynamic_3 :
                 setDisplayWidth(DisplayWidthOption._7);
                 break;
-            default:
+            default :
                 post("error in widthButtons(with extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
@@ -1661,19 +1672,19 @@ function lengthButtons(aButtonPressed) {
     if (!extendedLengthOptions) {
         switch (aButtonPressed) {
         
-            case FunctionButton.dynamic_0:
+            case FunctionButton.dynamic_0 :
                 setNewNoteLength(LengthOption._0);
                 break;
-            case FunctionButton.dynamic_1:
+            case FunctionButton.dynamic_1 :
                 setNewNoteLength(LengthOption._1);
                 break;
-            case FunctionButton.dynamic_2:
+            case FunctionButton.dynamic_2 :
                 setNewNoteLength(LengthOption._2);
                 break;
-            case FunctionButton.dynamic_3:
+            case FunctionButton.dynamic_3 :
                 setNewNoteLength(LengthOption._3);
                 break;
-            default:
+            default :
                 post("error in lengthButtons(no extendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
@@ -1681,19 +1692,19 @@ function lengthButtons(aButtonPressed) {
     else if (extendedLengthOptions) {
         switch (aButtonPressed) {
         
-            case FunctionButton.dynamic_0:
+            case FunctionButton.dynamic_0 :
                 setNewNoteLength(LengthOption._4);
                 break;
-            case FunctionButton.dynamic_1:
+            case FunctionButton.dynamic_1 :
                 setNewNoteLength(LengthOption._5);
                 break;
-            case FunctionButton.dynamic_2:
+            case FunctionButton.dynamic_2 :
                 setNewNoteLength(LengthOption._6);
                 break;
-            case FunctionButton.dynamic_3:
+            case FunctionButton.dynamic_3 :
                 setNewNoteLength(LengthOption._7);
                 break;
-            default:
+            default :
                 post("error in lengthButtons(with extendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
@@ -1707,19 +1718,19 @@ function velocityButtons(aButtonPressed) {
     if (!extendedVelocityOptions) {
         switch (aButtonPressed) {
         
-            case FunctionButton.dynamic_0:
+            case FunctionButton.dynamic_0 :
                 setNewNoteVelocity(VelocityOption._0);
                 break;
-            case FunctionButton.dynamic_1:
+            case FunctionButton.dynamic_1 :
                 setNewNoteVelocity(VelocityOption._1);
                 break;
-            case FunctionButton.dynamic_2:
+            case FunctionButton.dynamic_2 :
                 setNewNoteVelocity(VelocityOption._2);
                 break;
-            case 3:
+            case FunctionButton.dynamic_3 :
                 setNewNoteVelocity(VelocityOption._3);
                 break;
-            default:
+            default :
                 post("error in velocityButtons(no extendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
@@ -1727,19 +1738,19 @@ function velocityButtons(aButtonPressed) {
     else if (extendedVelocityOptions) {
         switch (aButtonPressed) {
         
-            case FunctionButton.dynamic_0:
+            case FunctionButton.dynamic_0 :
                 setNewNoteVelocity(VelocityOption._4);
                 break;
-            case FunctionButton.dynamic_1:
+            case FunctionButton.dynamic_1 :
                 setNewNoteVelocity(VelocityOption._5);
                 break;
-            case FunctionButton.dynamic_2:
+            case FunctionButton.dynamic_2 :
                 setNewNoteVelocity(VelocityOption._6);
                 break;
-            case FunctionButton.dynamic_3:
+            case FunctionButton.dynamic_3 :
                 setNewNoteVelocity(VelocityOption._7);
                 break;
-            default:
+            default :
                 post("error in velocityButtons(with extendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
