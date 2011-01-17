@@ -196,29 +196,10 @@ var parameter = {
     patchString : "GsCss"
 };
 
-// 
-var mDebugLevel;
-setDebugLevel(0);
+function getLastTrackIndex() {
+    return (mWatchersCreated) ? (trackArray.length - 1) : 2048;
+}
 
-//debugItem.functionName = true;
-//debugItem.functionEnd = true;
-//debugItem.endValue = true;
-//debugItem.startValue = true;
-//debugItem.list = true;
-//debugItem.getterSetterName = true;
-//debugItem.getterSetterEndValue = true;
-//debugItem.getterSetterStartValue = true;
-//
-
-// 0 - silence
-// 1 - function name at beginning
-// 2 - function end
-// 3 - variables at end of function
-// 4 - variables at beginning of function
-// 5 - lists. so many lists.
-// 6 - setters and getters - name at beginning
-// 7 - setters and getters - value at end
-// 8 - setters and getters - value at beginning
 
 function bang() {
     if (debugItem.functionName) { post("                     ---bang-\n"); }
@@ -276,7 +257,7 @@ function grabAllPattrValues() {
 }
 
 function setClipFromGlobal(aTrack, aScene) {
-    if (debugItem.getterSetterName) { post("                     ---setClipFromGlobal-\n"); }
+    if (debugItem.getSetName) { post("                     ---setClipFromGlobal-\n"); }
     
     var index = getIndexOfTrack(aTrack);
     if (index > -1) {
@@ -284,23 +265,10 @@ function setClipFromGlobal(aTrack, aScene) {
     }
 }
 
-function setDebugLevel(level) {
-    if (level > 0) { post("                           --setDebugLevel = ", level, "--\n"); }
-    mDebugLevel = new Array();
-     for (var c = 0; c < 6; c++) {
-        if (c <= level) {
-            mDebugLevel[c] = true;
-        }
-        else {
-            mDebugLevel[c] = false;
-        }
-    }
-}
-
 //                                  ---===Prototype work===---
 
 Array.prototype.inArray = function (numInQuestion) {
-    if (debugItem.getterSetterName) { post("                               --inArray-\n"); }
+    if (debugItem.getSetName) { post("                               --inArray-\n"); }
     
     // need this later for Folding Logic
     var g;
@@ -311,7 +279,7 @@ Array.prototype.inArray = function (numInQuestion) {
 };
 
 Array.prototype.noteToLiveAPI = function () {
-    if (debugItem.getterSetterName) { post("                               --noteToLiveAPI-\n"); }
+    if (debugItem.getSetName) { post("                               --noteToLiveAPI-\n"); }
     
     // Typecasting? In javascript? Yessert!
     var timeNumber = Number(this[2]);
@@ -322,7 +290,7 @@ Array.prototype.noteToLiveAPI = function () {
 };
 
 Number.prototype.toLength = function (len) {
-       if (debugItem.getterSetterName) { post("                              --toLength--\n"); }
+       if (debugItem.getSetName) { post("                              --toLength--\n"); }
 
     s = this.toString();
     if (s.length < len) {
@@ -356,14 +324,14 @@ var LengthOption = {
 };
 
 var DisplayWidthOption = {
-    _0 : 1,
-    _1 : 2,
-    _2 : 4,
-    _3 : 8,
-    _4 : 16,
-    _5 : 32,
-    _6 : 64,
-    _7 : 128
+    _0 : 0.50,
+    _1 : 1,
+    _2 : 2,
+    _3 : 4,
+    _4 : 8,
+    _5 : 16,
+    _6 : 32,
+    _7 : 64
 };
 
 
@@ -476,7 +444,6 @@ var extendedLengthOptions = false;
 var extendedVelocityOptions = false;
         
 //                                  ---===Variables===---
-var timeOffset = 0;
 
 //                                  ---===LiveAPI placeholders===---
 var checkForClip = false;
@@ -496,48 +463,44 @@ var functionToggle = [ false, false];
 //                                  ---===track accessors===---
 
 function setTrack(aNewTrackNumber) {
-    if (debugItem.getterSetterName) { post("                               --setTrack--\n"); }
+    if (debugItem.getSetName) { post("                               --setTrack--\n"); }
 
     setTrackIndex(getIndexOfTrack(aNewTrackNumber -1));    
 }
 
 //                                  ---===trackIndex accessors===---
 function setTrackIndex(aNewIndexNumber) {
-    if (debugItem.getterSetterName) { post("                               --setTrackIndex--\n"); }
-    parameter.trackIndex.value = aNewIndexNumber;
+    if (debugItem.getSetName) { post("                               --setTrackIndex--\n"); }
+    
+    setParameterProperty("trackIndex", aNewIndexNumber);    
     focusOnClip();
+}
 
-    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
-    
-    if (debugItem.endValue) { post("trackIndex after setTrackIndex:", parameter.trackIndex.value, "\n"); }
-}
 function getTrackIndex() {
-    if (debugItem.getterSetterName) { post("                               --getTrackIndex--\n"); }
+    if (debugItem.getSetName) { post("                               --getTrackIndex--\n"); }
     return parameter.trackIndex.value;
 }
+
 function changeTrackIndex(amountOfChange) {
-    if (debugItem.getterSetterName) { post("                               --changeTrackIndex--\n"); }
-    if (debugItem.startValue) { post("trackIndex before:", parameter.trackIndex.value, "amountOfChange", amountOfChange, "\n"); }
-    parameter.trackIndex.value += amountOfChange;
+    if (debugItem.getSetName) { post("                               --changeTrackIndex--\n"); }
     
-    if (parameter.trackIndex.value < 0) { parameter.trackIndex.value = 0; }
-    else if (parameter.trackIndex.value >= trackArray.length) { 
-        parameter.trackIndex.value = trackArray.length - 1;
-    }
-    if (debugItem.endValue) { post("trackIndex after:", parameter.trackIndex.value, "\n"); }
-    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
-    return parameter.trackIndex.value;
+    var lValue = parameter.trackIndex.value + amountOfChange;
+    if (lValue >= trackArray.length) { lValue = trackArray.length - 1; }
+    
+    setParameterProperty("trackIndex", lValue);
+    focusOnClip();
 }
+
 function getIndexOfTrack(trackToFind) {
-    if (debugItem.getterSetterName) { post("                               --getTrackIndex--\n"); }
+    if (debugItem.getSetName) { post("                               --getTrackIndex--\n"); }
 
     if (debugItem.startValue) { post("looking for:", trackToFind, "\n");}
-    var index = trackArray.indexOf(trackToFind);
+    var lIndex = trackArray.indexOf(trackToFind);
 
-    if (index != -1) {
+    if (lIndex != -1) {
         if (debugItem.startValue) { post(trackToFind, "is a valid midi track\n");}
-        if (debugItem.startValue) { post(index, "is it's index\n");}
-        return index;
+        if (debugItem.startValue) { post(lIndex, "is it's index\n");}
+        return lIndex;
     }
     
     else {
@@ -547,61 +510,50 @@ function getIndexOfTrack(trackToFind) {
 }
 
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
-    if (debugItem.getterSetterName) { post("                               --setTrackIndex--\n"); }
-    parameter.trackIndex.value = aNewIndexNumber;
+    if (debugItem.getSetName) { post("                               --setTrackIndex--\n"); }
     
-    var lCounter;
+    setParameterProperty("trackIndex", aNewIndexNumber);
+        
+    var iCounter;
     
     var lLimit = watchSet.getcount("scenes");
 
     if (lLimit != 0) { 
-        for (lCounter = aNewSceneNumber; lCounter < lLimit; lCounter++) {
-            parameter.clipScene.value = lCounter;
-            if (debugItem.getterSetterName) { post("clipScene:", parameter.clipScene.value, "\n"); }
+        for (iCounter = aNewSceneNumber; iCounter < lLimit; iCounter++) {
+            setParameterProperty("clipScene", iCounter);
             if (focusOnClip()) { return true; }
         }
     
-        for (lCounter = aNewSceneNumber; lCounter >=0; lCounter--) {
-            parameter.clipScene.value = lCounter;
-            if (debugItem.getterSetterName) { post("clipScene:", parameter.clipScene.value, "\n"); }
+        for (iCounter = aNewSceneNumber; iCounter >=0; iCounter--) {
+            setParameterProperty("clipScene", iCounter);
             if (focusOnClip()) { return true; }
         }
     
-        parameter.clipScene.value = 0;
+        setParameterProperty("clipScene", 0);
     }
-    
-    if (debugItem.startValue) { 
-        post("trackIndex after setTrackIndexAndScene:", parameter.trackIndex.value, "\n");
-        post("clipScene after setTrackIndexAndScene:", parameter.clipScene.value, "\n");
-    }
-    
-    this.patcher.getnamed("trackIndexGsCssPattr").message(parameter.trackIndex.value);
-    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
         
     return false;
 }
 
 //                                  ---===rowOffset accessors===---
 function setRowOffset(aNewOffsetNumber) {
-    if (debugItem.getterSetterName) { post("                               --setRowOffset--\n"); }
-    parameter.rowOffset.value =        aNewOffsetNumber;
+    if (debugItem.getSetName) { post("                               --setRowOffset--\n"); }
+
+    setParameterProperty("rowOffset", aNewOffsetNumber);
     updateNoteDisplay();
-
-    this.patcher.getnamed("rowOffsetGsCssPattr").message(parameter.rowOffset.value);
-
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
-    if (debugItem.getterSetterName) { post("                               --setRowOffset--\n"); }
-    parameter.foldingRowOffset.value =      aNewOffsetNumber;
+    if (debugItem.getSetName) { post("                               --setRowOffset--\n"); }
+
+    setParameterProperty("foldingRowOffset", aNewOffsetNumber);
     updateNoteDisplay();
-    
-    this.patcher.getnamed("foldingRowOffsetGsCssPattr").message(parameter.foldingRowOffset.value);
+
 }
 function getRowOffset() {
     return (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
 }
 function changeRowOffset(amountOfChange) {
-    if (debugItem.getterSetterName) { post("                               --changeRowOffset--\n"); }
+    if (debugItem.getSetName) { post("                               --changeRowOffset--\n"); }
     
     if(!amountOfChange) { amountOfChange = 1; }
     var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
@@ -626,45 +578,34 @@ function changeRowOffset(amountOfChange) {
 
 //                                  ---===clipScene accessors===---
 function setClipScene(aNewSceneNumber) {
-    if (debugItem.getterSetterName) { post("                               --setClipScene--\n"); }
-    parameter.clipScene.value = aNewSceneNumber;
+    if (debugItem.getSetName) { post("                               --setClipScene--\n"); }
+
+    setParameterProperty("clipScene", aNewSceneNumber);
     focusOnClip();
     
-    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
 }
 
 function setClipSceneFromPatcher(aNewSceneNumber) {
-    if (debugItem.getterSetterName) { post("                               --setClipSceneFromPatcher--\n"); }
+    if (debugItem.getSetName) { post("                               --setClipSceneFromPatcher--\n"); }
     setClipScene(aNewSceneNumber - 1);
 }
+
 function getClipScene() {
-    if (debugItem.getterSetterName) { post("                               --getClipScene--\n"); }
+    if (debugItem.getSetName) { post("                               --getClipScene--\n"); }
     return parameter.clipScene.value;
 }
+
 function changeClipScene(amountOfChange) {
-    if (debugItem.getterSetterName) { post("                               --changeClipScene--\n"); }
-    //var oldClipSceneNumber = parameter.clipScene.value;
-    parameter.clipScene.value += amountOfChange;
+    if (debugItem.getSetName) { post("                               --changeClipScene--\n"); }
     
-//    if (amountOfChange == 0) { return parameter.clipScene.value; }
-//    else {
-//        while (!focusOnClip()) {
-//            setClipScene(parameter.clipScene.value + (amountOfChange / Math.abs(amountOfChange)));
-//            if (debugItem.list) { post("clipScene:", parameter.clipScene.value, "\n"); }
-//        }
-//    }    
-//    if (!isValidClipSceneNumber(parameter.clipScene.value)) { setClipScene(oldClipSceneNumber); }
+    var lValue = parameter.clipScene.value + amountOfChange;
     
-    if (parameter.clipScene.value < 0) {
-        parameter.clipScene.value = 0;
+    if (lValue >= watchSet.getcount("scenes")) {
+        lValue = watchSet.getcount("scenes") - 1; 
     }
-    else if (parameter.clipScene.value >= watchSet.getcount("scenes")) {
-        parameter.clipScene.value = watchSet.getcount("scenes") - 1; 
-    }
+    setParameterProperty("clipScene", lValue);
     
     focusOnClip();
-    this.patcher.getnamed("clipSceneGsCssPattr").message(parameter.clipScene.value);
-    return parameter.clipScene.value;
 }
 
 function isValidClipSceneNumber() {
@@ -676,57 +617,44 @@ function isValidClipSceneNumber() {
     }
 }
 
-//                                  ---===timeOfffset accessors===---
+//                                  ---===timeOffset accessors===---
 function setTimeOffset(aNewOffset){
-    if (debugItem.getterSetterName) { post("                               --setTimeOffset--\n"); }
-    
-    timeOfffset = aNewOffset;
+    if (debugItem.getSetName) { post("                               --setTimeOffset--\n"); }
+
+    setParameterProperty("timeOffset", aNewOffset);
     updateNoteDisplay();
 
-    this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
 }
-function getTimeOffset() {
-    if (debugItem.getterSetterName) { post("                               --getTimeOffset-\n"); }
-    
-    return timeOfffset();
-}
+
 function changeTimeOffset(amountOfChange) {
-    if (debugItem.getterSetterName) { post("                               --changeTimeOffset-\n"); }
+    if (debugItem.getSetName) { post("                               --changeTimeOffset-\n"); }
+    
+    
+    var lValue;
     
     if(!amountOfChange) { amountOfChange = parameter.displayWidth.value; }
     else { amountOfChange *= parameter.displayWidth.value; }
     
-    timeOffset += amountOfChange;
+    lValue =timeOffset + amountOfChange;
     
-    if (timeOffset < 0) {
-        timeOffset = 0;
-    }
-    else if (timeOffset >= editClip.get("length")) {
-        timeOffset = editClip.get("length") - parameter.displayWidth.value;
-    }
+    if (timeOffset >= editClip.get("length")) { timeOffset = editClip.get("length") - parameter.displayWidth.value; }
 
-    this.patcher.getnamed("timeOffsetGsCssPattr").message(timeOffset);
+    setParameterProperty("timeOffset", lValue);
 }
 
 //                                  ---===newNoteLength accessors===---
 
-function setNewNoteLength(length) {
-    if (length < 0) {
-        post("invalid length argument was less than 0");
-    }
-    else {
-        parameter.newNoteLength.value = length;
-    }
-    sendToHud("noteLength", parameter.newNoteLength.value, 0);
+function setNewNoteLength(aLength) {
+    if (debugItem.getSetName) { post("                     --setNewNoteLength--\n"); }
+    
+    setParameterProperty("newNoteLength", aLength);
     updateMultiPurposeLeds();
-
-    this.patcher.getnamed("newNoteLengthGsCssPattr").message(parameter.newNoteLength.value);
 }
 
 //                                  ---===newNoteVelocity===---
 
 function setNewNoteVelocity(aVelocity) {
-    if (debugItem.getterSetterName) { post("                     ---setNewNoteVelocity-\n"); }
+    if (debugItem.getSetName) { post("                     ---setNewNoteVelocity-\n"); }
     
     if ((0 <= aVelocity) && (aVelocity <= 127)) {
         parameter.newNoteVelocity.value = aVelocity;
@@ -741,7 +669,7 @@ function setNewNoteVelocity(aVelocity) {
 
 //                                  ---===functionMode accessors===---
 function setFunctionMode(aMode) {
-    if (debugItem.getterSetterName) { post("                               --setFunctionMode--\n"); }
+    if (debugItem.getSetName) { post("                               --setFunctionMode--\n"); }
     parameter.functionMode.value = aMode;
 
     updateControlLeds();
@@ -754,7 +682,7 @@ function getFunctionMode() {
 }
 
 function decrementFunctionMode() {
-    if (debugItem.getterSetterName) { post("                               --decrementFunctionMode--\n"); }
+    if (debugItem.getSetName) { post("                               --decrementFunctionMode--\n"); }
     
     var fN = getFunctionMode();
     
@@ -762,7 +690,7 @@ function decrementFunctionMode() {
 }
 
 function incrementFunctionMode() {
-    if (debugItem.getterSetterName) { post("                               --incrementFunctionMode--\n"); }
+    if (debugItem.getSetName) { post("                               --incrementFunctionMode--\n"); }
     
     var fN = getFunctionMode();
     
@@ -800,7 +728,7 @@ function toggleFolding() {
     (getFolding()) ? setFolding(false) : setFolding(true);
 }
 function setFolding(newFolding) {
-    if (debugItem.getterSetterName) { post("                               --setFolding--\n"); }
+    if (debugItem.getSetName) { post("                               --setFolding--\n"); }
     
     parameter.folding.value = newFolding;
     updateFunctionModeLeds();
@@ -810,7 +738,7 @@ function setFolding(newFolding) {
     this.patcher.getnamed("foldingGsCssPattr").message(parameter.folding.value);
 }
 function getFolding() {
-    if (debugItem.getterSetterName) { post("                               --getFolding--\n"); }
+    if (debugItem.getSetName) { post("                               --getFolding--\n"); }
     return parameter.folding.value;
 }
                     
@@ -825,7 +753,7 @@ function onNewSlotPlaying(apiArray) {
 }
 
 function setPlayheadVisible() {
-    if (debugItem.getterSetterName) { post("                               --setPlayheadVisible--\n"); }
+    if (debugItem.getSetName) { post("                               --setPlayheadVisible--\n"); }
     if (!thereIsAClipInSlot) { return; }
     
        clipPlaying = watchClipIsPlaying.get("is_playing");
@@ -844,15 +772,16 @@ function setPlayheadVisible() {
 }
 
 function setDisplayWidth(aWidth) {
-    if (debugItem.getterSetterName) { post("                               --setDisplayWidth--\n"); }
-    parameter.displayWidth.value = aWidth;
+    if (debugItem.getSetName) { post("                               --setDisplayWidth--\n"); }
+
+    setParameterProperty("displayWidth", aWidth);
+    
     roundDisplayOffset();
     updateNoteDisplay();
-    if (parameter.functionMode.value == 2) {
+    if (parameter.functionMode.value == FunctionMode.widthMode) {
         updateMultiPurposeLeds();
     }
 
-    this.patcher.getnamed("displayWidthGsCssPattr").message(parameter.displayWidth.value);
 }
 
 function updatePlayhead(aTimeNumber) {
@@ -1163,7 +1092,7 @@ function publishNoteArray() {
     
     var l, j;
     for (l = noteArray.length , j = 0; j < l; j++) {
-        if (debugItem.startValue) { post(j.toLength(2), noteArray[j], "\n"); }
+        if (debugItem.startValue) { post(j.toLength(10), noteArray[j], "\n"); }
         editClip.call( noteArray[j].noteToLiveAPI() ); //CALL
     }
     
@@ -1217,7 +1146,8 @@ function updateMonome() {
 function updateNoteDisplay() {
     if (debugItem.functionName) { post("                               --updateNoteDisplay--\n"); }
 
-    if (mWatchersCreated) {     clearNoteDisplay();
+    if (mWatchersCreated) {
+        clearNoteDisplay();
         getClipNotes();
         noteArray.forEach(displayNote);
         updateHud();
@@ -1454,7 +1384,7 @@ function displayVelocityLeds() {
     }
 }
 
-function displayNote(aNoteToDisplay) {
+function displayNote(aNoteToDisplay, aIndex, aArray) {
     if (debugItem.list) { post("                               --displayNote--\n"); }
     // View
     // 1 = a quarter note. 4 equals a measure.
@@ -1476,13 +1406,13 @@ function displayNote(aNoteToDisplay) {
         Monome[colOnMonome][rowOnMonome].ledOn();
         
         // Debug Statements
-        if (debugItem.startValue) {
+        if (debugItem.endValue) {
+            post("aNoteToDisplay:", aNoteToDisplay, "\n"); 
             post("col:", colOnMonome, "row:", rowOnMonome, "\n");
             post("absoluteTime is:", absoluteTime, "\n");
             post("colOnMonome is:", colOnMonome, "\n");
         }
-    }
-    
+    }    
 }
 
 
@@ -1665,16 +1595,16 @@ function widthButtons(aButtonPressed) {
         switch (aButtonPressed) {
         
             case FunctionButton.dynamic_0:
-                setDisplayWidth(1);
+                setDisplayWidth(DisplayWidthOption._0);
                 break;
             case FunctionButton.dynamic_1:
-                setDisplayWidth(2);
+                setDisplayWidth(DisplayWidthOption._1);
                 break;
             case FunctionButton.dynamic_2:
-                setDisplayWidth(4);
+                setDisplayWidth(DisplayWidthOption._2);
                 break;
             case FunctionButton.dynamic_3:
-                setDisplayWidth(8);
+                setDisplayWidth(DisplayWidthOption._3);
                 break;
             default: {
                 post("error in widthButtons(no extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
@@ -1686,16 +1616,16 @@ function widthButtons(aButtonPressed) {
         switch (aButtonPressed) {
         
             case FunctionButton.dynamic_0:
-                setDisplayWidth(16);
+                setDisplayWidth(DisplayWidthOption._4);
                 break;
             case FunctionButton.dynamic_1:
-                setDisplayWidth(32);
+                setDisplayWidth(DisplayWidthOption._5);
                 break;
             case FunctionButton.dynamic_2:
-                setDisplayWidth(64);
+                setDisplayWidth(DisplayWidthOption._6);
                 break;
             case FunctionButton.dynamic_3:
-                setDisplayWidth(128);
+                setDisplayWidth(DisplayWidthOption._7);
                 break;
             default: {
                 post("error in widthButtons(with extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
@@ -1909,10 +1839,7 @@ function leftInClip(aHowMuch) {
     
     if(!aHowMuch) { aHowMuch = 1; }
     
-    if (debugItem.startValue) { post("timeOffset before leftInClip:", timeOffset, "\n"); }
-    changeTimeOffset(-aHowMuch);
-    if (debugItem.endValue) { post("timeOffset after leftInClip:", timeOffset, "\n"); }
-    
+    changeTimeOffset(-aHowMuch);    
 }
 
 
@@ -1921,26 +1848,20 @@ function rightInClip(aHowMuch) {
     
     if(!aHowMuch) { aHowMuch = 1; }
     
-    if (debugItem.startValue) { post("timeOffset before rightInClip:", timeOffset, "\n"); }
     changeTimeOffset(aHowMuch);
-    if (debugItem.functionEnd) { post("timeOffset after rightInClip:", timeOffset, "\n"); }
 }
 function upInClip(aHowMuch) {
     if (debugItem.functionName) { post("                               --upInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
-    if (debugItem.startValue) { post("offsetHolder before upInClip:", getRowOffset(), "\n"); }
     changeRowOffset(-aHowMuch);
-    if (debugItem.endValue) { post("offsetHolder after upInClip:", getRowOffset(), "\n"); }
 
 }
 function downInClip(aHowMuch) {
     if (debugItem.functionName) { post("                               --downInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
-    if (debugItem.startValue) { post("offsetHolder before downInClip:", getRowOffset(), "\n"); }
     changeRowOffset(aHowMuch);
-    if (debugItem.endValue) { post("offsetHolder after downInClip:", getRowOffset(), "\n"); }
 
 }
 
@@ -2056,7 +1977,7 @@ function sendToHud(key, value, format) {
 
 //                                  ---===Monome Device Methods===---
 function setMonomeWidth(aWidth) {
-    if (debugItem.getterSetterName) { post("                               --setMonomeWidth--\n"); }
+    if (debugItem.getSetName) { post("                               --setMonomeWidth--\n"); }
     parameter.monomeWidth.value = aWidth;
     sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
 
@@ -2065,7 +1986,7 @@ function setMonomeWidth(aWidth) {
     this.patcher.getnamed("monomeWidthGsCssPattr").message(parameter.monomeWidth.value);
 }
 function setMonomeHeight(aHeight) {
-    if (debugItem.getterSetterName) { post("                               --setMonomeHeight--\n"); }
+    if (debugItem.getSetName) { post("                               --setMonomeHeight--\n"); }
     parameter.monomeHeight.value = aHeight;
     sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
     
@@ -2245,7 +2166,7 @@ function refreshMonome() {
 
 //                                  ---===cycles accessors===---
 function setCycles(aNewCycleCount) {
-    if (debugItem.getterSetterName) { post("                               --setCycles--\n"); }
+    if (debugItem.getSetName) { post("                               --setCycles--\n"); }
     
     if (0 < aNewCycleCount) {
         parameter.cycles.value = aNewCycleCount;
@@ -2259,7 +2180,7 @@ function setCycles(aNewCycleCount) {
 
 //                                  ---===rootNote accessors===---
 function setRootNote(aNewRoot) {
-    if (debugItem.getterSetterName) { post("                               --setRootNote--\n"); }
+    if (debugItem.getSetName) { post("                               --setRootNote--\n"); }
 
     if (isValidCCNumber(aNewRoot)) {
         parameter.rootNote.value = aNewRoot;
@@ -2272,7 +2193,7 @@ function setRootNote(aNewRoot) {
 
 //                                  ---===onScaleVariableChange===---
 function onScaleVariableChange () {
-    if (debugItem.getterSetterName) { post("                               --onScaleVariableChange--\n"); }
+    if (debugItem.getSetName) { post("                               --onScaleVariableChange--\n"); }
 
     if (debugItem.list) { post("my name is:", parameter.currentScaleName.value, "\n"); }
 
@@ -2333,7 +2254,7 @@ function generateFullScaleList(scaleArray, localRootNote, localCycles) {
 }
 
 function setCurrentScale(scaleToUse, scaleName) {
-    if (debugItem.getterSetterName) { post("                     --setCurrentScale--\n"); }
+    if (debugItem.getSetName) { post("                     --setCurrentScale--\n"); }
     
     if (currentScale != scaleToUse) {
         currentScale = scaleToUse;
@@ -2343,7 +2264,7 @@ function setCurrentScale(scaleToUse, scaleName) {
 }
 
 function setCurrentScaleName(aNewName) {
-    if (debugItem.getterSetterName) { post("                     ---setCurrentScaleName-\n"); }
+    if (debugItem.getSetName) { post("                     ---setCurrentScaleName-\n"); }
     parameter.currentScaleName.value = aNewName;
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(parameter.currentScaleName.value);
 }
@@ -2469,8 +2390,7 @@ function setInSuite(aNewValue) {
 function setParameterProperty(aPropertyString, aValue) {
 
     var lValue;
-
-    post("aValue:", aValue, "\n");
+    
     if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
     else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
     else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
@@ -2482,7 +2402,7 @@ function setParameterProperty(aPropertyString, aValue) {
     
 	if (parameter[aPropertyString].saveInPattr) {
 	    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Pattr";
-    	this.patcher.getnamed(patcherObjectNameString).message("set", parameter[aPropertyString].value);
+    	this.patcher.getnamed(patcherObjectNameString).message(parameter[aPropertyString].value);
 	}
 }
 
@@ -2543,7 +2463,6 @@ function recall(aNumber) {
 
 function freebang() {
     if (debugItem.functionName) { post("                               --freebang--\n"); }
-    updatePattrs();
     if (debugItem.list) { postPattrs("end"); }
     if (watchSet) { watchSet = null; }
     if (countAllTracks) { countAllTracks = null; }
