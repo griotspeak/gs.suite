@@ -62,75 +62,97 @@ var debugItem = {
     frequentName : false
 };
 
-//                                  ---===Scale Maps===---
-                                //    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
-var majorScale =                     [0, 2, 2, 1, 2, 2, 2, 1]; //last note provided for distance
-majorScale.name = "Major";
-
-var naturalMinorScale            =    [0, 2, 1, 2, 2, 1, 2, 2];
-naturalMinorScale.name = "NaturalMinor";
-
-var harmonicMinorScale            =    [0, 2, 1, 2, 2, 1, 3, 1];
-harmonicMinorScale.name = "HarmonicMinor";
-
-var chromaticScale                =    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-chromaticScale.name = "Chromatic";
-
-var minorPentatonicScale        =    [0, 3, 2, 2, 3, 2];
-minorPentatonicScale.name = "MinorPentatonic";
-
-var majorPentatonicScale        =    [0, 2, 2, 3, 2, 3];
-majorPentatonicScale.name = "MajorPentatonic";
-
-var bluesPentatonicScale        =    [0, 3, 2, 1, 1, 3, 2];
-bluesPentatonicScale.name = "BluesPentatonic";
-
-                                //    [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2]
-var ionianMode                     =    [0, 2, 2, 1, 2, 2, 2, 1];
-ionianMode.name = "Ionian";
-
-var dorianMode                    =    [0, 2, 1, 2, 2, 2, 1, 2];
-dorianMode.name = "Dorian";
-
-var phrygianMode                =    [0, 1, 2, 2, 2, 1, 2, 2];
-phrygianMode.name = "Phrygian";
-
-var lydianMode                    =    [0, 2, 2, 2, 1, 2, 2, 1];
-lydianMode.name = "Lydian";
-
-var mixolydianMode                =    [0, 2, 2, 1, 2, 2, 1, 2];
-mixolydianMode.name = "Mixolydian";
-
-var aeolianMode                    =    [0, 2, 1, 2, 2, 1, 2, 2];
-aeolianMode.name = "Aeolian";
-
-var locrianMode                    =    [0, 1, 2, 2, 1, 2, 2, 2];
-locrianMode.name = "Locrian";
-
-var wholeToneScale                =    [0, 2, 2, 2, 2, 2];
-wholeToneScale.name = "WholeTone";
-
-var wholeHalfdiminishedScale    =    [0, 2, 1, 2, 1, 2, 1, 2];
-wholeHalfdiminishedScale.name = "WholeHalfDiminished";
-
-var halfWholeDiminishedScale    =    [0, 1, 2, 1, 2, 1, 2, 1];
-halfWholeDiminishedScale.name = "HalfWholeDiminished";
-
-var symmetricalAugmentedScale    =    [0, 3, 1, 3, 1, 3, 1];
-symmetricalAugmentedScale.name = "SymmetricalAugmented";
-
-var tritoneScale                =    [0, 3, 2, 3, 1, 3, 2];
-tritoneScale.name = "Tritone";
-
-var majorQuartalScale            =    [0, 5, 6, 5, 5, 5, 5, 5];
-majorQuartalScale.name = "MajorQuartal";
-
-var minorQuartalScale            =    [0, 5, 5, 5, 5, 6, 5, 5];
-minorQuartalScale.name = "MinorQuartal";
-
-//                                  ---===Drum Mapping===---
-var defaultDrumScale            =    [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59];
-defaultDrumScale.name = "Drums";
+maps = {
+    Major: {
+        value: [0, 2, 2, 1, 2, 2, 2, 1],
+        name: "Major"
+    },
+    NaturalMinor: {
+        value: [0, 2, 1, 2, 2, 1, 2, 2],
+        name: "NaturalMinor"
+    },
+    HarmonicMinor: {
+        value: [0, 2, 1, 2, 2, 1, 3, 1],
+        name: "HarmonicMinor"
+    },
+    Chromatic: {
+        value: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        name: "Chromatic"
+    },
+    MinorPentatonic: {
+        value: [0, 3, 2, 2, 3, 2],
+        name: "MinorPentatonic"
+    },
+    MajorPentatonic: {
+        value: [0, 2, 2, 3, 2, 3],
+        name: "MajorPentatonic"
+    },
+    BluesPentatonic: {
+        value: [0, 3, 2, 1, 1, 3, 2],
+        name: "BluesPentatonic"
+    },
+    Ionian: {
+        value: [0, 2, 2, 1, 2, 2, 2, 1],
+        name: "Ionian"
+    },
+    Dorian: {
+        value: [0, 2, 1, 2, 2, 2, 1, 2],
+        name: "Dorian"
+    },
+    Phrygian: {
+        value: [0, 1, 2, 2, 2, 1, 2, 2],
+        name: "Phrygian"
+    },
+    Lydian: {
+        value: [0, 2, 2, 2, 1, 2, 2, 1],
+        name: "Lydian"
+    },
+    Mixolydian: {
+        value: [0, 2, 2, 1, 2, 2, 1, 2],
+        name: "Mixolydian"
+    },
+    Aeolian: {
+        value: [0, 2, 1, 2, 2, 1, 2, 2],
+        name: "Aeolian"
+    },
+    Locrian: {
+        value: [0, 1, 2, 2, 1, 2, 2, 2],
+        name: "Locrian"
+    },
+    WholeTone: {
+        value: [0, 2, 2, 2, 2, 2],
+        name: "WholeTone"
+    },
+    WholeHalfDiminished: {
+        value: [0, 2, 1, 2, 1, 2, 1, 2],
+        name: "WholeHalfDiminished"
+    },
+    HalfWholeDiminished: {
+        value: [0, 1, 2, 1, 2, 1, 2, 1],
+        name: "HalfWholeDiminished"
+    },
+    SymmetricalAugmented: {
+        value: [0, 3, 1, 3, 1, 3, 1],
+        name: "SymmetricalAugmented"
+    },
+    Tritone: {
+        value: [0, 3, 2, 3, 1, 3, 2],
+        name: "Tritone"
+    },
+    MajorQuartal: {
+        value: [0, 5, 6, 5, 5, 5, 5, 5],
+        name: "MajorQuartal"
+    },
+    MinorQuartal: {
+        value: [0, 5, 5, 5, 5, 6, 5, 5],
+        name: "MinorQuartal"
+    },
+    //                                  ---===Drum Mapping===---
+    Drums: {
+        value: [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
+        name: "Drums"
+    }
+};
 
 var parameter = {
     clipScene : {
@@ -144,7 +166,7 @@ var parameter = {
     currentScale : {
         name : "currentScale",
         type : "array",
-        value : defaultDrumScale,
+        value : [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
         minValue : null,
         maxValue : null,
         saveInPattr : false
@@ -2165,12 +2187,13 @@ function onScaleVariableChange () {
 }
 //                                  ---===Scale Methods===---
 
-function generateFullScaleList(scaleArray, localRootNote, localCycles) {
+function generateFullScaleList(aMapString) {
     if (debugItem.functionName) { post("                               --generateFullScaleList--\n"); }
     
-    if (debugItem.list) { post("scaleArray:", scaleArray, "\n"); }     
+    post("aMapString:", aMapString, "\n");
+    if (debugItem.list) { post("maps[" + aMapString + "].value:", maps[aMapString].value, "\n"); }     
 
-    var scaleMap = scaleArray.slice(0); //because i will manipulate this array
+    var scaleMap = maps[aMapString].value.slice(0); //because i will manipulate this array
     var distanceToSecondRoot = scaleMap.pop(); // the last note is only needed for distance calculation
     if (debugItem.list) { post("distanceToSecondRoot:", distanceToSecondRoot, "\n");       }
     
@@ -2178,8 +2201,8 @@ function generateFullScaleList(scaleArray, localRootNote, localCycles) {
     var scaleLength = scaleMap.length;
     if (debugItem.endValue) { post("scaleLength:", scaleLength, "\n"); }
     
-    var numberOfNotesInScale = scaleLength * localCycles + 1; //root on top
-    if(debugItem.startValue) { post("numberOfNotesInScale:", numberOfNotesInScale, "\n"); }
+    var numberOfNotes = scaleLength * parameter.cycles.value + 1; //root on top
+    if(debugItem.startValue) { post("numberOfNotes:", numberOfNotes, "\n"); }
     //i assume the scale starts at 0.
     // the distance to the root is needed more than 0
     scaleMap[0] = distanceToSecondRoot; 
@@ -2188,10 +2211,10 @@ function generateFullScaleList(scaleArray, localRootNote, localCycles) {
     
     var scaleNoteList = new Array();
     
-    scaleNoteList.push(parseInt(localRootNote, 10));
-    if (debugItem.list) { post("root", localRootNote, "\n"); }
+    scaleNoteList.push(parseInt(parameter.rootNote.value, 10));
+    if (debugItem.list) { post("root", parameter.rootNote.value, "\n"); }
     
-    for (var n = 1; n < numberOfNotesInScale; n++) {
+    for (var n = 1; n < numberOfNotes; n++) {
         var noteNumberInQuestion = scaleNoteList[(n - 1)] + scaleMap[(n % scaleLength)];
         
         if (debugItem.list) { post("noteNumberInQuestion:", noteNumberInQuestion, "\n"); }
@@ -2217,6 +2240,7 @@ function generateFullScaleList(scaleArray, localRootNote, localCycles) {
 
 function setCurrentScale(scaleToUse, scaleName) {
     if (debugItem.getSetName) { post("                     --setCurrentScale--\n"); }
+    post("or here?:", 2, "\n");
     
     if (parameter.currentScale.value != scaleToUse) {
         parameter.currentScale.value = scaleToUse;
@@ -2246,102 +2270,15 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
     if (debugItem.functionName) { post("                               --setCurrentScaleWithSymbol--\n"); }
     if (debugItem.startValue) { post("           symbolFromPatcher:", symbolFromPatcher, "\n"); }
     if (!thereIsAClipInSlot) { return; }
-    
-    switch (symbolFromPatcher) {
-    
-        case majorScale.name:
-            setCurrentScale(generateFullScaleList(majorScale, parameter.rootNote.value, parameter.cycles.value), majorScale.name);
-            break;
-            
-        case "NaturalMinor":
-            setCurrentScale(generateFullScaleList(naturalMinorScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "HarmonicMinor":
-            setCurrentScale(generateFullScaleList(harmonicMinorScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Drums":
-            setCurrentScale(defaultDrumScale, symbolFromPatcher);
-            break;
-            
-        case "Chromatic":
-            setCurrentScale(generateFullScaleList(chromaticScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "MinorPentatonic":
-            setCurrentScale(generateFullScaleList(minorPentatonicScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "MajorPentatonic":
-            setCurrentScale(generateFullScaleList(majorPentatonicScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "BluesPentatonic":
-            setCurrentScale(generateFullScaleList(bluesPentatonicScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Ionian":
-            setCurrentScale(generateFullScaleList(ionianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Dorian":
-            setCurrentScale(generateFullScaleList(dorianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Phrygian":
-            setCurrentScale(generateFullScaleList(phrygianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Lydian":
-            setCurrentScale(generateFullScaleList(lydianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Mixolydian":
-            setCurrentScale(generateFullScaleList(mixolydianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Aeolian":
-            setCurrentScale(generateFullScaleList(aeolianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Locrian":
-            setCurrentScale(generateFullScaleList(locrianMode, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "WholeTone":
-            setCurrentScale(generateFullScaleList(wholeToneScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "WholeHalfDiminished":
-            setCurrentScale(generateFullScaleList(wholeHalfdiminishedScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "HalfWholeDiminished":
-            setCurrentScale(generateFullScaleList(halfWholeDiminishedScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "SymmetricalAugmented":
-            setCurrentScale(generateFullScaleList(symmetricalAugmentedScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "Tritone":
-            setCurrentScale(generateFullScaleList(tritoneScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
 
-        case "MajorQuartal":
-            setCurrentScale(generateFullScaleList(majorQuartalScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        case "MinorQuartal":
-            setCurrentScale(generateFullScaleList(minorQuartalScale, parameter.rootNote.value, parameter.cycles.value), symbolFromPatcher);
-            break;
-            
-        default:
-            updateNoteDisplay();
-            break;
+    if (symbolFromPatcher == "Drums") {
+        setCurrentScale(defaultDrumScale, symbolFromPatcher);
     }
+    
+    setCurrentScale(generateFullScaleList(symbolFromPatcher), symbolFromPatcher);
+
     if (debugItem.startValue) { post("symbolFromPatcher at end:", symbolFromPatcher, "\n"); }
+    post("here?:", 1, "\n");
 }
 
 function setInSuite(aNewValue) {
