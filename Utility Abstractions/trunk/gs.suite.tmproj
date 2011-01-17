@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
+	<string>../gs.chordScale/gs.chordScale.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -30,9 +30,7 @@
 			<key>filename</key>
 			<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-17T15:28:33Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-01-17T19:41:42Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -45,6 +43,10 @@
 		<dict>
 			<key>filename</key>
 			<string>../gs.chordScale/gs.chordScale.js</string>
+			<key>lastUsed</key>
+			<date>2011-01-17T19:41:42Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -59,24 +61,40 @@
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
-		<key>../gs.clipstep/gs.ClipStepSequencer.js</key>
+		<key>../gs.chordScale/gs.chordScale.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>23</integer>
+				<integer>27</integer>
 				<key>line</key>
-				<integer>409</integer>
+				<integer>856</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>38</integer>
+			<integer>827</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>51</integer>
+				<key>line</key>
+				<integer>856</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>856</integer>
+			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
+		<string>../gs.chordScale/gs.chordScale.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
