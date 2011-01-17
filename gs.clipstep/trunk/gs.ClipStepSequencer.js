@@ -59,7 +59,8 @@ var debugItem = {
     list : false,
     localValue : false,
     startValue : false,
-    frequentName : false
+    frequentName : false,
+    loading : false
 };
 
 maps = {
@@ -247,8 +248,8 @@ var parameter = {
         name : "newNoteLength",
         type : "number",
         value : 0.125,
-        minValue : 0.00625,
-        maxValue : 0.000390625,
+        minValue : 0.000390625,
+        maxValue : 127,
         saveInPattr : true
     },
     newNoteVelocity : {
@@ -293,6 +294,97 @@ var parameter = {
     },
     patchString : "GsCss"
 };
+
+var VelocityOption = {
+    _0 : 0,
+    _1 : 24,
+    _2 : 48,
+    _3 : 64,
+    _4 : 80,
+    _5 : 96,
+    _6 : 112,
+    _7 : 127
+};
+
+var LengthOption = {
+    _0 : 0.0625,
+    _1 : 0.125,
+    _2 : 0.25,
+    _3 : 0.5,
+    _4 : 1,
+    _5 : 2,
+    _6 : 4,
+    _7 : 8
+};
+
+var DisplayWidthOption = {
+    _0 : 1,
+    _1 : 2,
+    _2 : 4,
+    _3 : 8,
+    _4 : 16,
+    _5 : 32,
+    _6 : 64,
+    _7 : 128
+};
+
+//                                  ---===Monome Setup===---
+
+var Monome = [];
+
+var FunctionButton = {
+    dynamic_0: 0,
+    dynamic_1: 1,
+    dynamic_2: 2,
+    dynamic_3: 3,
+    shift: 4,
+    bit0: 5,
+    bit1: 6,
+    fold: 7,
+    store_0 : 8,
+    store_1 : 9,
+    store_2 : 10,
+    store_3 : 11,
+    store_4 : 12,
+    store_5 : 13,
+    store_6 : 14,
+    store_7 : 15
+};
+
+var FunctionMode = {
+    moveMode: 0,
+    lengthMode: 1,
+    velocityMode: 2,
+    widthMode: 3
+};
+
+//                                  ---===Create Empty Arrays===---
+var noteArray = [];
+var displayNoteList = [];
+var clipNotes = new Array();
+
+
+//                                  ---===conditions===---
+var playheadVisible = false;
+var followingPlayingClip = false;
+var extendedWidthOptions = false;
+var extendedLengthOptions = false;
+var extendedVelocityOptions = false;
+        
+//                                  ---===Variables===---
+
+//                                  ---===LiveAPI placeholders===---
+var checkForClip = false;
+var editClip = false;
+var watchTrack = false;
+var watchTrackForPlayingClip = false;
+var watchClipNotes = false;
+var watchClipPlayingStatus = false;
+var watchClipIsPlaying = false;
+var watchClipPlayhead = false;
+var indexSet = false;
+var functionToggle = [ false, false];
+
 
 function getLastTrackIndex() {
     return (mWatchersCreated) ? (trackArray.length - 1) : 2048;
@@ -341,6 +433,7 @@ function initialize() {
     setTrackIndexAndScene(parameter.trackIndex.value, parameter.clipScene.value);
     
     mWatchersCreated = true;
+
     updateNoteDisplay();
     
     post("gs.ClipStepSequencer finished loading\n");
@@ -398,88 +491,6 @@ Number.prototype.toLength = function (len) {
     return lString;
    
 };
-
-var VelocityOption = {
-    _0 : 0,
-    _1 : 24,
-    _2 : 48,
-    _3 : 64,
-    _4 : 80,
-    _5 : 96,
-    _6 : 112,
-    _7 : 127
-};
-
-var LengthOption = {
-    _0 : 0.0625,
-    _1 : 0.125,
-    _2 : 0.25,
-    _3 : 0.5,
-    _4 : 1,
-    _5 : 2,
-    _6 : 4,
-    _7 : 8
-};
-
-var DisplayWidthOption = {
-    _0 : 0.50,
-    _1 : 1,
-    _2 : 2,
-    _3 : 4,
-    _4 : 8,
-    _5 : 16,
-    _6 : 32,
-    _7 : 64
-};
-
-//                                  ---===Monome Setup===---
-
-var Monome = [];
-
-var FunctionButton = {
-    dynamic_0: 0,
-    dynamic_1: 1,
-    dynamic_2: 2,
-    dynamic_3: 3,
-    shift: 4,
-    bit0: 5,
-    bit1: 6,
-    fold: 7
-};
-
-var FunctionMode = {
-    moveMode: 0,
-    lengthMode: 1,
-    velocityMode: 2,
-    widthMode: 3
-};
-
-//                                  ---===Create Empty Arrays===---
-var noteArray = [];
-var displayNoteList = [];
-var clipNotes = new Array();
-
-
-//                                  ---===conditions===---
-var playheadVisible = false;
-var followingPlayingClip = false;
-var extendedWidthOptions = false;
-var extendedLengthOptions = false;
-var extendedVelocityOptions = false;
-        
-//                                  ---===Variables===---
-
-//                                  ---===LiveAPI placeholders===---
-var checkForClip = false;
-var editClip = false;
-var watchTrack = false;
-var watchTrackForPlayingClip = false;
-var watchClipNotes = false;
-var watchClipPlayingStatus = false;
-var watchClipIsPlaying = false;
-var watchClipPlayhead = false;
-var indexSet = false;
-var functionToggle = [ false, false];
 
 //                                  ---===LiveAPI Calls===---
 // those without callbacks
@@ -1575,6 +1586,26 @@ function press(mCol, mRow, upDown) {
             }
         }
     }
+    else if ((mRow == monomeLastRow()) && (mCol >= 8) && (mCol <= 15)) {
+        switch (mCol) {
+            case FunctionButton.store_0:
+                break;
+            case FunctionButton.store_1:
+                break;
+            case FunctionButton.store_2:
+                break;
+            case FunctionButton.store_3:
+                break;
+            case FunctionButton.store_4:
+                break;
+            case FunctionButton.store_5:
+                break;
+            case FunctionButton.store_6:
+                break;
+            case FunctionButton.store_7:
+                break;
+        }
+    
 }
 
 function shiftIsHeld() {
@@ -2190,7 +2221,6 @@ function onScaleVariableChange () {
 function generateFullScaleList(aMapString) {
     if (debugItem.functionName) { post("                               --generateFullScaleList--\n"); }
     
-    post("aMapString:", aMapString, "\n");
     if (debugItem.list) { post("maps[" + aMapString + "].value:", maps[aMapString].value, "\n"); }     
 
     var scaleMap = maps[aMapString].value.slice(0); //because i will manipulate this array
@@ -2240,7 +2270,6 @@ function generateFullScaleList(aMapString) {
 
 function setCurrentScale(scaleToUse, scaleName) {
     if (debugItem.getSetName) { post("                     --setCurrentScale--\n"); }
-    post("or here?:", 2, "\n");
     
     if (parameter.currentScale.value != scaleToUse) {
         parameter.currentScale.value = scaleToUse;
@@ -2278,7 +2307,6 @@ function setCurrentScaleWithSymbol(symbolFromPatcher) {
     setCurrentScale(generateFullScaleList(symbolFromPatcher), symbolFromPatcher);
 
     if (debugItem.startValue) { post("symbolFromPatcher at end:", symbolFromPatcher, "\n"); }
-    post("here?:", 1, "\n");
 }
 
 function setInSuite(aNewValue) {
