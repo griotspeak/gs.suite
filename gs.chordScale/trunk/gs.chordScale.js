@@ -248,7 +248,8 @@ var parameter = {
         isPatcherGlobal : true
     },
     lastRoot : 0,
-    lastVelocity : 0
+    lastVelocity : 0,
+    patchString : "GsChord"
 };
 
 var onChangeValue = {
@@ -448,8 +449,8 @@ function setParameterProperty(aPropertyString, aVoice, aValue) {
 
     sendToHud(aVoice, parameter[aPropertyString].name, parameter[aPropertyString].value[aVoice], (parameter[aPropertyString].isPatcherGlobal) ? 4 : 0);
     updateVoiceDisplay(aVoice);
-    var patcherObjectNameString = aVoice + "-" + parameter[aPropertyString].name + "GsChordObject";
-    this.patcher.getnamed(patcherObjectNameString).message("set", parameter[aPropertyString].value[aVoice]);
+    var patcherObjectNameString = aVoice + "-" + parameter[aPropertyString].name + "GsChordPattr";
+    this.patcher.getnamed(patcherObjectNameString).message(parameter[aPropertyString].value[aVoice]);
 
     if (!parameter[aPropertyString].isPatcherGlobal) {
         if (parameter.onChange.value[0] == onChangeValue.clip) { flushNote(aVoice, 0); }
@@ -475,13 +476,13 @@ function grabAllPattrValues() {
     grabPattrValues(parameter.octave);
     grabPattrValues(parameter.degree);
     grabPattrValues(parameter.accidental);
-    parameter.channel.value[0] = Number(this.patcher.getnamed("0-channelGsChordObject").getvalueof());
-    parameter.onChange.value[0] = Number(this.patcher.getnamed("0-onChangeGsChordObject").getvalueof());
+    parameter.channel.value[0] = Number(this.patcher.getnamed("0-channelGsChordPattr").getvalueof());
+    parameter.onChange.value[0] = Number(this.patcher.getnamed("0-onChangeGsChordPattr").getvalueof());
 }
 
 function grabPattrValues(aProperty) {
     for (var iVoice = 0; iVoice < 8; iVoice++) {
-        var patcherObjectNameString = iVoice + "-" + aProperty.name + "GsChordObject";
+        var patcherObjectNameString = iVoice + "-" + aProperty.name + "GsChordPattr";
         aProperty.value[iVoice] = Number(this.patcher.getnamed(patcherObjectNameString).getvalueof());
         if (mDebugLevel[5]) {  post(aProperty.name + ".value[" + iVoice + "]:", aProperty.value[iVoice], "\n"); }
     }
@@ -841,6 +842,22 @@ Monome.column = function(aColumn, aMethodToInvoke) {
             }
         }
 };
+
+
+
+
+function store(aNumber) {
+    if (mDebugLevel[1]) { post("                     --store--\n"); }
+    
+    this.patcher.getnamed("gsChordScale-presetStore").message("store", aNumber);
+}
+
+function recall(aNumber) {
+    if (mDebugLevel[1]) { post("                     --recall--\n"); }
+    this.patcher.getnamed("gsChordScale-presetStore").message(aNumber);
+    grabAllPattrValues();
+    updateHud;
+}
 
 function refreshMonome() {
     if (mDebugLevel[1]) { post("                               --refreshMonome--\n"); }
