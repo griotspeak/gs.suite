@@ -45,16 +45,15 @@ var outlets = 3;
 var post;
 var outlet;
 
-
-var watchSet;
-var countAllTracks;
+var mWatchSet;
+var mCountAllTracks;
 var trackArray;
-var watchSetPlaying;
+var mWatchSetPlaying;
 var glob;
 var indexTrack;
 var mWatchersCreated = false;
 
-var watchSetTracks; //not an attribute
+var mWatchSetTracks; //not an attribute
 var thereIsAClipInSlot; // not an attribute
 
 var debugItem = {
@@ -414,8 +413,8 @@ function initialize() {
     grabAllPattrValues();
     buildMonome();
     
-    watchSet = new LiveAPI(this.patcher, null, "live_set");
-    countAllTracks = new LiveAPI(this.patcher, null, "live_set");
+    mWatchSet = new LiveAPI(this.patcher, null, "live_set");
+    mCountAllTracks = new LiveAPI(this.patcher, null, "live_set");
     
     updateFunctionModeLeds();
     updateMultiPurposeLeds();
@@ -428,10 +427,10 @@ function initialize() {
     }
     
     // those with callbacks 
-    watchSetTracks = new LiveAPI(this.patcher, countMidiTracks, "live_set");
-    watchSetTracks.property = "tracks";
-    watchSetPlaying = new LiveAPI(this.patcher, setPlayheadVisible, "live_set");
-    watchSetPlaying.property = "is_playing";
+    mWatchSetTracks = new LiveAPI(this.patcher, countMidiTracks, "live_set");
+    mWatchSetTracks.property = "tracks";
+    mWatchSetPlaying = new LiveAPI(this.patcher, setPlayheadVisible, "live_set");
+    mWatchSetPlaying.property = "is_playing";
     
     glob = new Global("clipStepGlobalController");
     glob.setClip = setClipFromGlobal;
@@ -554,7 +553,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
         
     var iCounter;
     
-    var lLimit = watchSet.getcount("scenes");
+    var lLimit = mWatchSet.getcount("scenes");
 
     if (lLimit != 0) { 
         for (iCounter = aNewSceneNumber; iCounter < lLimit; iCounter++) {
@@ -633,8 +632,8 @@ function changeClipScene(aAmount) {
     
     var lValue = parameter.clipScene.value + aAmount;
     
-    if (lValue >= watchSet.getcount("scenes")) {
-        lValue = watchSet.getcount("scenes") - 1; 
+    if (lValue >= mWatchSet.getcount("scenes")) {
+        lValue = mWatchSet.getcount("scenes") - 1; 
     }
     setParameterProperty("clipScene", lValue);
     
@@ -642,7 +641,7 @@ function changeClipScene(aAmount) {
 }
 
 function isValidClipSceneNumber() {
-    if ((parameter.clipScene.value >= 0) || (parameter.clipScene.value < watchSet.getcount("scenes"))) { 
+    if ((parameter.clipScene.value >= 0) || (parameter.clipScene.value < mWatchSet.getcount("scenes"))) { 
         return true;
     }
     else {
@@ -774,7 +773,7 @@ function setPlayheadVisible() {
     if (!thereIsAClipInSlot) { return; }
     
        clipPlaying = watchClipIsPlaying.get("is_playing");
-    setPlaying = watchSet.get("is_playing");
+    setPlaying = mWatchSet.get("is_playing");
    
     if ((setPlaying == 1) && (clipPlaying == 1)) { playheadVisible = true; }
     else { 
@@ -829,7 +828,7 @@ updatePlayhead.immediate = 1;
 function countMidiTracks() {
     if (debugItem.functionName) { post("                               --countMidiTracks--\n"); }
     trackArray = [];
-    trackCount = countAllTracks.getcount("tracks");
+    trackCount = mCountAllTracks.getcount("tracks");
     for (var j = 0; j < trackCount; j++) {
         if (indexSet) { indexSet.goto("live_set tracks " + j); }
         else { indexSet = new LiveAPI(this.patcher, null, "live_set tracks " + j ); }
@@ -853,7 +852,7 @@ function countScenesWithClip() {
     
     if (debugItem.functionName) { post("                               --countScenesWithClip--\n"); }
     sceneArray = [];
-    sceneCount = countAllTracks.getcount("scenes");
+    sceneCount = mCountAllTracks.getcount("scenes");
     for (var k = 0; k < sceneCount; k++) {
         if (indexTrack) { indexTrack.goto("live_set tracks " + trackArray[parameter.trackIndex.value] + "clip_slots" + k); }
         else { indexTrack = new LiveAPI(this.patcher, null, "live_set tracks " + trackArray[parameter.trackIndex.value] + "clip_slots" + k); }
@@ -2387,10 +2386,10 @@ function recall(aNumber) {
 function freebang() {
     if (debugItem.functionName) { post("                               --freebang--\n"); }
     if (debugItem.list) { postPattrs("end"); }
-    if (watchSet) { watchSet = null; }
-    if (countAllTracks) { countAllTracks = null; }
-    if (watchSetTracks) { watchSetTracks = null; }
-    if (watchSetPlaying) { watchSetPlaying = null; }
+    if (mWatchSet) { mWatchSet = null; }
+    if (mCountAllTracks) { mCountAllTracks = null; }
+    if (mWatchSetTracks) { mWatchSetTracks = null; }
+    if (mWatchSetPlaying) { mWatchSetPlaying = null; }
     if (checkForClip) { checkForClip = null; }
     if (editClip) { editClip = null; }
     if (watchTrack) { watchTrack = null; }
