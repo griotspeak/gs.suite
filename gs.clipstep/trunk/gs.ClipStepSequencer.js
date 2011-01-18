@@ -57,6 +57,7 @@ var mWatchSetTracks; //not an attribute
 var thereIsAClipInSlot; // not an attribute
 
 var debugItem = {
+    arguments : false,
     endValue : false,
     frequentItem : false,
     frequentList: false,
@@ -158,6 +159,16 @@ var maps = {
         value: [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
         name: "Drums"
     }
+};
+
+var HudFormat = {
+    set : 0,
+    trigger : 1,
+    symbol : 2,
+    measures : 3,
+    slotSet : 4,
+    slotTrigger : 5,
+    slotSymbol : 6
 };
 
 var parameter = {
@@ -690,7 +701,7 @@ function setNewNoteVelocity(aVelocity) {
     
     if ((0 <= aVelocity) && (aVelocity <= 127)) {
         parameter.newNoteVelocity.value = aVelocity;
-        sendToHud("velocity", parameter.newNoteVelocity.value, 0);
+        sendToHud("velocity", parameter.newNoteVelocity.value, HudFormat.set);
     }
     else {
         post("invalid velocity");
@@ -966,8 +977,8 @@ function getCurrentPosition() {
         if (debugItem.endValue) { post("clipScene changed from:", parameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
         parameter.clipScene.value = currentSceneNumber;
     }
-    sendToHud("track", trackArray[parameter.trackIndex.value] + 1, 0);
-    sendToHud("scene", Number(parameter.clipScene.value) + 1, 0);
+    sendToHud("track", trackArray[parameter.trackIndex.value] + 1, HudFormat.set);
+    sendToHud("scene", Number(parameter.clipScene.value) + 1, HudFormat.set);
 }
 
 function playCurrentClip() {
@@ -1178,20 +1189,20 @@ Array.prototype.diff = function(a) {
 */
 
 function updateHud() {
-    sendToHud("track", (trackArray[parameter.trackIndex.value] + 1), 0);
-    sendToHud("scene", (Number(parameter.clipScene.value) + 1), 0);
-    sendToHud("time", parameter.timeOffset.value / 4, 0);
-    sendToHud("width", parameter.displayWidth.value / 4, 0);
-    sendToHud("top", (displayNoteList[parameter.rowOffset.value]) ? displayNoteList[parameter.rowOffset.value] : 0, 0 );
-    if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), 3); }
-    sendToHud("scale", parameter.currentScaleName.value, 2);
-    sendToHud("noteLength", parameter.newNoteLength.value, 0);
-    sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
-    sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
-    sendToHud("cycles", parameter.cycles.value, 0);
-    sendToHud("root", parameter.rootNote.value, 0);
-    sendToHud("folding", parameter.folding.value, 0);
-    sendToHud("velocity", parameter.newNoteVelocity.value, 0);   
+    sendToHud("track", (trackArray[parameter.trackIndex.value] + 1), HudFormat.set);
+    sendToHud("scene", (Number(parameter.clipScene.value) + 1), HudFormat.set);
+    sendToHud("time", parameter.timeOffset.value / 4, HudFormat.set);
+    sendToHud("width", parameter.displayWidth.value / 4, HudFormat.set);
+    sendToHud("top", (displayNoteList[parameter.rowOffset.value]) ? displayNoteList[parameter.rowOffset.value] : 0, HudFormat.set );
+    if (thereIsAClipInSlot) { sendToHud("clipLength", (editClip.get("length") /4), HudFormat.measures); }
+    sendToHud("scale", parameter.currentScaleName.value, HudFormat.symbol);
+    sendToHud("noteLength", parameter.newNoteLength.value, HudFormat.set);
+    sendToHud("monomeHeight", parameter.monomeHeight.value, HudFormat.set);
+    sendToHud("monomeWidth", parameter.monomeWidth.value, HudFormat.set);
+    sendToHud("cycles", parameter.cycles.value, HudFormat.set);
+    sendToHud("root", parameter.rootNote.value, HudFormat.set);
+    sendToHud("folding", parameter.folding.value, HudFormat.set);
+    sendToHud("velocity", parameter.newNoteVelocity.value, HudFormat.set);   
 }
 
 
@@ -1510,7 +1521,7 @@ function press(aCol, aRow, aPress) {
                     addNote(newNoteNote, newNoteTime, parameter.newNoteVelocity.value);
             }
         }
-        sendToHud("latest", newNoteNote, 0);
+        sendToHud("latest", newNoteNote, HudFormat.set);
     }
     // Arrow keys
     else if ((aRow == monomeLastRow()) && (aPress == 1) && (aCol >= 0) && (aCol <= 3)) {
@@ -1818,7 +1829,7 @@ function toggleFollowingPlayingClip() {
     followingPlayingClip = (followingPlayingClip == true) ? false : true;
     updateFunctionModeLeds();
     getPlayingSlotNumber();
-    sendToHud("following", followingPlayingClip, 0);
+    sendToHud("following", followingPlayingClip, HudFormat.set);
 }
 function getPlayingSlotNumber() {
     if (debugItem.functionName) { post("--getPlayingSlotNumber--\n"); }
@@ -1973,20 +1984,21 @@ function leftInSet(aHowMuch) {
 //                                  ---===Communicate with Patcher===---
 function sendToHud(aKey, aValue, aFormat) {
     if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
-    if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
+    if (debugItem.arguments) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
+
     var lOutlet = 2;
     
     switch (aFormat) {
-        case 0:
+        case HudFormat.set:
             outlet(lOutlet, aKey, "set", aValue);
             break;
-        case 1:
+        case HudFormat.trigger:
             outlet(lOutlet, aKey, aValue);
             break;
-        case 2:
+        case HudFormat.symbol:
             outlet(lOutlet, aKey, "setsymbol", aValue);
             break;
-        case 3:
+        case HudFormat.measures:
             outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
             break;
         default: {
@@ -2317,7 +2329,7 @@ function setParameterProperty(aPropertyString, aValue) {
 
     parameter[aPropertyString].value = lValue;
 
-    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, 0);
+    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, HudFormat.set);
     
 	if (parameter[aPropertyString].saveInPattr) {
 	    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Pattr";
@@ -2364,7 +2376,7 @@ function grabPattrValue(aProperty) {
     if (debugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
     
     aProperty.value = lValue;
-    sendToHud(aProperty.name, aProperty.value, 0);
+    sendToHud(aProperty.name, aProperty.value, HudFormat.set);
     
     if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
