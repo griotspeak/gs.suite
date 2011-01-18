@@ -163,7 +163,15 @@ AccidentalType = {
   doubleSharp : 2  
 };
 
-function bang() { setChannel((parameter.channel.value[0])?0:1); }
+var HudFormat = {
+    set : 0,
+    trigger : 1,
+    symbol : 2,
+    measures : 3,
+    slotSet : 4,
+    slotTrigger : 5,
+    slotSymbol : 6
+};
 
 function initialize() {
     grabAllPattrValues();
@@ -401,16 +409,16 @@ function updateCommentDisplay(aVoice) {
             var lScaleDegreeObject = ScaleObject[iIntervalName].value[parameter.accidental.value[aVoice] + 2];
     
             if ((parameter.octave.value[aVoice] > 1) && (parameter.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
-                    sendToHud(aVoice, "comment", lScaleDegreeObject.opinionated.tension, 0);
+                    sendToHud(aVoice, "comment", lScaleDegreeObject.opinionated.tension, HudFormat.set);
             }
             else if ((parameter.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
-                sendToHud(aVoice, "comment", lScaleDegreeObject.passive.tension, 0);
+                sendToHud(aVoice, "comment", lScaleDegreeObject.passive.tension, HudFormat.set);
             }
             else if ((parameter.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
-                sendToHud(aVoice, "comment", lScaleDegreeObject.opinionated.scale, 0);
+                sendToHud(aVoice, "comment", lScaleDegreeObject.opinionated.scale, HudFormat.set);
             }
             else {              
-                sendToHud(aVoice, "comment", lScaleDegreeObject.passive.scale, 0);
+                sendToHud(aVoice, "comment", lScaleDegreeObject.passive.scale, HudFormat.set);
             }
         }
     }
@@ -419,11 +427,11 @@ function updateCommentDisplay(aVoice) {
 function updateVoiceDisplay(aVoice) {
     updateCommentDisplay(aVoice);
     updateVoiceOnMonome(aVoice);
-    sendToHud(aVoice, parameter.voiceOn.name, parameter.voiceOn.value[aVoice], 0);
-    sendToHud(aVoice, parameter.split.name, parameter.split.value[aVoice], 0);
-    sendToHud(aVoice, parameter.octave.name, parameter.octave.value[aVoice], 0);
-    sendToHud(aVoice, parameter.degree.name, parameter.degree.value[aVoice], 0);
-    sendToHud(aVoice, parameter.accidental.name, parameter.accidental.value[aVoice], 0);
+    sendToHud(aVoice, parameter.voiceOn.name, parameter.voiceOn.value[aVoice], HudFormat.set);
+    sendToHud(aVoice, parameter.split.name, parameter.split.value[aVoice], HudFormat.set);
+    sendToHud(aVoice, parameter.octave.name, parameter.octave.value[aVoice], HudFormat.set);
+    sendToHud(aVoice, parameter.degree.name, parameter.degree.value[aVoice], HudFormat.set);
+    sendToHud(aVoice, parameter.accidental.name, parameter.accidental.value[aVoice], HudFormat.set);
 }
 
 function updateHud() {
@@ -447,7 +455,7 @@ function setParameterProperty(aPropertyString, aVoice, aValue) {
 
     parameter[aPropertyString].value[aVoice] = lValue;
 
-    sendToHud(aVoice, parameter[aPropertyString].name, parameter[aPropertyString].value[aVoice], (parameter[aPropertyString].isPatcherGlobal) ? 4 : 0);
+    sendToHud(aVoice, parameter[aPropertyString].name, parameter[aPropertyString].value[aVoice], (parameter[aPropertyString].isPatcherGlobal) ? 4 : HudFormat.set);
     updateVoiceDisplay(aVoice);
     var patcherObjectNameString = aVoice + "-" + parameter[aPropertyString].name + "GsChordPattr";
     this.patcher.getnamed(patcherObjectNameString).message(parameter[aPropertyString].value[aVoice]);
