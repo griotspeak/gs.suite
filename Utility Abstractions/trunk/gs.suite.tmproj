@@ -2,15 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>../gs.tile/gs.tile.router.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
-			<string>../gs.tile/gs.m4l.tile.client.maxpat</string>
+			<string>../gs.tile/gs.tile.client.js</string>
+			<key>lastUsed</key>
+			<date>2011-01-18T03:11:59Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>../gs.tile/gs.tile.clientDisplay.maxpat</string>
+			<string>../gs.tile/gs.tile.router.js</string>
+			<key>lastUsed</key>
+			<date>2011-01-18T03:19:29Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -42,9 +50,7 @@
 			<key>filename</key>
 			<string>../gs.chordScale/gs.chordScale.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-18T02:27:09Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-01-18T03:09:18Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -58,7 +64,26 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>200</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>../gs.tile/gs.tile.router.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>58</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>27</integer>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>../gs.tile/gs.tile.router.js</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
