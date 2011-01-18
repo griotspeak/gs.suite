@@ -525,7 +525,10 @@ function setTrack(aNewTrackNumber) {
 function setTrackIndex(aNewIndexNumber) {
     if (debugItem.getSetName) { post("                               --setTrackIndex--\n"); }
     
-    setParameterProperty("trackIndex", aNewIndexNumber);    
+    setParameterProperty({
+        key : "trackIndex",
+        value : aNewIndexNumber
+    });    
     focusOnClip();
 }
 
@@ -535,7 +538,10 @@ function changeTrackIndex(aAmount) {
     var lValue = parameter.trackIndex.value + aAmount;
     if (lValue >= trackArray.length) { lValue = trackArray.length - 1; }
     
-    setParameterProperty("trackIndex", lValue);
+    setParameterProperty({
+        key : "trackIndex",
+        value : lValue
+    });
     focusOnClip();
 }
 
@@ -560,7 +566,10 @@ function getIndexOfTrack(aTrackToFind) {
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (debugItem.getSetName) { post("                               --setTrackIndex--\n"); }
     
-    setParameterProperty("trackIndex", aNewIndexNumber);
+    setParameterProperty({
+        key : "trackIndex",
+        value : aNewIndexNumber
+    });
         
     var iCounter;
     
@@ -568,16 +577,25 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 
     if (lLimit != 0) { 
         for (iCounter = aNewSceneNumber; iCounter < lLimit; iCounter++) {
-            setParameterProperty("clipScene", iCounter);
+            setParameterProperty({
+                key : "clipScene",
+                value : iCounter
+            });
             if (focusOnClip()) { return true; }
         }
     
         for (iCounter = aNewSceneNumber; iCounter >=0; iCounter--) {
-            setParameterProperty("clipScene", iCounter);
+            setParameterProperty({
+                key : "clipScene",
+                value : iCounter
+            });
             if (focusOnClip()) { return true; }
         }
     
-        setParameterProperty("clipScene", 0);
+        setParameterProperty({
+            key : "clipScene",
+            value : 0
+        });
     }
         
     return false;
@@ -587,13 +605,19 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 function setRowOffset(aNewOffsetNumber) {
     if (debugItem.getSetName) { post("                               --setRowOffset--\n"); }
 
-    setParameterProperty("rowOffset", aNewOffsetNumber);
+    setParameterProperty({
+        key : "rowOffset",
+        value : aNewOffsetNumber
+    });
     updateNoteDisplay();
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
     if (debugItem.getSetName) { post("                               --setRowOffset--\n"); }
 
-    setParameterProperty("foldingRowOffset", aNewOffsetNumber);
+    setParameterProperty({
+        key : "foldingRowOffset",
+        value : aNewOffsetNumber
+    });
     updateNoteDisplay();
 
 }
@@ -628,7 +652,10 @@ function changeRowOffset(aAmount) {
 function setClipScene(aNewSceneNumber) {
     if (debugItem.getSetName) { post("                               --setClipScene--\n"); }
 
-    setParameterProperty("clipScene", aNewSceneNumber);
+    setParameterProperty({
+        key : "clipScene",
+        value : aNewSceneNumber
+    });
     focusOnClip();
     
 }
@@ -646,7 +673,10 @@ function changeClipScene(aAmount) {
     if (lValue >= mWatchSet.getcount("scenes")) {
         lValue = mWatchSet.getcount("scenes") - 1; 
     }
-    setParameterProperty("clipScene", lValue);
+    setParameterProperty({
+        key : "clipScene",
+        value : lValue
+    });
     
     focusOnClip();
 }
@@ -664,7 +694,10 @@ function isValidClipSceneNumber() {
 function setTimeOffset(aNewOffset){
     if (debugItem.getSetName) { post("                               --setTimeOffset--\n"); }
 
-    setParameterProperty("timeOffset", aNewOffset);
+    setParameterProperty({
+        key : "timeOffset",
+        value : aNewOffset
+    });
     updateNoteDisplay();
 
 }
@@ -682,7 +715,10 @@ function changeTimeOffset(aAmount) {
     
     if (parameter.timeOffset.value >= editClip.get("length")) { parameter.timeOffset.value = editClip.get("length") - parameter.displayWidth.value; }
 
-    setParameterProperty("timeOffset", lValue);
+    setParameterProperty({
+        key : "timeOffset",
+        value : lValue
+    });
 }
 
 //                                  ---===newNoteLength accessors===---
@@ -690,7 +726,10 @@ function changeTimeOffset(aAmount) {
 function setNewNoteLength(aLength) {
     if (debugItem.getSetName) { post("                     --setNewNoteLength--\n"); }
     
-    setParameterProperty("newNoteLength", aLength);
+    setParameterProperty({
+        key : "newNoteLength",
+        value : aLength
+    });
     updateMultiPurposeLeds();
 }
 
@@ -717,7 +756,10 @@ function setNewNoteVelocity(aVelocity) {
 function setFunctionMode(aMode) {
     if (debugItem.getSetName) { post("                               --setFunctionMode--\n"); }
 
-    setParameterProperty("functionMode", aMode);
+    setParameterProperty({
+        key : "functionMode",
+        value : aMode
+    });
     updateControlLeds();
 }
 
@@ -804,7 +846,10 @@ function setPlayheadVisible() {
 function setDisplayWidth(aWidth) {
     if (debugItem.getSetName) { post("                               --setDisplayWidth--\n"); }
 
-    setParameterProperty("displayWidth", aWidth);
+    setParameterProperty({
+        key : "displayWidth",
+        value : aWidth
+    });
     
     roundDisplayOffset();
     updateNoteDisplay();
@@ -2044,10 +2089,10 @@ function leftInSet(aHowMuch) {
 function sendToHud(aObject) {
     
     var lOutlet = 2,
-        aKey = aObject["key"],
-        aValue = aObject["value"],
-        aFormat = (aObject["format"] === undefined) ? 0 : aObject["format"],
-        aSlot = (aObject["slot"] === undefined) ? null : aObject["slot"];
+        aKey = aObject.key,
+        aValue = aObject.value,
+        aFormat = (aObject.format === undefined) ? 0 : aObject.format,
+        aSlot = (aObject.slot === undefined) ? null : aObject.slot;
         
     
     if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
@@ -2076,13 +2121,19 @@ function sendToHud(aObject) {
 function setMonomeWidth(aWidth) {
     if (debugItem.getSetName) { post("                               --setMonomeWidth--\n"); }
 
-    setParameterProperty("monomeWidth", aWidth);
+    setParameterProperty({
+        key : "monomeWidth",
+        value : aWidth
+    });
     buildMonome();
     updateMonome();
 }
 function setMonomeHeight(aHeight) {
     if (debugItem.getSetName) { post("                               --setMonomeHeight--\n"); }
-    setParameterProperty("monomeHeight", aHeight);
+    setParameterProperty({
+        key : "monomeHeight",
+        value : aHeight
+    });
     buildMonome();
     updateMonome();
 }
@@ -2258,7 +2309,10 @@ function refreshMonome() {
 function setCycles(aNewCycleCount) {
     if (debugItem.getSetName) { post("                               --setCycles--\n"); }
     
-    setParameterProperty("cycles", aNewCycleCount);
+    setParameterProperty({
+        key : "cycles",
+        value : aNewCycleCount
+    });
 
     onScaleVariableChange();
 }
@@ -2267,7 +2321,10 @@ function setCycles(aNewCycleCount) {
 function setRootNote(aNewRoot) {
     if (debugItem.getSetName) { post("                               --setRootNote--\n"); }
 
-    setParameterProperty("rootNote", aNewRoot);
+    setParameterProperty({
+        key : "rootNote",
+        value : aNewRoot
+    });
 
     onScaleVariableChange();
 }
@@ -2376,43 +2433,68 @@ function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
 }
 
 function setInSuite(aNewValue) {
-    setParameterProperty("inSuite", aNewValue);
+    setParameterProperty({
+        key : "inSuite",
+        value : aNewValue
+    });
 }
 
-function setParameterProperty(aPropertyString, aValue) {
+function setParameterProperty(aObject) {
 
-    var lValue;
+    var aProperty = parameter[aObject["key"]],
+        aValue = aObject["value"],
+        aSlot = (aObject["slot"] === undefined) ? null : aObject["slot"],
+        lPatcherObjectNameString,
+        lValue;
     
-    if ((parameter[aPropertyString].type == "number") || (parameter[aPropertyString].type == "toggle")) {
-        if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
-        else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
-        else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
+    //check validity of aValue
+    if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
+        if ((aValue >= aProperty.minValue) && (aValue <= aProperty.maxValue)) { lValue = aValue; }
+        else if (aValue < aProperty.minValue) { lValue = aProperty.minValue; }
+        else if (aValue > aProperty.maxValue) { lValue = aProperty.maxValue; }
         else { post("something has gane awry in setParameterProperty!\n"); }
     }
     else { lValue = aValue; }
 
-    parameter[aPropertyString].value = lValue;
-
-    sendToHud({
-        key : parameter[aPropertyString].name, 
-        value : parameter[aPropertyString].value, 
-        format : HudFormat.set});
+    //update HUD
+    if (aProperty.type == "slotArray") {
+        aProperty.value[aSlot] = lValue;
+        sendToHud({
+            key : aProperty.name,
+            value : aProperty.value[aSlot],
+            format : HudFormat.slotSet,
+            slot : aSlot});
+    }
+     else {
+        aProperty.value = lValue;
+        sendToHud({
+            key : aProperty.name,
+            value : aProperty.value,
+            format : HudFormat.set});
+    }
     
-	if (parameter[aPropertyString].saveInPattr) {
-	    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Pattr";
-	    this.patcher.getnamed(patcherObjectNameString).message(parameter[aPropertyString].value);
-	}
+    // Save it.
+    if (aProperty.saveInPattr) {
+        patcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
+        this.patcher.getnamed(patcherObjectNameString).message(aProperty.value);
+    }
 }
 
 function changeParameterProperty(aPropertyString, aAmount) {
     var lValue = parameter[aPropertyString].value + aAmount;
-    setParameterProperty(aPropertyString, lValue);    
+    setParameterProperty({
+        propertyName : aPropertyString,
+        value : lValue
+    });
 }
 
 function toggleParameterProperty(aPropertyString) {
     if (parameter[aPropertyString].type == "toggle") {
         var lValue = Number(!Boolean(parameter[aPropertyString].value));
-        setParameterProperty(aPropertyString, lValue);
+        setParameterProperty({
+            propertyName : aPropertyString,
+            value : lValue
+        });
     }
     else { post(aPropertyString, "is not a toggle parameter\n");}
 }
