@@ -33,14 +33,12 @@
 			<string>../gs.LiveMixer/gs.LiveMixer.js</string>
 			<key>lastUsed</key>
 			<date>2011-01-18T16:02:40Z</date>
-			<key>selected</key>
-			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-18T16:02:39Z</date>
+			<date>2011-01-18T22:32:03Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -56,7 +54,9 @@
 			<key>filename</key>
 			<string>../gs.chordScale/gs.chordScale.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-18T03:09:18Z</date>
+			<date>2011-01-18T22:44:01Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
