@@ -808,16 +808,16 @@ function sendToHud(aKey, aValue, aFormat) {
     var lOutlet = 1;
     
     switch (aFormat) {
-        case 0:
+        case HudFormat.set:
             outlet(lOutlet, aKey, "set", aValue);
             break;
-        case 1:
+        case HudFormat.trigger:
             outlet(lOutlet, aKey, aValue);
             break;
-        case 2:
+        case HudFormat.symbol:
             outlet(lOutlet, aKey, "setsymbol", aValue);
             break;
-        case 3:
+        case HudFormat.measures:
             outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
             break;
         default: {
