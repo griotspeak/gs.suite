@@ -47,7 +47,7 @@ var mAppChannelsMade = false,
         endValue : false,
         frequentItem : false,
         frequentList: false,
-        functionName : false,
+        functionName : true,
         frequentFunctionName : false,
         list : false,
         startValue : false
