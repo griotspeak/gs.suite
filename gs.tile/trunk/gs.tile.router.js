@@ -44,18 +44,18 @@ var mAppChannelsMade = false,
     mPrependLedObject = [],
     
     debugItem = {
-    endValue : false,
-    frequentItem : false,
-    frequentList: false,
-    functionName : false,
-    frequentFunctionName : false,
-    list : false,
-    startValue : false
-},
+        endValue : false,
+        frequentItem : false,
+        frequentList: false,
+        functionName : false,
+        frequentFunctionName : false,
+        list : false,
+        startValue : false
+    },
 
-mThisRouterObject = this.patcher.getnamed("routerJSObject"),
+    mThisRouterObject = this.patcher.getnamed("routerJSObject"),
 
-gsTileGlobal = new Global("gsTileRouter");
+    gsTileGlobal = new Global("gsTileRouter");
 
 
 gsTileGlobal.appList = [];

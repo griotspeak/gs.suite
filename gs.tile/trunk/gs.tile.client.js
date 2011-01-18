@@ -153,6 +153,16 @@ var parameter = {
     patchString : "GsTileClient"
 };
 
+var HudFormat = {
+    set : 0,
+    trigger : 1,
+    symbol : 2,
+    measures : 3,
+    slotSet : 4,
+    slotTrigger : 5,
+    slotSymbol : 6
+};
+
 
 function initialize() {
     if (debugItem.functionName) { post("                     --initialize--\n"); }
@@ -425,13 +435,6 @@ function isInWindow(aColumnInQuestion, aRowInQuestion) {
     else {
         return false;
     }
-}
-
-function sendToRouter(aKey, aValue) {
-    if (debugItem.functionName) { post("                                --sendToHud--\n"); }
-
-    if (debugItem.list) { post("key:", aKey, "value:", aValue, "\n"); }
-        outlet(0, aKey, aValue);
 }
 
 function makeChannel(aChannelNumber) {
@@ -751,7 +754,7 @@ function setParameterProperty(aPropertyString, aValue) {
 
     parameter[aPropertyString].value = lValue;
 
-    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, 0);
+    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, HudFormat.set);
     
 	if (parameter[aPropertyString].saveInPattr) {
 	    var lPatcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Pattr";
@@ -792,7 +795,7 @@ function grabPattrValue(aProperty) {
     if (debugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
     
     aProperty.value = lValue;
-    sendToHud(aProperty.name, aProperty.value, 0);
+    sendToHud(aProperty.name, aProperty.value, HudFormat.set);
     
     if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
