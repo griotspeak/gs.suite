@@ -2461,8 +2461,8 @@ function setInSuite(aNewValue) {
 function setParameterProperty(aObject) {
 
     var aProperty = parameter[aObject["key"]],
-        aValue = aObject["value"],
-        aSlot = (aObject["slot"] === undefined) ? null : aObject["slot"],
+        aValue = aObject.value,
+        aSlot = (aObject.slot === undefined) ? null : aObject.slot,
         lPatcherObjectNameString,
         lValue;
     
