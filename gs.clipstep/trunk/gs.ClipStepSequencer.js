@@ -743,7 +743,8 @@ function setNewNoteVelocity(aVelocity) {
         sendToHud({
             key : "velocity",
             value : parameter.newNoteVelocity.value,
-            format : HudFormat.set});
+            format : HudFormat.set
+        });
     }
     else {
         post("invalid velocity");
@@ -1028,11 +1029,13 @@ function getCurrentPosition() {
     sendToHud({
         key : "track",
         value : trackArray[parameter.trackIndex.value] + 1,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "scene", 
         value : Number(parameter.clipScene.value) + 1, 
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
 }
 
 function playCurrentClip() {
@@ -1246,61 +1249,75 @@ function updateHud() {
     sendToHud({
         key : "track", 
         value : (trackArray[parameter.trackIndex.value] + 1), 
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "scene",
         value : (Number(parameter.clipScene.value) + 1),
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "time",
         value : parameter.timeOffset.value / 4,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "width",
         value : parameter.displayWidth.value / 4,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "top",
         value : (displayNoteList[parameter.rowOffset.value]) ? displayNoteList[parameter.rowOffset.value] : 0,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     if (thereIsAClipInSlot) {
         sendToHud({
             key : "clipLength",
             value : (editClip.get("length") /4),
-            format : HudFormat.measures}); 
+            format : HudFormat.measures
+        }); 
     }
     sendToHud({
         key : "scale",
         value : parameter.currentScaleName.value,
-        format : HudFormat.symbol});
+        format : HudFormat.symbol
+    });
     sendToHud({
         key : "noteLength",
         value :parameter.newNoteLength.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "monomeHeight",
         value : parameter.monomeHeight.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "monomeWidth",
         value : parameter.monomeWidth.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "cycles",
         value : parameter.cycles.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "root",
         value : parameter.rootNote.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "folding",
         value : parameter.folding.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     sendToHud({
         key : "velocity",
         value : parameter.newNoteVelocity.value,
-        format : HudFormat.set});   
+        format : HudFormat.set
+    });   
 }
 
 
@@ -1622,7 +1639,8 @@ function press(aCol, aRow, aPress) {
         sendToHud({
             key : "latest",
             value : newNoteNote,
-            format : HudFormat.set});
+            format : HudFormat.set
+        });
     }
     // Arrow keys
     else if ((aRow == monomeLastRow()) && (aPress == 1) && (aCol >= 0) && (aCol <= 3)) {
@@ -1933,7 +1951,8 @@ function toggleFollowingPlayingClip() {
     sendToHud({
         key : "following",
         value : followingPlayingClip,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
 }
 function getPlayingSlotNumber() {
     if (debugItem.functionName) { post("--getPlayingSlotNumber--\n"); }
@@ -2122,8 +2141,8 @@ function setMonomeWidth(aWidth) {
     if (debugItem.getSetName) { post("                               --setMonomeWidth--\n"); }
 
     setParameterProperty({
-        key : "monomeWidth",
-        value : aWidth
+        key: "monomeWidth",
+        value: aWidth
     });
     buildMonome();
     updateMonome();
@@ -2463,14 +2482,16 @@ function setParameterProperty(aObject) {
             key : aProperty.name,
             value : aProperty.value[aSlot],
             format : HudFormat.slotSet,
-            slot : aSlot});
+            slot : aSlot
+        });
     }
      else {
         aProperty.value = lValue;
         sendToHud({
             key : aProperty.name,
             value : aProperty.value,
-            format : HudFormat.set});
+            format : HudFormat.set
+        });
     }
     
     // Save it.
@@ -2483,7 +2504,7 @@ function setParameterProperty(aObject) {
 function changeParameterProperty(aPropertyString, aAmount) {
     var lValue = parameter[aPropertyString].value + aAmount;
     setParameterProperty({
-        propertyName : aPropertyString,
+        key : aPropertyString,
         value : lValue
     });
 }
@@ -2492,7 +2513,7 @@ function toggleParameterProperty(aPropertyString) {
     if (parameter[aPropertyString].type == "toggle") {
         var lValue = Number(!Boolean(parameter[aPropertyString].value));
         setParameterProperty({
-            propertyName : aPropertyString,
+            key : aPropertyString,
             value : lValue
         });
     }
@@ -2528,7 +2549,8 @@ function grabPattrValue(aProperty) {
     sendToHud({
         key : aProperty.name,
         value : aProperty.value,
-        format : HudFormat.set});
+        format : HudFormat.set
+    });
     
     if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
