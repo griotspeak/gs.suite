@@ -314,7 +314,6 @@ function setAccidental(aVoice, aValue) {
         slot : aVoice,
         value : aValue
     });
-    updateVoiceOnMonome(aVoice);
 }
 
 function setSplit(aVoice, aValue) {
@@ -324,7 +323,6 @@ function setSplit(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
-    updateVoiceOnMonome(aVoice);
 }
 
 function setOctave(aVoice, aValue) {
@@ -334,7 +332,6 @@ function setOctave(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
-    updateVoiceOnMonome(aVoice);
 }
 
 function setVoiceOn(aVoice, aValue) {
@@ -344,7 +341,6 @@ function setVoiceOn(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
-    updateVoiceOnMonome(aVoice);
 }
 
 function setOpinion(aVoice, aValue) {
@@ -354,7 +350,6 @@ function setOpinion(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
-    updateVoiceOnMonome(aVoice);
 }
 
 function setOnChange(aValue) {
@@ -571,6 +566,7 @@ function setParameterProperty(aObject) {
             format : HudFormat.slotSet,
             slot : aSlot
         });
+        updateVoiceOnMonome(aSlot);
     }
      else {
         aProperty.value = lValue;
