@@ -296,6 +296,7 @@ function setDegree(aVoice, aValue) {
         slot : aVoice,
         value : aValue
     });
+    updateVoiceOnMonome(aVoice);
 }
 
 function setChannel(aValue) {
@@ -313,6 +314,7 @@ function setAccidental(aVoice, aValue) {
         slot : aVoice,
         value : aValue
     });
+    updateVoiceOnMonome(aVoice);
 }
 
 function setSplit(aVoice, aValue) {
@@ -322,6 +324,7 @@ function setSplit(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
+    updateVoiceOnMonome(aVoice);
 }
 
 function setOctave(aVoice, aValue) {
@@ -331,6 +334,7 @@ function setOctave(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
+    updateVoiceOnMonome(aVoice);
 }
 
 function setVoiceOn(aVoice, aValue) {
@@ -340,6 +344,7 @@ function setVoiceOn(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
+    updateVoiceOnMonome(aVoice);
 }
 
 function setOpinion(aVoice, aValue) {
@@ -349,6 +354,7 @@ function setOpinion(aVoice, aValue) {
         slot :aVoice,
         value :aValue
     });
+    updateVoiceOnMonome(aVoice);
 }
 
 function setOnChange(aValue) {
@@ -367,7 +373,7 @@ function note(aPitch, aVelocity) {
     
     for (var iVoice = 0; iVoice < 8; iVoice++) {
         
-        if (parameter.onChange.value[0] == onChangeValue.hold) { flushNote(iVoice, 0); }
+        if (parameter.onChange.value == onChangeValue.hold) { flushNote(iVoice, 0); }
         
         if(parameter.voiceOn.value[iVoice]) {
             lSemitones = aPitch;
@@ -440,14 +446,14 @@ function updateVoiceOnMonome(aVoice) {
         }
 
         //Channel Buttons
-        if (parameter.split.value[aVoice] < parameter.channel.value[0]) {
+        if (parameter.split.value[aVoice] < parameter.channel.value) {
             Monome[aVoice][VoiceButton.channelDown].ledOn();
         }
-        else if (parameter.split.value[aVoice] == parameter.channel.value[0]) { 
+        else if (parameter.split.value[aVoice] == parameter.channel.value) { 
             Monome[aVoice][VoiceButton.channelUp].ledOn();
             Monome[aVoice][VoiceButton.channelDown].ledOn();
         }
-        else if (parameter.split.value[aVoice] > parameter.channel.value[0]) {
+        else if (parameter.split.value[aVoice] > parameter.channel.value) {
             Monome[aVoice][VoiceButton.channelUp].ledOn();
         }
     }
@@ -482,7 +488,7 @@ function updateCommentDisplay(aVoice) {
                     slot : aVoice,
                     key : "comment",
                     value : lScaleDegreeObject.opinionated.scale,
-                    format : HudFormat.set
+                    format : HudFormat.slotSet
                 });
             }
             else {              
@@ -490,7 +496,7 @@ function updateCommentDisplay(aVoice) {
                     slot : aVoice,
                     key : "comment",
                     value : lScaleDegreeObject.passive.scale,
-                    format : HudFormat.set
+                    format : HudFormat.slotSet
                 });
             }
         }
@@ -504,38 +510,37 @@ function updateVoiceDisplay(aVoice) {
         slot : aVoice,
         key : parameter.voiceOn.name,
         value : parameter.voiceOn.value[aVoice],
-        format : HudFormat.set
+        format : HudFormat.slotSet
     });
     sendToHud({
         slot : aVoice,
         key : parameter.split.name,
         value : parameter.split.value[aVoice],
-        format : HudFormat.set
+        format : HudFormat.slotSet
     });
     sendToHud({
         slot : aVoice,
         key : parameter.octave.name,
         value : parameter.octave.value[aVoice],
-        format : HudFormat.set
+        format : HudFormat.slotSet
     });
     sendToHud({
         slot : aVoice,
         key : parameter.degree.name,
         value : parameter.degree.value[aVoice],
-        format : HudFormat.set
+        format : HudFormat.slotSet
     });
     sendToHud({
         slot : aVoice,
         key : parameter.accidental.name,
         value : parameter.accidental.value[aVoice],
-        format : HudFormat.set
+        format : HudFormat.slotSet
     });
 }
 
 function updateHud() {
     for (var iVoice = 0; iVoice < 8; iVoice++) {
         updateVoiceDisplay(iVoice);
-        
     }
 }
 
@@ -579,7 +584,7 @@ function setParameterProperty(aObject) {
     // Save it.
     if (aProperty.saveInPattr) {
         patcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
-        this.patcher.getnamed(patcherObjectNameString).message(aProperty.value);
+        this.patcher.getnamed(patcherObjectNameString).setvalueof(aProperty.value);
     }
 }
 
@@ -603,27 +608,70 @@ function toggleParameterProperty(aPropertyString, aVoice) {
 
 
 function grabAllPattrValues() {
-    grabPattrValues(parameter.voiceOn);
-    grabPattrValues(parameter.split);
-    grabPattrValues(parameter.octave);
-    grabPattrValues(parameter.degree);
-    grabPattrValues(parameter.accidental);
-    parameter.channel.value[0] = Number(this.patcher.getnamed("0-channelGsChordPattr").getvalueof());
-    parameter.onChange.value[0] = Number(this.patcher.getnamed("0-onChangeGsChordPattr").getvalueof());
+    grabPattrValue(parameter.voiceOn);
+    grabPattrValue(parameter.split);
+    grabPattrValue(parameter.octave);
+    grabPattrValue(parameter.degree);
+    grabPattrValue(parameter.accidental);
+    grabPattrValue(parameter.onChange);
+    grabPattrValue(parameter.channel);
 }
 
-function grabPattrValues(aProperty) {
-    for (var iVoice = 0; iVoice < 8; iVoice++) {
-        var patcherObjectNameString = iVoice + "-" + aProperty.name + "GsChordPattr";
-        aProperty.value[iVoice] = Number(this.patcher.getnamed(patcherObjectNameString).getvalueof());
-        if (mDebugLevel[5]) {  post(aProperty.name + ".value[" + iVoice + "]:", aProperty.value[iVoice], "\n"); }
+function grabPattrValue(aProperty) {
+    if (debugItem.functionName) { post("                     --grabPattrValue--\n"); }
+    
+    var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr",
+        iCounter,
+        lLength;
+        
+    if (debugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
+    if (debugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+    
+    switch (aProperty.type) {
+        case "number" : 
+            /*jsl:fallthru*/
+        case "toggle" :
+            aProperty.value = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        case "string" :
+            aProperty.value = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        case "slotArray" :
+            aProperty.value = this.patcher.getnamed(lPatcherObjectNameString).getvalueof();
+            break;
+        default :
+            post(aProperty.name + ".type:", aProperty.type , "\n");
+            break;
     }
+    
+    if (debugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue.toString(), "\n"); }
+    
+    if (aProperty.type == "slotArray") {
+        lLength = aProperty.value.length;
+        for (iCounter = 0; iCounter < lLength; iCounter++) {
+            sendToHud({
+                key : aProperty.name,
+                value : aProperty.value[iCounter],
+                format : HudFormat.slotSet,
+                slot : iCounter
+            });
+        }
+    }
+    else {
+        sendToHud({
+            key : aProperty.name,
+            value : aProperty.value,
+            format : HudFormat.set
+        });
+    }
+   
+    if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
 
 function sendNoteMessage(aVoice, aPitch, aVelocity) {
         
     if (aVoice != "root") {
-        if (parameter.split.value[aVoice] == parameter.channel.value[0]) {
+        if (parameter.split.value[aVoice] == parameter.channel.value) {
             outlet(0, aPitch, aVelocity);
         }
         
@@ -663,7 +711,7 @@ function sendToHud(aObject) {
         
     
     if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
-    if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
+    if (true) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
     
     switch (aFormat) {
         case HudFormat.set:
