@@ -566,7 +566,7 @@ function setParameterProperty(aObject) {
             format : HudFormat.slotSet,
             slot : aSlot
         });
-        updateVoiceOnMonome(aSlot);
+        updateVoiceDisplay(aSlot);
     }
      else {
         aProperty.value = lValue;
