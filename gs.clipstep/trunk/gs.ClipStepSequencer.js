@@ -2497,7 +2497,7 @@ function setParameterProperty(aObject) {
     // Save it.
     if (aProperty.saveInPattr) {
         patcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
-        this.patcher.getnamed(patcherObjectNameString).message(aProperty.value);
+        this.patcher.getnamed(patcherObjectNameString).setvalueof(aProperty.value);
     }
 }
 
@@ -2521,16 +2521,13 @@ function toggleParameterProperty(aPropertyString) {
 }
 
 function grabPattrValue(aProperty) {
-    if (debugItem.functionName) {
-        post("                     --grabPattrValue--\n");
-    }
+    if (debugItem.functionName) { post("                     --grabPattrValue--\n"); }
+    
+    var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr",
+        lValue;
+        
     if (debugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
-    
-    var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
-    
     if (debugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
-    
-    var lValue;
     
     switch (aProperty.type) {
         case "number" : 
@@ -2540,6 +2537,12 @@ function grabPattrValue(aProperty) {
             break;
         case "string" :
             lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        case "slotArray" :
+            lValue = Array(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        default :
+            post(aProperty.name + ".type:", aProperty.type , "\n");
             break;
     }
     
@@ -2551,7 +2554,7 @@ function grabPattrValue(aProperty) {
         value : aProperty.value,
         format : HudFormat.set
     });
-    
+        
     if (debugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
 }
 
