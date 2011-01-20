@@ -344,14 +344,14 @@ var LengthOption = {
 };
 
 var DisplayWidthOption = {
-    _0 : 1,
-    _1 : 2,
-    _2 : 4,
-    _3 : 8,
-    _4 : 16,
-    _5 : 32,
-    _6 : 64,
-    _7 : 128
+    _0 : 0.5,
+    _1 : 1,
+    _2 : 2,
+    _3 : 4,
+    _4 : 8,
+    _5 : 16,
+    _6 : 32,
+    _7 : 64
 };
 
 //                                  ---===Monome Setup===---
@@ -496,9 +496,9 @@ Array.prototype.noteToLiveAPI = function () {
     
     // Typecasting? In javascript? Yessert!
     var timeNumber = Number(this[2]);
-    this[2] = timeNumber.toFixed(3);
+    this[2] = timeNumber.toFixed(12);
     var durationNumber = Number(this[3]);
-    this[3] = durationNumber.toFixed(3);
+    this[3] = durationNumber.toFixed(12);
     return this;
 };
 
@@ -1187,7 +1187,6 @@ function addNote(aPitch, aTime, aVelocity) {
     editClip.call("notes", 1); // CALL
 
     editClip.call(tempNoteArray.noteToLiveAPI()); // CALL
-
     
     if (debugItem.startValue) {
         post(tempNoteArray, "\n");
@@ -1515,7 +1514,7 @@ function displayNote(aNoteToDisplay, aIndex, aArray) {
     // 1 = a quarter note. 4 equals a measure.
     
     // find ratio to monome and such
-    var absoluteTime = aNoteToDisplay[2];
+    var absoluteTime = aNoteToDisplay[2].toFixed(12);
     var colOnMonome = absoluteTime * displayRatioToMonome() - colOffset();
     
     // Formatted Notes for Monome
@@ -2494,10 +2493,9 @@ function changeParameterProperty(aPropertyString, aAmount) {
 
 function toggleParameterProperty(aPropertyString) {
     if (parameter[aPropertyString].type == "toggle") {
-        var lValue = Number(!Boolean(parameter[aPropertyString].value));
         setParameterProperty({
             key : aPropertyString,
-            value : lValue
+            value : Number(!Boolean(parameter[aPropertyString].value))
         });
     }
     else { post(aPropertyString, "is not a toggle parameter\n");}
