@@ -707,7 +707,7 @@ function sendToHud(aObject) {
         
     
     if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
-    if (true) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
+    if (debugItem.arguments) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
     
     switch (aFormat) {
         case HudFormat.set:
@@ -739,7 +739,7 @@ function sendToHud(aObject) {
 
 var gTemplateChord = {
     ionian : {          //  r   9   3   s4  5   13  7
-        voiceOn :        [   1,  1,  1,  0,  1,  1,  1,  0],
+        voiceOn :       [   1,  1,  1,  0,  1,  1,  1,  0],
         degree :        [   1,  2,  3,  4,  5,  6,  7,  8],
         accidental :    [   0,  0,  0,  0,  0,  0,  0,  0],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
@@ -747,7 +747,7 @@ var gTemplateChord = {
         opinion :       [   0,  0,  0,  0,  0,  0,  0,  0]
     },
     dorian : {          //  r   9   b3  11  5   s6  b7
-        voiceOn :        [   1,  1,  1,  1,  1,  0,  1,  0],
+        voiceOn :       [   1,  1,  1,  1,  1,  0,  1,  0],
         degree :        [   1,  2,  3,  4,  5,  6,  7,  8],
         accidental :    [   0,  0,  -1, 0,  0,  0,  -1, 0],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
@@ -755,7 +755,7 @@ var gTemplateChord = {
         opinion :       [   0,  0,  0,  0,  0,  0,  0,  0]
     },
     phrygian : {        //  r   sb2 b3  11  5   sb6 b7
-        voiceOn :        [   1,  0,  1,  1,  1,  0,  1,  0],
+        voiceOn :       [   1,  0,  1,  1,  1,  0,  1,  0],
         degree :        [   1,  2,  3,  4,  5,  6,  7,  8],
         accidental :    [   0,  -1, -1, 0,  0,  -1, -1, 0],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
@@ -763,7 +763,7 @@ var gTemplateChord = {
         opinion :       [   0,  0,  0,  0,  0,  0,  0,  0]
     },
     lydian : {          //  r   9   3   #11 5   13  7   (b7)
-        voiceOn :        [   1,  1,  1,  1,  1,  1,  1,  0],
+        voiceOn :       [   1,  1,  1,  1,  1,  1,  1,  0],
         degree :        [   1,  2,  3,  4,  5,  6,  7,  7],
         accidental :    [   0,  0,  0,  1,  0,  0,  0,  -1],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
@@ -772,7 +772,7 @@ var gTemplateChord = {
     },
 
     mixolydian : {      //  r   (b9)    9   3   s4  5   13  b7
-        voiceOn :        [   1,  0,      1,  1,  0,  1,  1,  1],
+        voiceOn :       [   1,  0,      1,  1,  0,  1,  1,  1],
         degree :        [   1,  2,      2,  3,  4,  5,  6,  7],
         accidental :    [   0,  -1,     1,  0,  0,  0,  0,  -1],
         split :         [   0,  0,      0,  0,  0,  0,  0,  0],
@@ -781,7 +781,7 @@ var gTemplateChord = {
     },
 
     aeolian : {         //  r   9   b3  11  5   sb6 b7
-        voiceOn :        [   1,  1,  1,  1,  1,  0,  1,  0],
+        voiceOn :       [   1,  1,  1,  1,  1,  0,  1,  0],
         degree :        [   1,  2,  3,  4,  5,  6,  7,  8],
         accidental :    [   0,  0,  -1, 0,  0,  -1, -1, 0],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
@@ -792,7 +792,7 @@ var gTemplateChord = {
     locrian : {         //  r   sb2 b3  11  b5  b13 b7
         degree :        [   1,  2,  3,  4,  5,  6,  7,  8],
         accidental :    [   0,  -1, -1, 0,  -1, -1, -1, 0],
-        voiceOn :        [   1,  0,  1,  1,  1,  0,  1,  0],
+        voiceOn :       [   1,  0,  1,  1,  1,  0,  1,  0],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
         octave :        [   1,  0,  1,  2,  1,  2,  1,  1],
         opinion :       [   0,  0,  0,  0,  0,  0,  0,  0]
@@ -801,7 +801,7 @@ var gTemplateChord = {
     symDiminished : {   //  r   9   b3  11  b5  b13 bb7 T7
         degree :        [   1,  2,  3,  4,  5,  6,  7,  7],
         accidental :    [   0,  0,  -1, 0,  -1, -1, -2, 0],
-        voiceOn :        [   1,  1,  1,  1,  1,  1,  1,  0],
+        voiceOn :       [   1,  1,  1,  1,  1,  1,  1,  0],
         split :         [   0,  0,  0,  0,  0,  0,  0,  0],
         octave :        [   1,  2,  1,  2,  1,  2,  1,  2],
         opinion :       [   0,  0,  0,  0,  0,  0,  0,  0]
