@@ -177,7 +177,9 @@ var parameter = {
         type : "number",
         value : 0,
         minValue : 0,
-        maxValue : 2048,
+        maxValue : function() {
+            return (mWatchersCreated) ? (mWatchSet.getcount("scenes") - 1) : 2048;
+        },
         saveInPattr : true
     },
     currentScale : {
@@ -225,7 +227,9 @@ var parameter = {
         type : "number",
         value : 0,
         minValue : 0,
-        maxValue : 2048,
+        maxValue : function() {
+            return (mWatchersCreated) ? (displayNoteList.length - monomeLastRow()) : 2048;
+        },
         saveInPattr : true
     },
     functionMode : {
@@ -281,7 +285,9 @@ var parameter = {
         type : "number",
         value : 0,
         minValue : 0,
-        maxValue : 2048,
+        maxValue : function() {
+            return (mWatchersCreated) ? (trackArray.length - 1) : 2048;
+        },
         saveInPattr : true
     },
     rootNote : {
@@ -297,7 +303,9 @@ var parameter = {
         type : "number",
         value : 0,
         minValue : 0,
-        maxValue : 2048,
+        maxValue : function() {
+            return (mWatchersCreated) ? (displayNoteList.length - monomeLastRow()) : 2048;
+        },
         saveInPattr : true
     },
     timeOffset : {
@@ -305,7 +313,9 @@ var parameter = {
         type : "number",
         value : 0,
         minValue : 0,
-        maxValue : 2048,
+        maxValue : function() { 
+            return (mWatchersCreated) ? (editClip.get("length") - parameter.displayWidth.value) : 2048;
+        },
         saveInPattr : true
     },
     patchString : "GsCss"
@@ -400,12 +410,6 @@ var watchClipIsPlaying = false;
 var watchClipPlayhead = false;
 var indexSet = false;
 var functionToggle = [ false, false];
-
-
-function getLastTrackIndex() {
-    return (mWatchersCreated) ? (trackArray.length - 1) : 2048;
-}
-
 
 function bang() {
     if (debugItem.functionName) { post("                     ---bang-\n"); }
@@ -534,14 +538,12 @@ function setTrackIndex(aNewIndexNumber) {
 
 function changeTrackIndex(aAmount) {
     if (debugItem.getSetName) { post("                               --changeTrackIndex--\n"); }
-    
-    var lValue = parameter.trackIndex.value + aAmount;
-    if (lValue >= trackArray.length) { lValue = trackArray.length - 1; }
-    
+        
     setParameterProperty({
         key : "trackIndex",
-        value : lValue
+        value : parameter.trackIndex.value + aAmount
     });
+    
     focusOnClip();
 }
 
@@ -625,26 +627,21 @@ function getRowOffset() {
     return (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
 }
 function changeRowOffset(aAmount) {
-    if (debugItem.getSetName) { post("                               --changeRowOffset--\n"); }
+    if (debugItem.functionName) { post("                               --changeRowOffset--\n"); }
     
     if(!aAmount) { aAmount = 1; }
-    var offsetHolder = (parameter.folding.value) ? parameter.foldingRowOffset.value : parameter.rowOffset.value;
+            
+    if (parameter.folding.value) {
+        setParameterProperty({
+            key : "foldingRowOffset",
+            value : (parameter.foldingRowOffset.value + aAmount)
+        }); }
+    else {
+        setParameterProperty({
+            key : "rowOffset",
+            value : (parameter.rowOffset.value + aAmount)
+        }); }
     
-    if (debugItem.getterSetterStartValue) { post("offsetHolder before changeRowOffset:", offsetHolder, "\n"); }
-    
-    offsetHolder += aAmount;
-    
-    if (offsetHolder + monomeLastRow() >= displayNoteList.length) {
-        offsetHolder = displayNoteList.length - monomeLastRow();
-    }
-    if (offsetHolder < 0) {
-        offsetHolder = 0;
-    }
-    
-    if (parameter.folding.value) { parameter.foldingRowOffset.value = offsetHolder; }
-    else { parameter.rowOffset.value = offsetHolder; }
-    
-    if (debugItem.getterSetterEndValue) { post("offsetHolder after downInClip:", offsetHolder, "\n"); }
     updateNoteDisplay();
 }
 
@@ -668,14 +665,9 @@ function setClipSceneFromPatcher(aNewSceneNumber) {
 function changeClipScene(aAmount) {
     if (debugItem.getSetName) { post("                               --changeClipScene--\n"); }
     
-    var lValue = parameter.clipScene.value + aAmount;
-    
-    if (lValue >= mWatchSet.getcount("scenes")) {
-        lValue = mWatchSet.getcount("scenes") - 1; 
-    }
     setParameterProperty({
         key : "clipScene",
-        value : lValue
+        value : parameter.clipScene.value + aAmount
     });
     
     focusOnClip();
@@ -704,20 +696,13 @@ function setTimeOffset(aNewOffset){
 
 function changeTimeOffset(aAmount) {
     if (debugItem.getSetName) { post("                               --changeTimeOffset-\n"); }
-    
-    
-    var lValue;
-    
+        
     if(!aAmount) { aAmount = parameter.displayWidth.value; }
     else { aAmount *= parameter.displayWidth.value; }
-    
-    lValue = parameter.timeOffset.value + aAmount;
-    
-    if (parameter.timeOffset.value >= editClip.get("length")) { parameter.timeOffset.value = editClip.get("length") - parameter.displayWidth.value; }
 
     setParameterProperty({
         key : "timeOffset",
-        value : lValue
+        value : (parameter.timeOffset.value + aAmount)
     });
 }
 
@@ -2030,21 +2015,17 @@ function liveSetArrows(aWhichArrow) {
     switch (aWhichArrow) {
         
         case FunctionButton.dynamic_0:
-            if (debugItem.functionEnd) { post("upInSet\n"); }
-            upInSet();
+            leftInSet();
             break;
             
         case FunctionButton.dynamic_1:
-            if (debugItem.functionEnd) { post("downInSet\n"); }
-            downInSet();
+            rightInSet();
             break;
         case FunctionButton.dynamic_2:
-            if (debugItem.functionEnd) { post("leftInSet\n"); }
-            leftInSet();
+            upInSet();
             break;
         case FunctionButton.dynamic_3:
-            if (debugItem.functionEnd) { post("rightInSet\n"); }
-            rightInSet();
+            downInSet();
             break;
         default:
             post("error in liveSetArrows. whichArrow:", aWhichArrow, "\n");
@@ -2459,18 +2440,20 @@ function setInSuite(aNewValue) {
 }
 
 function setParameterProperty(aObject) {
-
+post("aObject.key:", aObject.key, "\n");
     var aProperty = parameter[aObject.key],
         aValue = aObject.value,
         aSlot = (aObject.slot === undefined) ? null : aObject.slot,
         lPatcherObjectNameString,
-        lValue;
+        lValue,
+        lMinimum = (aProperty.minValue instanceof Function) ? aProperty.minValue() : aProperty.minValue,
+        lMaximum = (aProperty.maxValue instanceof Function) ? aProperty.maxValue() : aProperty.maxValue;
     
     //check validity of aValue
     if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
-        if ((aValue >= aProperty.minValue) && (aValue <= aProperty.maxValue)) { lValue = aValue; }
-        else if (aValue < aProperty.minValue) { lValue = aProperty.minValue; }
-        else if (aValue > aProperty.maxValue) { lValue = aProperty.maxValue; }
+        if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
+        else if (aValue < lMinimum) { lValue = lMinimum; }
+        else if (aValue > lMaximum) { lValue = lMaximum; }
         else { post("something has gane awry in setParameterProperty!\n"); }
     }
     else { lValue = aValue; }
@@ -2502,10 +2485,10 @@ function setParameterProperty(aObject) {
 }
 
 function changeParameterProperty(aPropertyString, aAmount) {
-    var lValue = parameter[aPropertyString].value + aAmount;
+
     setParameterProperty({
         key : aPropertyString,
-        value : lValue
+        value : parameter[aPropertyString].value + aAmount
     });
 }
 
