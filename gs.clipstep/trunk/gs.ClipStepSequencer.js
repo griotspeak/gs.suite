@@ -1971,19 +1971,19 @@ function clipArrows(aWhichArrow) {
     switch (aWhichArrow) {
         
         case FunctionButton.dynamic_0:
-            upInClip();
+            leftInClip();
             break;
             
         case FunctionButton.dynamic_1:
-            downInClip();
+            rightInClip();
             break;
         
         case FunctionButton.dynamic_2:
-            leftInClip();
+            upInClip();
             break;
         
         case FunctionButton.dynamic_3:
-            rightInClip();
+            downInClip();
             break;
         default:
             post("error in clipArrows. whichArrow:", aWhichArrow, "\n");
