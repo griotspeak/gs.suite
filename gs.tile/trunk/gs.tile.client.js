@@ -827,4 +827,17 @@ function sendToHud(aKey, aValue, aFormat) {
     }
 }
 
+function store(aNumber) {
+    this.getnamed("gsTileClientPattrstorage").message("store", aNumber);
+}
+
+function recall(aNumber) {
+    this.getnamed("gsTileClientPattrstorage").message(aNumber);
+    grabAllPattrValues();
+    updateAppWindow();
+    refreshWindow();
+}
+
+
+
 initialize();
