@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 var autowatch = 1;
 
 var inlets = 1;
-var outlets = 3;
+var outlets = 2;
 
 var mDebugLevel;
 
@@ -37,25 +37,43 @@ var post;
 var outlet;
 var Monome = [];
 
+var debugItem = {
+    arguments : false,
+    endValue : false,
+    frequentItem : false,
+    frequentList: false,
+    functionName : false,
+    list : false,
+    localValue : false,
+    startValue : false,
+    frequentName : false,
+    loading : false
+};
 
 var parameter = {
     monomeWidth : {
         name : "monomeWidth",
+        type : "number",
         value : 0,
         minValue : 2,
-        maxValue : 2048
+        maxValue : 2048,
+        saveInPattr : true
     },
     monomeHeight : {
         name : "monomeHeight",
+        type : "number",
         value : 0,
         minValue : 2,
-        maxValue : 2048
+        maxValue : 2048,
+        saveInPattr : true
     },
     channel : {
         name : "channel",
+        type : "number",
         value : 0,
         minValue : 0,
-        maxValue : 127
+        maxValue : 127,
+        saveInPattr : true
     },
     patchString : "GsProgramChange"
 };
@@ -63,12 +81,28 @@ var parameter = {
 function initialize() {
     setDebugLevel(0);
     grabAllPattrValues();
-    sendToHud("monomeWidth", parameter.monomeWidth.value, 0);
-    sendToHud("monomeHeight", parameter.monomeHeight.value, 0);
-    sendToHud("channel", parameter.channel.value, 0);
+    sendToHud({
+        key : "monomeWidth",
+        value : parameter.monomeWidth.value,
+        format : HudFormat.set
+    });
+    sendToHud({
+        key : "monomeHeight",
+        value : parameter.monomeHeight.value,
+        format : HudFormat.set
+    });
+    sendToHud({
+        key : "channel",
+        value : parameter.channel.value,
+        format : HudFormat.set
+    });
     
     buildMonome();
 }
+
+var HudFormat = {
+    set : 0
+};
 
 function setDebugLevel(level) {
     if (level > 0) { post("                           --setDebugLevel = ", level, "--\n"); }
@@ -105,32 +139,31 @@ function setDebugLevel(level) {
 
 
 //                                  ---===Communicate with Patcher===---
-function sendToHud(key, value, format) {
-    if (mDebugLevel[1]) { post("                               --sendToHud - " + key + " --\n"); }
-    if (mDebugLevel[5]) { post("key:", key, "value:", value, "\n"); }
+function sendToHud(aObject) {
     
-    switch (format) {
-        case 0:
-            outlet(1, key, "set", value);
+    var lOutlet = 1,
+        aKey = aObject.key,
+        aValue = aObject.value,
+        aFormat = (aObject.format === undefined) ? 0 : aObject.format,
+        aSlot = (aObject.slot === undefined) ? null : aObject.slot;
+        
+    
+    if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
+    
+    switch (aFormat) {
+        case HudFormat.set:
+            outlet(lOutlet, aKey, "set", aValue);
             break;
-        case 1:
-            outlet(1, key, value);
+        default: 
+            post("error in sendToHud. aFormat:", aFormat, "\n");
             break;
-        case 2:
-            outlet(1, key, "setsymbol", value);
-            break;
-        case 3:
-            outlet(1, key, "set", value, (value == 1) ? "measure" : "measures");
-            break;
-    	default: {
-			post("error in sendToHud. format:", format, "\n");
-			break;
-		}
     }
 }
 
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
+    var lNumber;
     if (mDebugLevel[1]) { post("                               --press--\n"); }
     
     if (mDebugLevel[2]) {
@@ -138,6 +171,8 @@ function press(aCol, aRow, aPress) {
     }
     
     if (aPress == 1) {
+        lNumber = aRow * parameter.monomeWidth.value + aCol;
+        sendMessageNumber(lNumber);
         Monome[aCol][aRow].push();
         Monome[aCol][aRow].ledOn();
     }
@@ -145,28 +180,35 @@ function press(aCol, aRow, aPress) {
         Monome[aCol][aRow].release();
         Monome[aCol][aRow].ledOff();
     }
-    
-    var lNumber = aRow * parameter.monomeWidth.value + aCol;
 }
 
-function sendMessageNumber(aNumber, aPress) {
+function sendMessageNumber(aNumber) {
     
-    outlet(2, "channelProgramChange", parameter.channel.value, aNumber, aPress*127);
+    messnamed("gs.channel", "channelProgramChange", parameter.channel.value, aNumber);
 
 }
 
 function setChannel(aChannel) {
-    setParameterProperty("channel", aChannel);
+    setParameterProperty({
+        key : "channel",
+        value : aChannel
+    });
 }
 
 
 //                                  ---===Monome Device Methods===---
 function setMonomeWidth( aWidth) {
-    setParameterProperty("monomeWidth", aWidth);
+    setParameterProperty({
+        key : "monomeWidth",
+        value : aWidth
+    });
     buildMonome();
 }
 function setMonomeHeight( aHeight) {
-    setParameterProperty("monomeHeight", aHeight);
+    setParameterProperty({
+        key : "monomeHeight",
+        value : aHeight
+    });
     buildMonome();
 }
 function SingleCell(aCol, aRow, aOutlet) {
@@ -340,32 +382,63 @@ function refreshMonome() {
     }
 }
 
-function setParameterProperty(aPropertyString, aValue) {
+function setParameterProperty(aObject) {
 
-    var lValue;
-
-    if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
-    else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
-    else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
-    else { post("something has gane awry in setParameterProperty!\n"); }
-
-    parameter[aPropertyString].value = lValue;
-
-    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, 0);
+    var aProperty = parameter[aObject.key],
+        aValue = aObject.value,
+        aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+        lPatcherObjectNameString,
+        lValue;
     
-    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Object";
-    this.patcher.getnamed(patcherObjectNameString).message("set", parameter[aPropertyString].value);
+    //check validity of aValue
+    if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
+        if ((aValue >= aProperty.minValue) && (aValue <= aProperty.maxValue)) { lValue = aValue; }
+        else if (aValue < aProperty.minValue) { lValue = aProperty.minValue; }
+        else if (aValue > aProperty.maxValue) { lValue = aProperty.maxValue; }
+        else { post("something has gane awry in setParameterProperty!\n"); }
+    }
+    else { lValue = aValue; }
+
+    //update HUD
+    if (aProperty.type == "slotArray") {
+        aProperty.value[aSlot] = lValue;
+        sendToHud({
+            key : aProperty.name,
+            value : aProperty.value[aSlot],
+            format : HudFormat.slotSet,
+            slot : aSlot
+        });
+    }
+     else {
+        aProperty.value = lValue;
+        sendToHud({
+            key : aProperty.name,
+            value : aProperty.value,
+            format : HudFormat.set
+        });
+    }
     
+    // Save it.
+    if (aProperty.saveInPattr) {
+        patcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
+        this.patcher.getnamed(patcherObjectNameString).message(aProperty.value);
+    }
 }
 
 function changeParameterProperty(aPropertyString, aAmount) {
     var lValue = parameter[aPropertyString].value + aAmount;
-    setParameterProperty(aPropertyString, lValue);    
+    setParameterProperty({
+        key : aPropertyString,
+        value : lValue
+    });    
 }
 
 function toggleParameterProperty(aPropertyString) {
     var lValue = Number(!Boolean(parameter[aPropertyString].value));
-    setParameterProperty(aPropertyString, lValue);
+    setParameterProperty({
+        key : aPropertyString,
+        value : lValue
+    });
 }
 
 function grabAllPattrValues() {
