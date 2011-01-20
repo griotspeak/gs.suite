@@ -70,6 +70,19 @@ var parameter = {
     patchString : "GsMidiControl"
 };
 
+var debugItem = {
+    arguments : false,
+    endValue : false,
+    frequentItem : false,
+    frequentList: false,
+    functionName : false,
+    list : false,
+    localValue : false,
+    startValue : false,
+    frequentName : false,
+    loading : false
+};
+
 var eBankType = {
     programChange : 0,
     note : 1
@@ -198,11 +211,9 @@ function sendMessageNumber(aNumber, aPress) {
     if (mDebugLevel[1]) { post("                     --sendMessageNumber--\n"); }
 
     if (getBankType(parameter.messageBank.value) == eBankType.programChange) {
-        post("parameter.currentClient.value:", parameter.currentClient.value, "\n");
         if (aPress == 1) {messnamed("gs.channel", "channelProgramChange", parameter.currentClient.value, aNumber); }
     }
     else if (getBankType(parameter.messageBank.value) == eBankType.note) {
-        post("note!!! parameter.currentClient.value:", parameter.currentClient.value, "\n");
         messnamed("gs.channel", "channelNote",parameter.currentClient.value, aNumber, aPress*127);
     }
     else {
