@@ -356,7 +356,7 @@ var DisplayWidthOption = {
 
 //                                  ---===Monome Setup===---
 
-var Monome = [];
+var gMonome = [];
 
 var FunctionButton = {
     dynamic_0: 0,
@@ -426,7 +426,7 @@ function initialize() {
     if (debugItem.functionName) { post("                     ---initialize-\n"); }
     if (debugItem.list) { postPattrs("start"); }
     grabAllPattrValues();
-    buildMonome();
+    gMonome = new Monome(parameter.monomeWidth.value, parameter.monomeHeight.value);
     
     mWatchSet = new LiveAPI(this.patcher, null, "live_set");
     mCountAllTracks = new LiveAPI(this.patcher, null, "live_set");
@@ -852,14 +852,14 @@ function updatePlayhead(aTimeNumber) {
         var playheadTimeInt = Math.floor((aTimeNumber[1] - parameter.timeOffset.value) * displayRatioToMonome());
 
         if((playheadTimeInt == -1) || (playheadTimeInt == parameter.monomeWidth.value)) {
-            Monome[monomeLastCol()][0].tempOff();            
+            gMonome[monomeLastCol()][0].tempOff();            
         }
         else if(playheadTimeInt == 0) {                      
-            Monome[playheadTimeInt][0].blink();
+            gMonome[playheadTimeInt][0].blink();
         }
         else if((0 < playheadTimeInt) && (playheadTimeInt < parameter.monomeWidth.value)) {
-            Monome[playheadTimeInt][0].blink();
-            Monome[playheadTimeInt -1][0].tempOff();
+            gMonome[playheadTimeInt][0].blink();
+            gMonome[playheadTimeInt -1][0].tempOff();
         }
 
         if (playheadTimeInt % 4 == 0) {
@@ -1316,18 +1316,18 @@ function updateFunctionModeLeds() {
             
         case FunctionMode.lengthMode:
             //      10
-            Monome[FunctionButton.bit0][monomeLastRow()].ledOn();
+            gMonome[FunctionButton.bit0][monomeLastRow()].ledOn();
             break;
             
         case FunctionMode.velocityMode:
             //      01
-            Monome[FunctionButton.bit1][monomeLastRow()].ledOn();
+            gMonome[FunctionButton.bit1][monomeLastRow()].ledOn();
             break;
             
         case FunctionMode.widthMode:
             //      11
-            Monome[FunctionButton.bit0][monomeLastRow()].ledOn();
-            Monome[FunctionButton.bit1][monomeLastRow()].ledOn();
+            gMonome[FunctionButton.bit0][monomeLastRow()].ledOn();
+            gMonome[FunctionButton.bit1][monomeLastRow()].ledOn();
             break;
         default :
             post("error in updateFunctionModeLeds functionMode:", parameter.functionMode.value, "\n");
@@ -1335,9 +1335,9 @@ function updateFunctionModeLeds() {
     }
 
     if (shiftIsHeld()) {
-        Monome[FunctionButton.shift][monomeLastRow()].ledOn();
+        gMonome[FunctionButton.shift][monomeLastRow()].ledOn();
     }
-    if (parameter.folding.value){ Monome[FunctionButton.fold][monomeLastRow()].ledOn(); }
+    if (parameter.folding.value){ gMonome[FunctionButton.fold][monomeLastRow()].ledOn(); }
 }
 
 function updateMultiPurposeLeds() {
@@ -1348,10 +1348,10 @@ function updateMultiPurposeLeds() {
         case FunctionMode.moveMode:
             // Arrows
             if (shiftIsHeld()) {
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
             }
             break;
         case FunctionMode.widthMode:
@@ -1388,35 +1388,35 @@ function displayDisplayWidthLeds() {
     if ((parameter.functionMode.value == FunctionMode.widthMode) && (!extendedWidthOptions)) {
         switch(parameter.displayWidth.value) {
             case DisplayWidthOption._0:
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
             case DisplayWidthOption._1:
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
                 break;
             case DisplayWidthOption._2:
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
                 break;
             case DisplayWidthOption._3:
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
                 break;
             default:
                 break;
         }
     }
     else if ((parameter.functionMode.value == FunctionMode.widthMode) && (extendedWidthOptions)) {
-        Monome[FunctionButton.shift][monomeLastRow()].ledOn();
+        gMonome[FunctionButton.shift][monomeLastRow()].ledOn();
         switch(parameter.displayWidth.value) {
             case DisplayWidthOption._4:
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
             case DisplayWidthOption._5:
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
                 break;
             case DisplayWidthOption._6:
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
                 break;
             case DisplayWidthOption._7:
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
                 break;
             default:
                 break;
@@ -1430,35 +1430,35 @@ function displayLengthLeds() {
     if ((parameter.functionMode.value == FunctionMode.lengthMode) && (!extendedLengthOptions)) {
         switch(parameter.newNoteLength.value) {
             case LengthOption._0:
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
             case LengthOption._1:
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
                 break;
             case LengthOption._2:
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
                 break;
             case LengthOption._3:
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
                 break;
             default:
                 break;
         }
     }
     else if ((parameter.functionMode.value == FunctionMode.lengthMode) && (extendedLengthOptions)) {
-        Monome[FunctionButton.shift][monomeLastRow()].ledOn();
+        gMonome[FunctionButton.shift][monomeLastRow()].ledOn();
         switch(parameter.newNoteLength.value) {
             case LengthOption._4:
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
             case LengthOption._5:
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
                 break;
             case LengthOption._6:
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
                 break;
             case LengthOption._7:
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
                 break;
             default:
                 break;
@@ -1472,35 +1472,35 @@ function displayVelocityLeds() {
     if ((parameter.functionMode.value == FunctionMode.velocityMode) && (!extendedVelocityOptions)) {
         switch(parameter.newNoteVelocity.value) {
             case VelocityOption._0:
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
             case VelocityOption._1:
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
                 break;
             case VelocityOption._2:
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
                 break;
             case VelocityOption._3:
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
                 break;
             default:
                 break;
         }
     }
     else if ((parameter.functionMode.value == FunctionMode.velocityMode) && (extendedVelocityOptions)) {
-        Monome[FunctionButton.shift][monomeLastRow()].ledOn();
+        gMonome[FunctionButton.shift][monomeLastRow()].ledOn();
         switch(parameter.newNoteVelocity.value) {
             case VelocityOption._4:
-                Monome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
             case VelocityOption._5:
-                Monome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_1][monomeLastRow()].ledOn();
                 break;
             case VelocityOption._6:
-                Monome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_2][monomeLastRow()].ledOn();
                 break;
             case VelocityOption._7:
-                Monome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
+                gMonome[FunctionButton.dynamic_3][monomeLastRow()].ledOn();
                 break;
             default:
                 break;
@@ -1527,7 +1527,7 @@ function displayNote(aNoteToDisplay, aIndex, aArray) {
     }
     
     if (( timeIsDisplayed(absoluteTime)) && (rowIsDisplayed(rowIndex)) && (colOnMonome % 1 == 0 )) {
-        Monome[colOnMonome][rowOnMonome].ledOn();
+        gMonome[colOnMonome][rowOnMonome].ledOn();
         
         // Debug Statements
         if (debugItem.endValue) {
@@ -1546,14 +1546,14 @@ function clearFunctionModeLeds() {
     
     //TODO Use Min and Max
     for (var o = 4; o <= 7; o++) {
-        Monome[o][monomeLastRow()].ledOff();
+        gMonome[o][monomeLastRow()].ledOff();
     }
 }
 
 function clearMultiPurposeLeds() {
     if (debugItem.functionName) { post("                               --clearMultiPurposeLeds--\n"); }
     for (var p = 0; p < 4; p++) {
-        Monome[p][monomeLastRow()].ledOff();
+        gMonome[p][monomeLastRow()].ledOff();
     }
 }
 
@@ -1561,7 +1561,7 @@ function clearNoteDisplay() {
     if (debugItem.functionName) { post("                               --clearNoteDisplay--\n"); }
     for (var cCol = 0; cCol < parameter.monomeWidth.value; cCol ++) {
         for (var cRow = 0; cRow < monomeLastRow(); cRow++) {
-            Monome[cCol][cRow].ledOff();
+            gMonome[cCol][cRow].ledOff();
         }
     }
     if (debugItem.functionEnd) { post("           /clearNoteDisplay\n"); }
@@ -1595,8 +1595,8 @@ function press(aCol, aRow, aPress) {
         post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n");
     }
     
-    if (aPress == 1) { Monome[aCol][aRow].push(); }
-    else if (aPress == 0) { Monome[aCol][aRow].release(); }
+    if (aPress == 1) { gMonome[aCol][aRow].push(); }
+    else if (aPress == 0) { gMonome[aCol][aRow].release(); }
     
     
     if (aRow < monomeLastRow()) {
@@ -1728,7 +1728,7 @@ function press(aCol, aRow, aPress) {
 function shiftIsHeld() {
     if (debugItem.functionName) { post("                     --shiftIsHeld--\n"); }
 
-    if (Monome[FunctionButton.shift][monomeLastRow()].isHeld == 1) {
+    if (gMonome[FunctionButton.shift][monomeLastRow()].isHeld() == 1) {
         return true;
     }
     else { return false; }
@@ -2136,162 +2136,173 @@ function setMonomeHeight(aHeight) {
     buildMonome();
     updateMonome();
 }
-function SingleCell(aCol, aRow, aOutlet) {
-    this.outlet = aOutlet;
 
-    this.col = aCol;
-    this.row = aRow;
-    
-    // local variables
-    this.actualState = 0;
-    this.tempState =  0;
-    this.isHeld = 0;
-
-    this.checkHeld = function() {
-        return this.isHeld;
-    };
-
-    this.push = function() {
-        this.isHeld = 1;
-        return this.isHeld;
-    };
-
-    this.release = function() {
-        this.isHeld = 0;
-        return this.isHeld;
-    };
-
-    this.ledOn = function() {
-        this.actualState = 1;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-
-    this.ledOff = function() {
-        this.actualState = 0;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-
-    this.checkActual = function() {
-        outlet(this.outlet, this.col, this.row, this.actualState);
-        this.tempState = 0;
-    };
-
-    this.blink = function() {
-        this.tempState = (this.tempState == 1) ? 0:1;
-        outlet(this.outlet, this.col, this.row, this.tempState);
-    };
-
-    this.blinkIfOff = function() {
-        if (this.actualState == 0) {
-            this.tempState = (this.tempState == 1) ? 0:1;
-            outlet(this.outlet, this.col, this.row, this.tempState);
-        }
-    };
-
-    this.tempOn = function() {
-        this.tempState = 1;
-        outlet(this.outlet, this.col, this.row, this.tempState);
-    };
-
-    this.tempOff = function() {
-        this.tempState = 0;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-}
-
-function buildMonome() {    
-    if (debugItem.functionName) { post("                               --buildMonome--\n"); }
-    if (debugItem.functionEnd) { post("buildMonome called\n"); }
+function Monome(aColumns, aRows) {
+    var iCol,
+        iRow
+        mMonome = this;
+        
+    if (debugItem.functionName) {
+        post("                               --buildMonome--\n");
+    }
     if (debugItem.startValue) {
-        post("monomeWidth:", parameter.monomeWidth.value, "\n");
-        post("monomeHeight:", parameter.monomeHeight.value, "\n");
+        post("monomeWidth:", aColumns, "\n");
+        post("monomeHeight:", aRows, "\n");
     }
+
+    function SingleCell(aCol, aRow, aOutlet) {
+        var outletNumber = aOutlet;
+
+        var col = aCol;
+        var row = aRow;
+
+        // local variables
+        var actualState = 0;
+        var tempState = 0;
+        var held = 0;
+        var mCell = this;
+
+        this.isHeld = function() {
+            return held;
+        };
+
+        this.push = function() {
+            held = 1;
+            return held;
+        };
+
+        this.release = function() {
+            held = 0;
+            return held;
+        };
+
+        this.ledOn = function() {
+            actualState = 1;
+            outlet(outletNumber, col, row, actualState);
+        };
+
+        this.ledOff = function() {
+            actualState = 0;
+            outlet(outletNumber, col, row, actualState);
+        };
+
+        this.checkActual = function() {
+            outlet(outletNumber, col, row, actualState);
+            tempState = 0;
+        };
+
+        this.blink = function() {
+            tempState = (tempState == 1) ? 0: 1;
+            outlet(outletNumber, col, row, tempState);
+        };
+
+        this.blinkIfOff = function() {
+            if (actualState == 0) {
+                tempState = (tempState == 1) ? 0: 1;
+                outlet(outletNumber, col, row, tempState);
+            }
+        };
+
+        this.tempOn = function() {
+            tempState = 1;
+            outlet(outletNumber, col, row, tempState);
+        };
+
+        this.tempOff = function() {
+            tempState = 0;
+            outlet(outletNumber, col, row, actualState);
+        };
+    }
+
+    this.column = function(aColumn, aMethodToInvoke) {
+        switch (aMethodToInvoke) {
+        case "ledOn":
+            var iRow;
+            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+                mMonome[aColumn][iRow].ledOn();
+            }
+            break;
+        case "ledOff":
+            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+                mMonome[aColumn][iRow].ledOff();
+            }
+            break;
+        case "tempOn":
+            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+                mMonome[aColumn][iRow].tempOn();
+            }
+            break;
+        case "tempOff":
+            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+                mMonome[aColumn][iRow].tempOff();
+            }
+            break;
+        case "blink":
+            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+                mMonome[aColumn][iRow].blink();
+            }
+            break;
+        case "blinkIfOff":
+            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+                mMonome[aColumn][iRow].blinkIfOff();
+            }
+            break;
+        default:
+            break;
+        }
+    };
+
+    this.row = function(aRow, aMethodToInvoke) {
+        switch (aMethodToInvoke) {
+        case "ledOn":
+            var iColumn;
+            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+                mMonome[iColumn][aRow].ledOn();
+            }
+            break;
+        case "ledOff":
+            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+                mMonome[iColumn][aRow].ledOff();
+            }
+            break;
+        case "tempOn":
+            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+                mMonome[iColumn][aRow].tempOn();
+            }
+            break;
+        case "tempOff":
+            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+                mMonome[iColumn][aRow].tempOff();
+            }
+            break;
+        case "blink":
+            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+                mMonome[iColumn][aRow].blink();
+            }
+            break;
+        case "blinkIfOff":
+            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+                mMonome[iColumn][aRow].blinkIfOff();
+            }
+            break;
+        default:
+            break;
+        }
+    };
     
-    for (var iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
-        Monome[iCol] = [];
-        for (var iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-            Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
+    for (iCol = 0; iCol < aColumns; iCol++) {
+        mMonome[iCol] = [];
+        for (iRow = 0; iRow < aRows; iRow++) {
+            mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0);
         }
-        if (debugItem.startValue) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
+        if (debugItem.startValue) {
+            post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
+        }
     }
-    if (debugItem.startValue) { post("Monome.length (width):", Monome.length, "\n"); }
+    if (debugItem.startValue) {
+        post("Monome.length (width):", mMonome.length, "\n");
+    }
 }
-
-Monome.row = function(aRow, aMethodToInvoke) {
-        switch (aMethodToInvoke) {
-            case "ledOn":
-                var iColumn;
-                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].ledOn();
-                }
-                break;
-            case "ledOff":
-                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].ledOff();
-                }
-                break;
-            case "tempOn":
-                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].tempOn();
-                }
-                break;
-            case "tempOff":
-                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].tempOff();
-                }
-                break;
-            case "blink":
-                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].blink();
-                }
-                break;
-            case "blinkIfOff":
-                for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].blinkIfOff();
-                }
-                break;
-            default :
-                break;
-        }
-};
-
-Monome.column = function(aColumn, aMethodToInvoke) {
-        switch (aMethodToInvoke) {
-            case "ledOn":
-                var iRow;
-                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].ledOn();
-                }
-                break;
-            case "ledOff":
-                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].ledOff();
-                }
-                break;
-            case "tempOn":
-                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].tempOn();
-                }
-                break;
-            case "tempOff":
-                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].tempOff();
-                }
-                break;
-            case "blink":
-                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].blink();
-                }
-                break;
-            case "blinkIfOff":
-                for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].blinkIfOff();
-                }
-                break;
-            default :
-                break;
-        }
-};
 
 function refreshMonome() {
     if (debugItem.functionName) { post("                               --refreshMonome--\n"); }
@@ -2299,7 +2310,7 @@ function refreshMonome() {
     var iRow;
     for (iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
         for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
-            Monome[iCol][iRow].checkActual();
+            gMonome[iCol][iRow].checkActual();
         }
     }
 }
