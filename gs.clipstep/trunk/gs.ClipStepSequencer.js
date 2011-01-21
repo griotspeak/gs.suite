@@ -1220,9 +1220,11 @@ function updateNoteDisplay() {
     if (gDebugItem.functionName) { post("                               --updateNoteDisplay--\n"); }
 
     if (gWatchersCreated) {
+        gMonome.beginUpdates();
         clearNoteDisplay();
         getClipNotes();
         gNoteArray.forEach(displayNote);
+        gMonome.endUpdates();
         updateHud();
     }
 }
@@ -2264,20 +2266,8 @@ function Monome(aColumns, aRows) {
             post("Monome.length (width):", mMonome.length, "\n");
         }
     }
-    
-    function flushTemp() {
-        var iCol,
-            iRow;
-            
-        for (iCol = 0; iCol < mColumns; iCol++) {
-            for (iRow = 0; iRow < mRows; iRow++) {
-                mMonome[iCol][iRow].tempState = 0;
-            }
-        }
-    }
 
     this.beginUpdates = function() {
-        flushTemp();
         updating = true;
     }
     this.endUpdates = function() {
@@ -2290,7 +2280,6 @@ function Monome(aColumns, aRows) {
                 gMonome[iCol][iRow].checkActual();
             }
         }
-        flushTemp();
     }
     
     for (iCol = 0; iCol < aColumns; iCol++) {
