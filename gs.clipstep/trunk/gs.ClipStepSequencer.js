@@ -242,8 +242,8 @@ var gWatchSet,
     gPlayheadVisible = false,
     gFollowingPlayingClip = false,
     gExtendedWidthOptions = false,
-    gExtendedcLengthOptions = false,
-    gExtendedcVelocityOptions = false,
+    gExtendedLengthOptions = false,
+    gExtendedVelocityOptions = false,
         
 //                                  ---===Variables===---
 
@@ -1434,7 +1434,7 @@ function displayDisplayWidthLeds() {
 function displayLengthLeds() {
     if (gDebugItem.functionName) { post("                               --displayLengthLeds--\n"); }
         
-    if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (!gExtendedcLengthOptions)) {
+    if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (!gExtendedLengthOptions)) {
         switch(gParameter.newNoteLength.value) {
             case cLengthOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1452,7 +1452,7 @@ function displayLengthLeds() {
                 break;
         }
     }
-    else if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (gExtendedcLengthOptions)) {
+    else if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (gExtendedLengthOptions)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameter.newNoteLength.value) {
             case cLengthOption._4:
@@ -1476,7 +1476,7 @@ function displayLengthLeds() {
 function displayVelocityLeds() {
     if (gDebugItem.functionName) { post("                               --displayVelocityLeds--\n"); }
         
-    if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (!gExtendedcVelocityOptions)) {
+    if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (!gExtendedVelocityOptions)) {
         switch(gParameter.newNoteVelocity.value) {
             case cVelocityOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1494,7 +1494,7 @@ function displayVelocityLeds() {
                 break;
         }
     }
-    else if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (gExtendedcVelocityOptions)) {
+    else if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (gExtendedVelocityOptions)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameter.newNoteVelocity.value) {
             case cVelocityOption._4:
@@ -1567,9 +1567,9 @@ function clearMultiPurposeLeds() {
 
 function clearNoteDisplay() {
     if (gDebugItem.functionName) { post("                               --clearNoteDisplay--\n"); }
-    for (var cCol = 0; cCol < gParameter.monomeWidth.value; cCol ++) {
-        for (var cRow = 0; cRow < monomeLastRow(); cRow++) {
-            gMonome[cCol][cRow].ledOff();
+    for (var iCol = 0; iCol < gParameter.monomeWidth.value; iCol ++) {
+        for (var iRow = 0; iRow < monomeLastRow(); iRow++) {
+            gMonome[iCol][iRow].ledOff();
         }
     }
     if (gDebugItem.functionEnd) { post("           /clearNoteDisplay\n"); }
@@ -1668,10 +1668,10 @@ function press(aCol, aRow, aPress) {
                         updateControlLeds();
                         break;
                     case cFunctionMode.lengthMode:
-                        showcLengthOptions(aPress);
+                        gExtendedLengthOptions(aPress);
                         break;
                     case cFunctionMode.velocityMode:
-                        showcVelocityOptions(aPress);
+                        showVelocityOptions(aPress);
                         break;               
                     case cFunctionMode.widthMode:
                         showWidthOptions(aPress);
@@ -1792,7 +1792,7 @@ function widthButtons(aButtonPressed) {
 function lengthButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("                               --lengthButtons--\n"); }
     
-    if (!gExtendedcLengthOptions) {
+    if (!gExtendedLengthOptions) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1808,11 +1808,11 @@ function lengthButtons(aButtonPressed) {
                 setNewNoteLength(cLengthOption._3);
                 break;
             default :
-                post("error in lengthButtons(no gExtendedcLengthOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in lengthButtons(no gExtendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
-    else if (gExtendedcLengthOptions) {
+    else if (gExtendedLengthOptions) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1828,7 +1828,7 @@ function lengthButtons(aButtonPressed) {
                 setNewNoteLength(cLengthOption._7);
                 break;
             default :
-                post("error in lengthButtons(with gExtendedcLengthOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in lengthButtons(with gExtendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
@@ -1838,7 +1838,7 @@ function lengthButtons(aButtonPressed) {
 function velocityButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("                               --velocityButtons--\n"); }
     
-    if (!gExtendedcVelocityOptions) {
+    if (!gExtendedVelocityOptions) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1854,11 +1854,11 @@ function velocityButtons(aButtonPressed) {
                 setNewNoteVelocity(cVelocityOption._3);
                 break;
             default :
-                post("error in velocityButtons(no gExtendedcVelocityOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in velocityButtons(no gExtendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
-    else if (gExtendedcVelocityOptions) {
+    else if (gExtendedVelocityOptions) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1874,7 +1874,7 @@ function velocityButtons(aButtonPressed) {
                 setNewNoteVelocity(cVelocityOption._7);
                 break;
             default :
-                post("error in velocityButtons(with gExtendedcVelocityOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in velocityButtons(with gExtendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
@@ -1892,31 +1892,31 @@ function toggleWidthDisplayOptions() {
     
     if(gDebugItem.functionEnd) { post("gExtendedWidthOptions:", gExtendedWidthOptions, "\n"); }
 }
-function togglecLengthOptions() {
-    if (gDebugItem.functionName) { post("                               --togglecLengthOptions--\n"); }
+function toggleLengthOptions() {
+    if (gDebugItem.functionName) { post("                               --toggleLengthOptions--\n"); }
     
-    gExtendedcLengthOptions = (gExtendedcLengthOptions) ? false : true;
+    gExtendedLengthOptions = (gExtendedLengthOptions) ? false : true;
     updateControlLeds();
     
     if(gDebugItem.endValue) { post("gExtendedWidthOptions:", gExtendedWidthOptions, "\n"); }
 }
 
-function togglecVelocityOptions() {
-    if (gDebugItem.functionName) { post("                               --togglecVelocityOptions--\n"); }
+function toggleVelocityOptions() {
+    if (gDebugItem.functionName) { post("                               --toggleVelocityOptions--\n"); }
     
-    gExtendedcVelocityOptions = (gExtendedcVelocityOptions) ? false : true;
+    gExtendedVelocityOptions = (gExtendedVelocityOptions) ? false : true;
     updateControlLeds();
     
-    if(gDebugItem.endValue) { post("gExtendedcVelocityOptions:", gExtendedcVelocityOptions, "\n"); }
+    if(gDebugItem.endValue) { post("gExtendedVelocityOptions:", gExtendedVelocityOptions, "\n"); }
 }
 
-function showcVelocityOptions(aWhichOptions) {
-    if (gDebugItem.functionName) { post("                               --showcVelocityOptions--\n"); }
+function showVelocityOptions(aWhichOptions) {
+    if (gDebugItem.functionName) { post("                               --showVelocityOptions--\n"); }
     
-    gExtendedcVelocityOptions = (!!aWhichOptions) ? true : false;
+    gExtendedVelocityOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(gDebugItem.endValue) { post("gExtendedcVelocityOptions:", gExtendedcVelocityOptions, "\n"); }
+    if(gDebugItem.endValue) { post("gExtendedVelocityOptions:", gExtendedVelocityOptions, "\n"); }
 }
 
 function showWidthOptions(aWhichOptions) {
@@ -1928,13 +1928,13 @@ function showWidthOptions(aWhichOptions) {
     if(gDebugItem.endValue) { post("gExtendedWidthOptions:", gExtendedWidthOptions, "\n"); }
 }
 
-function showcLengthOptions(aWhichOptions) {
-    if (gDebugItem.functionName) { post("                               --showcLengthOptions--\n"); }
+function showLengthOptions(aWhichOptions) {
+    if (gDebugItem.functionName) { post("                               --gExtendedLengthOptions--\n"); }
     
-    gExtendedcLengthOptions = (!!aWhichOptions) ? true : false;
+    gExtendedLengthOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(gDebugItem.endValue) { post("gExtendedcLengthOptions:", gExtendedcLengthOptions, "\n"); }
+    if(gDebugItem.endValue) { post("gExtendedLengthOptions:", gExtendedLengthOptions, "\n"); }
 }
 
 function toggleFollowingPlayingClip() {
