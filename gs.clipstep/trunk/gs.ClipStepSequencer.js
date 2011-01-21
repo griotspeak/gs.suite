@@ -32,21 +32,18 @@ have taken inspiration/insight from.
 */
 
 
-/*jslint white:false */
-/*globals Global, LiveAPI, buildMonome, changeParameterProperty, clearFunctionModeLeds, clearMultiPurposeLeds, clearNoteDisplay, clipArrows, clipPlaying, countMidiTracks, defaultDrumScale, displayDisplayWidthLeds, displayLengthLeds, displayNote, displayRatioToMonome, displayVelocityLeds, downInClip, downInSet, elementsInNoteList, fillInNoteRows, focusOnClip, getClipScene, getIndexOfTrack, getPlayingSlotNumber, getTrackIndex, grabAllPattrValues, grabPattrValue, iProperty, isValidCCNumber, leftInClip, leftInSet, lengthButtons, liveSetArrows, monomeLastCol, monomeLastRow, gNoteArrayChecked, numberOfNotesInClip, onScaleVariableChange, postPattrs, refreshMonome, rightInClip, rightInSet, roundDisplayOffset, sceneArray, sceneCount, sendToHud, setClipFromGlobal, setCurrentScaleName, setCurrentScaleWithSymbol, setParameterProperty, setPlayheadVisible, setPlaying, setTrackIndex, setTrackIndexAndScene, shiftIsHeld, showcLengthOptions, showcVelocityOptions, showWidthOptions, toggleParameterProperty, trackCount, upInClip, upInSet, updateControlLeds, updateFunctionModeLeds, updateHud, updateMultiPurposeLeds, updateNoteDisplay, velocityButtons, widthButtons */
+/*jslint white:false, undef:false */
+/*globals post : false, inlets : true, outlets : true, outlet : false, inlet : false, autowatch : true */
 
 post("begin loading gs.clipStepSequencer\n");
 
 //                                  ---===Patcher/MaxMSP Stuff===---
-var autowatch = 1,
+autowatch = 1;
 
+inlets = 1;
+outlets = 3;
 
-    inlets = 1,
-    outlets = 3,
-    post,
-    outlet,
-
-    gWatchSet,
+var gWatchSet,
     gCountAllTracks,
     gTrackArray,
     gWatchSetPlaying,
@@ -58,7 +55,7 @@ var autowatch = 1,
     gThereIsAClipInSlot, // not an attribute
 
     gDebugItem = {
-        arguments : false,
+        argument : false,
         endValue : false,
         frequentItem : false,
         frequentList: false,
@@ -171,7 +168,97 @@ var autowatch = 1,
         slotTrigger : 5,
         slotSymbol : 6
     },
+    
+    cVelocityOption = {
+        _0 : 0,
+        _1 : 24,
+        _2 : 48,
+        _3 : 64,
+        _4 : 80,
+        _5 : 96,
+        _6 : 112,
+        _7 : 127
+    },
 
+    cLengthOption = {
+        _0 : 0.03125,
+        _1 : 0.0625,
+        _2 : 0.125,
+        _3 : 0.25,
+        _4 : 0.5,
+        _5 : 1,
+        _6 : 2,
+        _7 : 4
+    },
+
+    cDisplayWidthOption = {
+        _0 : 0.5,
+        _1 : 1,
+        _2 : 2,
+        _3 : 4,
+        _4 : 8,
+        _5 : 16,
+        _6 : 32,
+        _7 : 64
+    },
+
+//                                  ---===Monome Setup===---
+
+    gMonome = [],
+
+    cFunctionButton = {
+        dynamic_0: 0,
+        dynamic_1: 1,
+        dynamic_2: 2,
+        dynamic_3: 3,
+        shift: 4,
+        bit0: 5,
+        bit1: 6,
+        fold: 7,
+        store_0 : 8,
+        store_1 : 9,
+        store_2 : 10,
+        store_3 : 11,
+        store_4 : 12,
+        store_5 : 13,
+        store_6 : 14,
+        store_7 : 15
+    },
+
+    cFunctionMode = {
+        moveMode: 0,
+        lengthMode: 1,
+        velocityMode: 2,
+        widthMode: 3
+    },
+
+//                                  ---===Create Empty Arrays===---
+    gNoteArray = [],
+    gDisplayNoteList = [],
+    gClipNotes = [],
+
+
+//                                  ---===conditions===---
+    gPlayheadVisible = false,
+    gFollowingPlayingClip = false,
+    gExtendedWidthOptions = false,
+    gExtendedcLengthOptions = false,
+    gExtendedcVelocityOptions = false,
+        
+//                                  ---===Variables===---
+
+//                                  ---===LiveAPI placeholders===---
+    gCheckForClip = false,
+    gEditClip = false,
+    gWatchTrack = false,
+    gWatchTrackForPlayingClip = false,
+    gWatchClipNotes = false,
+    gWatchClipPlayingStatus = false,
+    gWatchClipIsPlaying = false,
+    gWatchClipPlayhead = false,
+    gIndexSet = false,
+    gFunctionToggle = [ false, false],
+    
     gParameter = {
         clipScene : {
             name : "clipScene",
@@ -320,97 +407,7 @@ var autowatch = 1,
             saveInPattr : true
         },
         patchString : "GsCss"
-    },
-
-    cVelocityOption = {
-        _0 : 0,
-        _1 : 24,
-        _2 : 48,
-        _3 : 64,
-        _4 : 80,
-        _5 : 96,
-        _6 : 112,
-        _7 : 127
-    },
-
-    cLengthOption = {
-        _0 : 0.03125,
-        _1 : 0.0625,
-        _2 : 0.125,
-        _3 : 0.25,
-        _4 : 0.5,
-        _5 : 1,
-        _6 : 2,
-        _7 : 4
-    },
-
-    cDisplayWidthOption = {
-        _0 : 0.5,
-        _1 : 1,
-        _2 : 2,
-        _3 : 4,
-        _4 : 8,
-        _5 : 16,
-        _6 : 32,
-        _7 : 64
-    },
-
-//                                  ---===Monome Setup===---
-
-    gMonome = [],
-
-    cFunctionButton = {
-        dynamic_0: 0,
-        dynamic_1: 1,
-        dynamic_2: 2,
-        dynamic_3: 3,
-        shift: 4,
-        bit0: 5,
-        bit1: 6,
-        fold: 7,
-        store_0 : 8,
-        store_1 : 9,
-        store_2 : 10,
-        store_3 : 11,
-        store_4 : 12,
-        store_5 : 13,
-        store_6 : 14,
-        store_7 : 15
-    },
-
-    cFunctionMode = {
-        moveMode: 0,
-        lengthMode: 1,
-        velocityMode: 2,
-        widthMode: 3
-    },
-
-//                                  ---===Create Empty Arrays===---
-    gNoteArray = [],
-    gDisplayNoteList = [],
-    gClipNotes = [],
-
-
-//                                  ---===conditions===---
-    gPlayheadVisible = false,
-    gFollowingPlayingClip = false,
-    gExtendedWidthOptions = false,
-    gExtendedcLengthOptions = false,
-    gExtendedcVelocityOptions = false,
-        
-//                                  ---===Variables===---
-
-//                                  ---===LiveAPI placeholders===---
-    gCheckForClip = false,
-    gEditClip = false,
-    gWatchTrack = false,
-    gWatchTrackForPlayingClip = false,
-    gWatchClipNotes = false,
-    gWatchClipPlayingStatus = false,
-    gWatchClipIsPlaying = false,
-    gWatchClipPlayhead = false,
-    gIndexSet = false,
-    gFunctionToggle = [ false, false];
+    };
 
 function bang() {
     if (gDebugItem.functionName) { post("                     ---bang-\n"); }
@@ -741,7 +738,7 @@ function setNewNoteVelocity(aVelocity) {
 
 //                                  ---===functionMode accessors===---
 function setFunctionMode(aMode) {
-    if (gDebugItem.getSetName) { post("                               --setFunctionMode--\n"); }
+    if (gDebugItem.functionName) { post("                               --setFunctionMode--\n"); }
 
     setParameterProperty({
         key : "functionMode",
@@ -770,19 +767,19 @@ function toggleFunctionBitButton(aButton) {
     // Little endian
     if ((!gFunctionToggle[0]) && (!gFunctionToggle[1]) ) {
         //00
-        setFunctionMode(FunctionMode.moveMode);
+        setFunctionMode(cFunctionMode.moveMode);
     }
     if ((gFunctionToggle[0]) && (!gFunctionToggle[1]) ) {
         //10
-        setFunctionMode(FunctionMode.lengthMode);
+        setFunctionMode(cFunctionMode.lengthMode);
     }
     if ((!gFunctionToggle[0]) && (gFunctionToggle[1]) ) {
         //01
-        setFunctionMode(FunctionMode.velocityMode);
+        setFunctionMode(cFunctionMode.velocityMode);
     }
     if ((gFunctionToggle[0]) && (gFunctionToggle[1]) ) {
         //11
-        setFunctionMode(FunctionMode.widthMode);
+        setFunctionMode(cFunctionMode.widthMode);
     }
 }
 
@@ -847,24 +844,26 @@ function setDisplayWidth(aWidth) {
 }
 
 function updatePlayhead(aTimeNumber) {
+    var playheadTimeInt = Math.floor((aTimeNumber[1] - gParameter.timeOffset.value) * displayRatioToMonome()),
+        mMonome = gMonome;
+    
     if (gDebugItem.frequentName) { post("                               --updatePlayhead--\n"); }
     // View
     if (gPlayheadVisible) {
-        var playheadTimeInt = Math.floor((aTimeNumber[1] - gParameter.timeOffset.value) * displayRatioToMonome());
 
         if((playheadTimeInt === -1) || (playheadTimeInt == gParameter.monomeWidth.value)) {
-            gMonome[monomeLastCol()][0].tempOff();            
+            mMonome[monomeLastCol()][0].tempOff();            
         }
         else if(playheadTimeInt === 0) {                      
-            gMonome[playheadTimeInt][0].blink();
+            mMonome[playheadTimeInt][0].blink();
         }
         else if((0 < playheadTimeInt) && (playheadTimeInt < gParameter.monomeWidth.value)) {
-            gMonome[playheadTimeInt][0].blink();
-            gMonome[playheadTimeInt -1][0].tempOff();
+            mMonome[playheadTimeInt][0].blink();
+            mMonome[playheadTimeInt -1][0].tempOff();
         }
 
         if (playheadTimeInt % 4 == 0) {
-            Monome.row(0, "tempOff");
+            mMonome.row(0, "tempOff");
         }
     }
 }
@@ -1081,6 +1080,12 @@ function doesCoincide(aArray, aTone, aTime) {
 
 //                                  ---===LiveAPI Note Manipulation===---
 function getClipNotes() {
+    var a,
+        b,
+        mNoteArray = gNoteArray,
+        sliceIndexLeft,
+        sliceIndexRight;
+    
     if (gDebugItem.functionName) { post("                               --getClipNotes--\n"); }
     
     if(!gThereIsAClipInSlot) { return; }
@@ -1102,39 +1107,37 @@ function getClipNotes() {
     numberOfNotesInClip = gClipNotes.shift();
     
     gDisplayNoteList.length = 0;
-    gNoteArray.length = 0;
+    mNoteArray.length = 0;
 
     // Debugging!
     if (gDebugItem.endValue == true) { post("there are:", numberOfNotesInClip, " notes\n"); }
-    
-    var a, b;
-    
+        
     for (a = 0, elementsInNoteList = 0; a < numberOfNotesInClip; a++) {
-        var sliceIndexLeft = a * 6;
-        var sliceIndexRight = a * 6 + 6;
-        gNoteArray[a] = gClipNotes.slice(sliceIndexLeft, sliceIndexRight);
+        sliceIndexLeft = a * 6;
+        sliceIndexRight = a * 6 + 6;
+        mNoteArray[a] = gClipNotes.slice(sliceIndexLeft, sliceIndexRight);
         
         // Folding Logic
-        if (!gDisplayNoteList.inArray(gNoteArray[a][1])) {
-            gDisplayNoteList.push(gNoteArray[a][1]);
+        if (!gDisplayNoteList.inArray(mNoteArray[a][1])) {
+            gDisplayNoteList.push(mNoteArray[a][1]);
             
             // Debug
-            if (gDebugItem.list) { post(gNoteArray[a][1] + " added to gDisplayNoteList \n"); }
+            if (gDebugItem.list) { post(mNoteArray[a][1] + " added to gDisplayNoteList \n"); }
         }
         
         if (gDebugItem.list) {
-            post( "gDisplayNoteList.inArray(gNoteArray[" + a + "][1]) = " + gDisplayNoteList.inArray(gNoteArray[a][1]) + "\n" );
+            post( "gDisplayNoteList.inArray(mNoteArray[" + a + "][1]) = " + gDisplayNoteList.inArray(mNoteArray[a][1]) + "\n" );
         }
         
         // Debug statements
         if (gDebugItem.list) {
             post(a);
             //if (gDebugItem.list) {
-                post("timeNumber is:" + gNoteArray[a][2], "\n");
-                post("durationNumber is:" + gNoteArray[a][3], "\n");
+                post("timeNumber is:" + mNoteArray[a][2], "\n");
+                post("durationNumber is:" + mNoteArray[a][3], "\n");
                 post("sliceIndex is:", sliceIndexLeft, "\n");
             //}
-            post(gNoteArray[a], "\n");
+            post(mNoteArray[a], "\n");
         }
     }
 
@@ -1143,7 +1146,7 @@ function getClipNotes() {
     gDisplayNoteList.sort(compareNumbers);
     if (gDebugItem.endValue) { post("gDisplayNoteList after padding =", gDisplayNoteList, '\n'); }
     gClipNotes = gEditClip.call("deselect_all_notes");
-    gNoteArrayChecked = true;
+    mNoteArrayChecked = true;
     
     if (gDebugItem.functionEnd) { post("           /getClipNotes\n"); }
 }
@@ -1151,7 +1154,8 @@ function getClipNotes() {
 function publishNoteArray() {
     if (gDebugItem.functionName) { post("                               --publishNoteArray--\n"); }
     // Model Controller
-    var newLength = gNoteArray.length;
+    var mNoteArray = gNoteArray,
+        newLength = mNoteArray.length;
     
     gEditClip.call("select_all_notes");//CALL
     gEditClip.call("replace_selected_notes");//CALL
@@ -1161,9 +1165,9 @@ function publishNoteArray() {
     if (gDebugItem.startValue) { post("replace_selected_notes\n"); }
     
     var l, j;
-    for (l = gNoteArray.length , j = 0; j < l; j++) {
-        if (gDebugItem.startValue) { post(j.toLength(10), gNoteArray[j], "\n"); }
-        gEditClip.call( gNoteArray[j].noteToLiveAPI() ); //CALL
+    for (l = mNoteArray.length , j = 0; j < l; j++) {
+        if (gDebugItem.startValue) { post(j.toLength(10), mNoteArray[j], "\n"); }
+        gEditClip.call( mNoteArray[j].noteToLiveAPI() ); //CALL
     }
     
     gEditClip.call("done");
@@ -1222,6 +1226,11 @@ function updateNoteDisplay() {
         updateHud();
     }
 }
+
+function redrawNoteDisplay() {
+    // TODO STOP BLINKING!
+}
+
 
 /* TODO 
 Array.prototype.diff = function(a) {
@@ -1515,12 +1524,13 @@ function displayNote(aNoteToDisplay, aIndex, aArray) {
     // 1 = a quarter note. 4 equals a measure.
     
     // find ratio to monome and such
-    var absoluteTime = aNoteToDisplay[2].toFixed(12);
-    var colOnMonome = absoluteTime * displayRatioToMonome() - colOffset();
+    var absoluteTime = aNoteToDisplay[2].toFixed(12),
+        colOnMonome = absoluteTime * displayRatioToMonome() - colOffset(),
     
     // Formatted Notes for Monome
-    var rowIndex = gDisplayNoteList.indexOf(aNoteToDisplay[1]);
-    var rowOnMonome = rowIndex - ((gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value);
+        rowIndex = gDisplayNoteList.indexOf(aNoteToDisplay[1]),
+        rowOnMonome = rowIndex - ((gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value);
+    
     if(gDebugItem.startValue) {
         post("rowIndex:", rowIndex, "\n");
         post("rowOnMonome:", rowOnMonome, "rowOffset:", gParameter.rowOffset.value, "foldingRowOffset", gParameter.foldingRowOffset.value, "\n");
@@ -1590,7 +1600,9 @@ function fillInNoteRows() {
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
     if (gDebugItem.functionName) { post("                               --press--\n"); }
-    var lOutlet = 1;
+    var lOutlet = 1,
+        lNewNoteTime,
+        lNewNotePitch;
     
     if (gDebugItem.functionEnd) {
         post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n");
@@ -1601,29 +1613,29 @@ function press(aCol, aRow, aPress) {
     
     
     if (aRow < monomeLastRow()) {
-        var newNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
-        var newNoteNote = gDisplayNoteList[aRow + ((gParameter.folding.value) ? gParameter.foldingRowOffset.value:gParameter.rowOffset.value)];
+        var lNewNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
+        var lNewNotePitch = gDisplayNoteList[aRow + ((gParameter.folding.value) ? gParameter.foldingRowOffset.value:gParameter.rowOffset.value)];
 
         // Debugging is fun!
         if (gDebugItem.functionEnd) {
-            post("newNoteTime:", newNoteTime, " newNoteNote:", newNoteNote, "\n");
+            post("lNewNoteTime:", lNewNoteTime, " lNewNotePitch:", lNewNotePitch, "\n");
         }
     
         if (aPress == 1) {
             // check for note in array
-            var isAlreadyInNoteArray = doesCoincide(gNoteArray, newNoteNote, newNoteTime);
+            var isAlreadyInNoteArray = doesCoincide(gNoteArray, lNewNotePitch, lNewNoteTime);
     
             if (isAlreadyInNoteArray[0]) {
                     removeNote(isAlreadyInNoteArray[1]);
             }
         
             else if (!isAlreadyInNoteArray[0]) {
-                    addNote(newNoteNote, newNoteTime, gParameter.newNoteVelocity.value);
+                    addNote(lNewNotePitch, lNewNoteTime, gParameter.newNoteVelocity.value);
             }
         }
         sendToHud({
             key : "latest",
-            value : newNoteNote,
+            value : lNewNotePitch,
             format : cHudFormat.set
         });
     }
@@ -2096,7 +2108,7 @@ function sendToHud(aObject) {
         
     
     if (gDebugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
-    if (gDebugItem.arguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
+    if (gDebugItem.argument) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
     
     switch (aFormat) {
         case cHudFormat.set:
