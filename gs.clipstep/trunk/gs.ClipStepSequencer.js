@@ -43,7 +43,8 @@ autowatch = 1;
 inlets = 1;
 outlets = 3;
 
-var gWatchSet,
+var gThis = this,
+    gWatchSet,
     gCountAllTracks,
     gTrackArray,
     gWatchSetPlaying,
@@ -268,7 +269,8 @@ var gWatchSet,
             maxValue : function() {
                 return (gWatchersCreated) ? (gWatchSet.getcount("scenes") - 1) : 2048;
             },
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         currentScale : {
             name : "currentScale",
@@ -276,7 +278,8 @@ var gWatchSet,
             value : [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
             minValue : null,
             maxValue : null,
-            saveInPattr : false
+            saveInPattr : false,
+            listeners : []
         },
         currentScaleName : {
             name : "currentScaleName",
@@ -284,7 +287,8 @@ var gWatchSet,
             value : "Drums",
             minValue : null,
             maxValue : null,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         cycles : {
             name : "cycles",
@@ -292,7 +296,8 @@ var gWatchSet,
             value : 3,
             minValue : 1,
             maxValue : 127,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : ["bang"]
         },
         displayWidth : {
             name : "displayWidth",
@@ -300,7 +305,8 @@ var gWatchSet,
             value : 1,
             minValue : 0.00625,
             maxValue : 127,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         folding : {
             name : "folding",
@@ -308,7 +314,8 @@ var gWatchSet,
             value : 0,
             minValue : 0,
             maxValue : 1,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         foldingRowOffset : {
             name : "foldingRowOffset",
@@ -318,7 +325,8 @@ var gWatchSet,
             maxValue : function() {
                 return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
             },
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         functionMode : {
             name : "functionMode",
@@ -326,7 +334,8 @@ var gWatchSet,
             value : 0,
             minValue : 0,
             maxValue : 4,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         inSuite : {
             name : "inSuite",
@@ -334,7 +343,8 @@ var gWatchSet,
             value : 0,
             minValue : 0,
             maxValue : 1,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         monomeHeight : {
             name : "monomeHeight",
@@ -342,7 +352,8 @@ var gWatchSet,
             value : 8,
             minValue : 2,
             maxValue : 2048,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         monomeWidth : {
             name : "monomeWidth",
@@ -350,7 +361,8 @@ var gWatchSet,
             value : 8,
             minValue : 2,
             maxValue : 2048,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         newNoteLength : {
             name : "newNoteLength",
@@ -358,7 +370,8 @@ var gWatchSet,
             value : 0.125,
             minValue : 0.000390625,
             maxValue : 127,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         newNoteVelocity : {
             name : "newNoteVelocity",
@@ -366,7 +379,8 @@ var gWatchSet,
             value : 100,
             minValue : 0,
             maxValue : 127,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         trackIndex : {
             name : "trackIndex",
@@ -376,7 +390,8 @@ var gWatchSet,
             maxValue : function() {
                 return (gWatchersCreated) ? (gTrackArray.length - 1) : 2048;
             },
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         rootNote : {
             name : "rootNote",
@@ -384,7 +399,8 @@ var gWatchSet,
             value : 60,
             minValue : 0,
             maxValue : 127,
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         rowOffset : {
             name : "rowOffset",
@@ -394,7 +410,8 @@ var gWatchSet,
             maxValue : function() {
                 return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
             },
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         timeOffset : {
             name : "timeOffset",
@@ -404,23 +421,20 @@ var gWatchSet,
             maxValue : function() { 
                 return (gWatchersCreated) ? (gEditClip.get("length") - gParameter.displayWidth.value) : 2048;
             },
-            saveInPattr : true
+            saveInPattr : true,
+            listeners : []
         },
         patchString : "GsCss"
     };
 
 function bang() {
-    if (gDebugItem.functionName) { post("                     ---bang-\n"); }
+    if (true) { post("                     ---bang-\n"); }
     
-    post(gParameter.currentScale.value, "\n");
-    post("name:", gParameter.currentScaleName.value, "\n");
-    post("monomeHeight:", gParameter.monomeHeight.value, "\n");
-    post("monomeWidth:", gParameter.monomeWidth.value, "\n");
-    post("root:", gParameter.rootNote.value, "\n");
-    post("cycles:", gParameter.cycles.value, "\n");
+    gMonome.row(0, "blink");
 }
 
 function initialize() {
+    
     if (gDebugItem.functionName) { post("                     ---initialize-\n"); }
     if (gDebugItem.list) { postPattrs("start"); }
     grabAllPattrValues();
@@ -457,9 +471,9 @@ function initialize() {
     post("gs.ClipStepSequencer finished loading\n");
 }
 
-function grabAllPattrValues() {
+function grabAllPattrValues() {    
     var iProperty;
-    
+        
     for (iProperty in gParameter) {
         if (gParameter[iProperty].saveInPattr) {
             grabPattrValue(gParameter[iProperty]);
@@ -721,19 +735,11 @@ function setNewNoteLength(aLength) {
 function setNewNoteVelocity(aVelocity) {
     if (gDebugItem.getSetName) { post("                     ---setNewNoteVelocity-\n"); }
     
-    if ((0 <= aVelocity) && (aVelocity <= 127)) {
-        gParameter.newNoteVelocity.value = aVelocity;
-        sendToHud({
-            key : "velocity",
-            value : gParameter.newNoteVelocity.value,
-            format : cHudFormat.set
-        });
-    }
-    else {
-        post("invalid velocity");
-    }
-
-    this.patcher.getnamed("newNoteVelocityGsCssPattr").message(gParameter.newNoteVelocity.value);
+    sendToHud({
+        key : "velocity",
+        value : gParameter.newNoteVelocity.value,
+        format : cHudFormat.set
+    });
 }
 
 //                                  ---===functionMode accessors===---
@@ -809,7 +815,7 @@ function onNewSlotPlaying(aApiArray) {
 }
 
 function setPlayheadVisible() {
-    if (gDebugItem.getSetName) { post("                               --setPlayheadVisible--\n"); }
+    if (gDebugItem.getSetName) { postst("                               --setPlayheadVisible--\n"); }
     if (!gThereIsAClipInSlot) { return; }
     
        clipPlaying = gWatchClipIsPlaying.get("is_playing");
@@ -818,7 +824,7 @@ function setPlayheadVisible() {
     if ((setPlaying == 1) && (clipPlaying == 1)) { gPlayheadVisible = true; }
     else { 
         gPlayheadVisible = false;
-        refreshMonome();
+        gMonome.refresh();
     }
 
     if(gDebugItem.endValue) { 
@@ -871,10 +877,13 @@ updatePlayhead.immediate = 1;
 
 
 function countMidiTracks() {
+    
+    var j;
+    
     if (gDebugItem.functionName) { post("                               --countMidiTracks--\n"); }
     gTrackArray = [];
     trackCount = gCountAllTracks.getcount("tracks");
-    for (var j = 0; j < trackCount; j++) {
+    for (j = 0; j < trackCount; j++) {
         if (gIndexSet) { gIndexSet.goto("live_set tracks " + j); }
         else { gIndexSet = new LiveAPI(this.patcher, null, "live_set tracks " + j ); }
         if (gIndexSet.get("has_midi_input") == 1 ) {
@@ -882,9 +891,8 @@ function countMidiTracks() {
         }
     }
     
-    var c = gTrackArray.length;
     if (gDebugItem.startValue) {
-        post("there are ", c, " midi tracks\n");
+        post("there are ", gTrackArray.length, " midi tracks\n");
         post("they are:", gTrackArray, "\n");
     }
     if (!gThereIsAClipInSlot) { focusOnClip(); }
@@ -1579,8 +1587,9 @@ function clearNoteDisplay() {
 function fillInNoteRows() {
     if (gDebugItem.functionName) { post("                               --fillInNoteRows--\n"); }
 
-    var numberNeeded = (gParameter.monomeHeight.value - gDisplayNoteList.length);
-    for (var m = 0; m < gParameter.currentScale.value.length; m++) {
+    var numberNeeded = (gParameter.monomeHeight.value - gDisplayNoteList.length), 
+        lScaleLength = gParameter.currentScale.value.length;
+    for (var m = 0; m < lScaleLength; m++) {
         if (!gDisplayNoteList.inArray(gParameter.currentScale.value[m]) ) {
             gDisplayNoteList.push(gParameter.currentScale.value[m]);
             if (gDebugItem.startValue) {
@@ -2134,19 +2143,33 @@ function setMonomeWidth(aWidth) {
         key: "monomeWidth",
         value: aWidth
     });
-    buildMonome();
+    
+    gMonome.rebuild(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
     updateMonome();
 }
 function setMonomeHeight(aHeight) {
     if (gDebugItem.getSetName) { post("                               --setMonomeHeight--\n"); }
+    
     setParameterProperty({
         key : "monomeHeight",
         value : aHeight
     });
-    buildMonome();
+    
+    gMonome.rebuild(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
     updateMonome();
 }
 
+/*
+   Function: Monome
+
+   Monome abstraction
+
+   Parameters:
+
+      aColumns - The number of columns to initialize with.
+      aRows - The number of rows to initialize with.
+
+*/
 function Monome(aColumns, aRows) {
     var iCol,
         iRow,
@@ -2155,9 +2178,7 @@ function Monome(aColumns, aRows) {
         mRows = aRows,
         updating = false;
         
-    if (gDebugItem.functionName) {
-        post("                               --buildMonome--\n");
-    }
+    if (gDebugItem.functionName) { post("                               --Monome--\n"); }
     if (gDebugItem.startValue) {
         post("monomeWidth:", aColumns, "\n");
         post("monomeHeight:", aRows, "\n");
@@ -2233,23 +2254,29 @@ function Monome(aColumns, aRows) {
     }
 
     this.column = function(aColumn, aMethodToInvoke) {
-        var iRow;
+        var iRow, 
+            lHeight = gParameter.monomeHeight.value;
         
-        for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
+        for (iRow = 0; iRow < lHeight; iRow++) {
             mMonome[aColumn][iRow][aMethodToInvoke]();
         }
     };
 
     this.row = function(aRow, aMethodToInvoke) {
-        var iColumn;
-        for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
+        var iColumn,
+            lWidth = gParameter.monomeWidth.value;
+            
+        for (iColumn = 0; iColumn < lWidth; iColumn++) {
             mMonome[iColumn][aRow][aMethodToInvoke]();
         }
     };
     
     this.rebuild = function(aColumns, aRows) {
-        
-        for (iCol = 0; iCol < Math.max(aColumns, mColumns); iCol++) {
+        var iCol,
+            iRow
+            lMax = Math.max(aColumns, mColumns);
+            
+        for (iCol = 0; iCol < lMax; iCol++) {
             
             if((!mMonome[iCol]) && (iCol < aColumns)) { mMonome[iCol] = []; }
             else if ((mMonome[iCol]) && (iCol >= aColumns)) { mMonome[iCol] = null; }
@@ -2266,6 +2293,19 @@ function Monome(aColumns, aRows) {
             post("Monome.length (width):", mMonome.length, "\n");
         }
     }
+    
+    this.refresh = function() {
+        var iCol,
+            iRow,
+            lHeight = gParameter.monomeHeight.value,
+            lWidth = gParameter.monomeWidth.value;
+
+        for (iCol = 0; iCol < lWidth; iCol++) {
+            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
+                gMonome[iCol][iRow].checkActual();
+            }
+        }
+    }
 
     this.beginUpdates = function() {
         updating = true;
@@ -2275,14 +2315,13 @@ function Monome(aColumns, aRows) {
         var iRow;
         
         updating = false;
-        for (iCol = 0; iCol < gParameter.monomeWidth.value; iCol++) {
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                gMonome[iCol][iRow].checkActual();
-            }
-        }
+        refresh();
     }
     
     for (iCol = 0; iCol < aColumns; iCol++) {
+        var iCol,
+            iRow;
+        
         mMonome[iCol] = [];
         for (iRow = 0; iRow < aRows; iRow++) {
             mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0);
@@ -2293,17 +2332,6 @@ function Monome(aColumns, aRows) {
     }
     if (gDebugItem.startValue) {
         post("Monome.length (width):", mMonome.length, "\n");
-    }
-}
-
-function refreshMonome() {
-    if (gDebugItem.functionName) { post("                               --refreshMonome--\n"); }
-    var iCol;
-    var iRow;
-    for (iCol = 0; iCol < gParameter.monomeWidth.value; iCol++) {
-        for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-            gMonome[iCol][iRow].checkActual();
-        }
     }
 }
 
@@ -2448,8 +2476,11 @@ function setParameterProperty(aObject) {
         lPatcherObjectNameString,
         lValue,
         lMinimum = (aProperty.minValue instanceof Function) ? aProperty.minValue() : aProperty.minValue,
-        lMaximum = (aProperty.maxValue instanceof Function) ? aProperty.maxValue() : aProperty.maxValue;
-    
+        lMaximum = (aProperty.maxValue instanceof Function) ? aProperty.maxValue() : aProperty.maxValue,
+        lListenerKeys = aProperty.listeners,
+        lLength = lListenerKeys.length,
+        iCounter;
+            
     //check validity of aValue
     if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
         if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
@@ -2476,6 +2507,11 @@ function setParameterProperty(aObject) {
             value : aProperty.value,
             format : cHudFormat.set
         });
+    }
+    
+    for (iCounter = 0; iCounter < lLength; iCounter++) {
+        gThis[lListenerKeys[iCounter]]();
+        post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n");
     }
     
     // Save it.
@@ -2542,7 +2578,7 @@ function grabPattrValue(aProperty) {
 }
 
 function store(aNumber) {
-    this.patcher.getnamed("gsClipStep-presetStore").message("store", aNumber);
+    this.patcher.getnamed(gParameter.patchString + "-presetStore").message("store", aNumber);
 }
 
 function recall(aNumber) {
