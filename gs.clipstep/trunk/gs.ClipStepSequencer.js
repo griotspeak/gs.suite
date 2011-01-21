@@ -1227,11 +1227,6 @@ function updateNoteDisplay() {
     }
 }
 
-function redrawNoteDisplay() {
-    // TODO STOP BLINKING!
-}
-
-
 /* TODO 
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return !(a.indexOf(i) > -1);});
@@ -2155,7 +2150,8 @@ function Monome(aColumns, aRows) {
         iRow,
         mMonome = this, 
         mColumns = aColumns,
-        mRows = aRows;
+        mRows = aRows,
+        updating = false;
         
     if (gDebugItem.functionName) {
         post("                               --buildMonome--\n");
@@ -2193,12 +2189,17 @@ function Monome(aColumns, aRows) {
 
         this.ledOn = function() {
             actualState = 1;
-            outlet(outletNumber, col, row, actualState);
+            if(!updating) {
+                outlet(outletNumber, col, row, actualState);
+            }
         };
 
         this.ledOff = function() {
             actualState = 0;
-            outlet(outletNumber, col, row, actualState);
+            
+            if (!updating) {
+                outlet(outletNumber, col, row, actualState);
+            }
         };
 
         this.checkActual = function() {
@@ -2230,78 +2231,17 @@ function Monome(aColumns, aRows) {
     }
 
     this.column = function(aColumn, aMethodToInvoke) {
-        switch (aMethodToInvoke) {
-        case "ledOn":
-            var iRow;
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                mMonome[aColumn][iRow].ledOn();
-            }
-            break;
-        case "ledOff":
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                mMonome[aColumn][iRow].ledOff();
-            }
-            break;
-        case "tempOn":
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                mMonome[aColumn][iRow].tempOn();
-            }
-            break;
-        case "tempOff":
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                mMonome[aColumn][iRow].tempOff();
-            }
-            break;
-        case "blink":
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                mMonome[aColumn][iRow].blink();
-            }
-            break;
-        case "blinkIfOff":
-            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
-                mMonome[aColumn][iRow].blinkIfOff();
-            }
-            break;
-        default:
-            break;
+        var iRow;
+        
+        for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
+            mMonome[aColumn][iRow][aMethodToInvoke]();
         }
     };
 
     this.row = function(aRow, aMethodToInvoke) {
-        switch (aMethodToInvoke) {
-        case "ledOn":
-            var iColumn;
-            for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
-                mMonome[iColumn][aRow].ledOn();
-            }
-            break;
-        case "ledOff":
-            for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
-                mMonome[iColumn][aRow].ledOff();
-            }
-            break;
-        case "tempOn":
-            for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
-                mMonome[iColumn][aRow].tempOn();
-            }
-            break;
-        case "tempOff":
-            for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
-                mMonome[iColumn][aRow].tempOff();
-            }
-            break;
-        case "blink":
-            for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
-                mMonome[iColumn][aRow].blink();
-            }
-            break;
-        case "blinkIfOff":
-            for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
-                mMonome[iColumn][aRow].blinkIfOff();
-            }
-            break;
-        default:
-            break;
+        var iColumn;
+        for (iColumn = 0; iColumn < gParameter.monomeWidth.value; iColumn++) {
+            mMonome[iColumn][aRow][aMethodToInvoke]();
         }
     };
     
@@ -2323,6 +2263,34 @@ function Monome(aColumns, aRows) {
         if (gDebugItem.endValue) {
             post("Monome.length (width):", mMonome.length, "\n");
         }
+    }
+    
+    function flushTemp() {
+        var iCol,
+            iRow;
+            
+        for (iCol = 0; iCol < mColumns; iCol++) {
+            for (iRow = 0; iRow < mRows; iRow++) {
+                mMonome[iCol][iRow].tempState = 0;
+            }
+        }
+    }
+
+    this.beginUpdates = function() {
+        flushTemp();
+        updating = true;
+    }
+    this.endUpdates = function() {
+        var iCol;
+        var iRow;
+        
+        updating = false;
+        for (iCol = 0; iCol < gParameter.monomeWidth.value; iCol++) {
+            for (iRow = 0; iRow < gParameter.monomeHeight.value; iRow++) {
+                gMonome[iCol][iRow].checkActual();
+            }
+        }
+        flushTemp();
     }
     
     for (iCol = 0; iCol < aColumns; iCol++) {
