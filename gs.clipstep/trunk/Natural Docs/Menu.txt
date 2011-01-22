@@ -46,11 +46,12 @@ Format: 1.51
 # --------------------------------------------------------------------------
 
 
-File: Monome  (gs.ClipStepSequencer.js)
+File: gs.ClipStepSequencer.js  (gs.ClipStepSequencer.js)
 
 Group: Index  {
 
    Index: Everything
+   File Index: Files
    Function Index: Functions
    }  # Group: Index
 

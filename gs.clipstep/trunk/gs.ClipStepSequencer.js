@@ -433,6 +433,13 @@ function bang() {
     gMonome.row(0, "blink");
 }
 
+// Method: initialize
+//      Initializes patch with current values from pattr
+//
+//  Note:
+//      Should not be called directly. 
+
+
 function initialize() {
     
     if (gDebugItem.functionName) { post("                     ---initialize-\n"); }
@@ -1604,6 +1611,16 @@ function fillInNoteRows() {
 }
 
 //                                  ---===Controller Methods===---
+
+// Method: press
+// 
+//      general method for interacting with Monome object
+// 
+// Parameters:
+// 
+//      aColumn - which column was pressed
+//      aRow - which row was pressed
+//      aPress - whether or not the buttons state changed to pressed (1) or released (0)
 function press(aCol, aRow, aPress) {
     if (gDebugItem.functionName) { post("                               --press--\n"); }
     var lOutlet = 1,
@@ -2052,6 +2069,15 @@ function liveSetArrows(aWhichArrow) {
     updateNoteDisplay();
 }
 
+// Method: upInSet
+// 
+// Moves focus to a clip up (lower index) in the live set
+// 
+// Argument:
+// 
+//    aHowMuch - how far up in the set to move
+
+
 function upInSet(aHowMuch) {
     if (gDebugItem.functionName) { post("                               --upInSet--\n"); }
     if(!aHowMuch) { aHowMuch = 1; }
@@ -2136,6 +2162,15 @@ function sendToHud(aObject) {
 }
 
 //                                  ---===Monome Device Methods===---
+
+// Method: setMonomeWidth
+// 
+// sets monome width and rebuilds monome
+// 
+// Argument:
+// 
+//    aWidth
+
 function setMonomeWidth(aWidth) {
     if (gDebugItem.getSetName) { post("                               --setMonomeWidth--\n"); }
 
@@ -2147,6 +2182,15 @@ function setMonomeWidth(aWidth) {
     gMonome.rebuild(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
     updateMonome();
 }
+
+// Method: setMonomeHeight
+// 
+// sets monome height and rebuilds monome
+// 
+// Argument:
+// 
+//    aHeight
+
 function setMonomeHeight(aHeight) {
     if (gDebugItem.getSetName) { post("                               --setMonomeHeight--\n"); }
     
@@ -2159,18 +2203,18 @@ function setMonomeHeight(aHeight) {
     updateMonome();
 }
 
-/*
-   Function: Monome
 
-   Monome abstraction
+   // Method: Monome
+   // 
+   // Monome abstraction
+   // 
+   // Parameters:
+   // 
+   //    aColumns - The number of columns to initialize with.
+   //    aRows - The number of rows to initialize with.
 
-   Parameters:
 
-      aColumns - The number of columns to initialize with.
-      aRows - The number of rows to initialize with.
-
-*/
-function Monome(aColumns, aRows) {
+function Monome(aColumns, aRows, aThirdParameter) {
     var iCol,
         iRow,
         mMonome = this, 
@@ -2194,21 +2238,40 @@ function Monome(aColumns, aRows) {
         var actualState = 0;
         var tempState = 0;
         var held = 0;
-        var mCell = this;
 
+        // Method: Monome[column][row].isHeld
+        // 
+        // Returns wether or not a button is currently held (1) or not (0)
+        
         this.isHeld = function() {
             return held;
         };
+        
+        // Method: Monome[column][row].push
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to held 
 
         this.push = function() {
             held = 1;
             return held;
         };
 
+        // Method: Monome[column][row].release
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to NOT held    
+        
         this.release = function() {
             held = 0;
             return held;
         };
+        
+        // Method: Monome[column][row].ledOn
+        //
+        // Change the state of the button to lit (sends message out of designated outlet)
 
         this.ledOn = function() {
             actualState = 1;
@@ -2607,3 +2670,4 @@ function freebang() {
     if (gWatchClipIsPlaying) { gWatchClipIsPlaying = null; }
     if (gWatchClipPlayhead) { gWatchClipPlayhead = null; }
 }
+
