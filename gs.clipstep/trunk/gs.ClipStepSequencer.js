@@ -536,87 +536,6 @@ function bang() {
 //  Note:
 //      Should not be called directly.
 
-//                                  ---===Communicate with Patcher===---
-function sendToHud(aObject) {
-    
-    var lOutlet = 2,
-        aKey = aObject.key,
-        aValue = aObject.value,
-        aFormat = (aObject.format == undefined) ? 0 : aObject.format;        
-    
-    if (gDebugItem.functionName) { post("    --sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
-    if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
-    
-    switch (aFormat) {
-        case cHudFormat.set:
-            outlet(lOutlet, aKey, "set", aValue);
-            break;
-        case cHudFormat.trigger:
-            outlet(lOutlet, aKey, aValue);
-            break;
-        case cHudFormat.symbol:
-            outlet(lOutlet, aKey, "setsymbol", aValue);
-            break;
-        case cHudFormat.measures:
-            outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
-            break;
-        default: 
-            post("error in sendToHud. aFormat:", aFormat, "\n");
-            break;
-    }
-}
-
-function grabPattrValue(aProperty) {
-    if (gDebugItem.functionName) { post("    --grabPattrValue " + aProperty.name + "--\n"); }
-    
-    var lPatcherObjectNameString = aProperty.name + gParameter.patchString + "Pattr",
-        lValue;
-        
-    if (gDebugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
-    if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
-    
-    switch (aProperty.type) {
-        case "number" : 
-            /*jsl:fallthru*/
-        case "toggle" :
-            lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        case "string" :
-            lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        case "slotArray" :
-            lValue = Array(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        default :
-            post(aProperty.name + ".type:", aProperty.type , "\n");
-            break;
-    }
-    
-    if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
-    
-    if (aProperty.format != null) {
-        aProperty.value = lValue;
-        sendToHud({
-            key: aProperty.name,
-            value: aProperty.value,
-            format: aProperty.format
-        });
-    }
-        
-    if (gDebugItem.endValue) { post(aProperty.name + ".value: ", aProperty.value, "\n"); }
-}
-
-
-function grabAllPattrValues() {    
-    var iProperty;
-        
-    for (iProperty in gParameter) {
-        if (gParameter[iProperty].saveInPattr) {
-            grabPattrValue(gParameter[iProperty]);
-        }
-    }
-}
-
 function initialize() {
     
     if (gDebugItem.functionName) { post("    ---initialize-\n"); }
@@ -715,7 +634,7 @@ function setTrack(aNewTrackNumber) {
 function setTrackIndex(aNewIndexNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.trackIndex.name,
         value : aNewIndexNumber
     });    
@@ -725,7 +644,7 @@ function setTrackIndex(aNewIndexNumber) {
 function changeTrackIndex(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeTrackIndex--\n"); }
         
-    setParameterProperty({
+    setParameter({
         key : gParameter.trackIndex.name,
         value : gParameter.trackIndex.value + aAmount
     });
@@ -754,7 +673,7 @@ function getIndexOfTrack(aTrackToFind) {
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.trackIndex.name,
         value : aNewIndexNumber
     });
@@ -765,7 +684,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 
     if (lLimit != 0) { 
         for (iCounter = aNewSceneNumber; iCounter < lLimit; iCounter++) {
-            setParameterProperty({
+            setParameter({
                 key : gParameter.clipScene.name,
                 value : iCounter
             });
@@ -773,14 +692,14 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
         }
     
         for (iCounter = aNewSceneNumber; iCounter >=0; iCounter--) {
-            setParameterProperty({
+            setParameter({
                 key : gParameter.clipScene.name,
                 value : iCounter
             });
             if (focusOnClip()) { return true; }
         }
     
-        setParameterProperty({
+        setParameter({
             key : gParameter.clipScene.name,
             value : 0
         });
@@ -793,7 +712,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 function setRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.rowOffset.name,
         value : aNewOffsetNumber
     });
@@ -803,7 +722,7 @@ function setRowOffset(aNewOffsetNumber) {
 function setFoldingRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.foldingRowOffset.name,
         value : aNewOffsetNumber
     });
@@ -821,12 +740,12 @@ function changeRowOffset(aAmount) {
     if(!aAmount) { aAmount = 1; }
             
     if (gParameter.folding.value) {
-        setParameterProperty({
+        setParameter({
             key : gParameter.foldingRowOffset.name,
             value : (gParameter.foldingRowOffset.value + aAmount)
         }); }
     else {
-        setParameterProperty({
+        setParameter({
             key : gParameter.rowOffset.name,
             value : (gParameter.rowOffset.value + aAmount)
         }); }
@@ -838,7 +757,7 @@ function changeRowOffset(aAmount) {
 function setClipScene(aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setClipScene--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.clipScene.name,
         value : aNewSceneNumber
     });
@@ -854,7 +773,7 @@ function setClipSceneFromPatcher(aNewSceneNumber) {
 function changeClipScene(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeClipScene--\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.clipScene.name,
         value : gParameter.clipScene.value + aAmount
     });
@@ -875,7 +794,7 @@ function isValidClipSceneNumber() {
 function setTimeOffset(aNewOffset){
     if (gDebugItem.getSetName) { post("    --setTimeOffset--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.timeOffset.name,
         value : aNewOffset
     });
@@ -889,7 +808,7 @@ function changeTimeOffset(aAmount) {
     if(!aAmount) { aAmount = gParameter.displayWidth.value; }
     else { aAmount *= gParameter.displayWidth.value; }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.timeOffset.name,
         value : (gParameter.timeOffset.value + aAmount)
     });
@@ -900,7 +819,7 @@ function changeTimeOffset(aAmount) {
 function setNewNoteLength(aLength) {
     if (gDebugItem.getSetName) { post("    --setNewNoteLength--\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.newNoteLength.name,
         value : aLength
     });
@@ -912,7 +831,7 @@ function setNewNoteLength(aLength) {
 function setNewNoteVelocity(aVelocity) {
     if (gDebugItem.getSetName) { post("    ---setNewNoteVelocity-\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.newNoteVelocity.name,
         value : aVelocity
     });
@@ -922,7 +841,7 @@ function setNewNoteVelocity(aVelocity) {
 function setFunctionMode(aMode) {
     if (gDebugItem.functionName) { post("    --setFunctionMode--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.functionMode.name,
         value : aMode
     });
@@ -1012,7 +931,7 @@ function setPlayheadVisible() {
 function setDisplayWidth(aWidth) {
     if (gDebugItem.getSetName) { post("    --setDisplayWidth--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.displayWidth.name,
         value : aWidth
     });
@@ -1199,11 +1118,11 @@ function getCurrentPosition() {
         if (gDebugItem.endValue) { post("clipScene changed from:", gParameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
         gParameter.clipScene.value = currentSceneNumber;
     }
-    setParameterProperty({
+    setParameter({
         key : gParameter.track.name,
         value : gTrackArray[gParameter.trackIndex.value] + 1
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.scene.name, 
         value : Number(gParameter.clipScene.value) + 1
     });
@@ -1423,61 +1342,61 @@ Array.prototype.diff = function(a) {
 */
 
 function updateHud() {
-    setParameterProperty({
+    setParameter({
         key : gParameter.track.name, 
         value : (gTrackArray[gParameter.trackIndex.value] + 1)
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.scene.name,
         value : (Number(gParameter.clipScene.value) + 1)
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.time.name,
         value : gParameter.timeOffset.value / 4
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.width.name,
         value : gParameter.displayWidth.value / 4
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.top.name,
         value : (gDisplayNoteList[gParameter.rowOffset.value]) ? gDisplayNoteList[gParameter.rowOffset.value] : 0
     });
     if (gThereIsAClipInSlot) {
-        setParameterProperty({
+        setParameter({
             key : gParameter.clipLength.name,
             value : (gEditClip.get("length") /4)
         });
     }
-    setParameterProperty({
+    setParameter({
         key : gParameter.currentScaleName.name,
         value : gParameter.currentScaleName.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.newNoteLength.name,
         value :gParameter.newNoteLength.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.monomeHeight.name,
         value : gParameter.monomeHeight.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.monomeWidth.name,
         value : gParameter.monomeWidth.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.cycles.name,
         value : gParameter.cycles.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.rootNote.name,
         value : gParameter.rootNote.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.folding.name,
         value : gParameter.folding.value
     });
-    setParameterProperty({
+    setParameter({
         key : gParameter.newNoteVelocity.name,
         value : gParameter.newNoteVelocity.value
     });   
@@ -1719,7 +1638,6 @@ function displayNote(aNoteToDisplay, aIndex, aArray) {
     }    
 }
 
-
 //                                  ---===Clear Methods===---
 function clearFunctionModeLeds() {
     if (gDebugItem.functionName) { post("    --clearFunctionModeLeds--\n"); }
@@ -1813,7 +1731,7 @@ function press(aCol, aRow, aPress) {
                     addNote(lNewNotePitch, lNewNoteTime, gParameter.newNoteVelocity.value);
             }
         }
-        setParameterProperty({
+        setParameter({
             key : "latest",
             value : lNewNotePitch
         });
@@ -1969,7 +1887,7 @@ function widthButtons(aButtonPressed) {
                 break;
         }
     }
-    if (gDebugItem.startValue) { post("dWidth = ", gParameter.displayWidth.value, "\n"); }
+    if (gDebugItem.endValue) { post("displayWidth = ", gParameter.displayWidth.value, "\n"); }
 }
 function lengthButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("    --lengthButtons--\n"); }
@@ -2014,7 +1932,7 @@ function lengthButtons(aButtonPressed) {
                 break;
         }
     }
-    if (gDebugItem.startValue) { post("new notes will be created with length:", gParameter.newNoteLength.value, "\n"); }
+    if (gDebugItem.endValue) { post("new notes will be created with length:", gParameter.newNoteLength.value, "\n"); }
 }
 
 function velocityButtons(aButtonPressed) {
@@ -2063,7 +1981,7 @@ function velocityButtons(aButtonPressed) {
     
     updateMultiPurposeLeds();
 
-    if (gDebugItem.startValue) { post("new notes will be created with velocity:", gParameter.newNoteVelocity.value, "\n"); }
+    if (gDebugItem.endValue) { post("new notes will be created with velocity:", gParameter.newNoteVelocity.value, "\n"); }
 }
 
 function toggleWidthDisplayOptions() {
@@ -2124,7 +2042,7 @@ function toggleFollowingPlayingClip() {
     gFollowingPlayingClip = (gFollowingPlayingClip == true) ? false : true;
     updateFunctionModeLeds();
     getPlayingSlotNumber();
-    setParameterProperty({
+    setParameter({
         key : "following",
         value : gFollowingPlayingClip
     });
@@ -2297,7 +2215,7 @@ function leftInSet(aHowMuch) {
 function setMonomeWidth(aWidth) {
     if (gDebugItem.getSetName) { post("    --setMonomeWidth--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.monomeWidth.name,
         value : aWidth
     });
@@ -2317,7 +2235,7 @@ function setMonomeWidth(aWidth) {
 function setMonomeHeight(aHeight) {
     if (gDebugItem.getSetName) { post("    --setMonomeHeight--\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.monomeHeight.name,
         value : aHeight
     });
@@ -2528,7 +2446,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
 function setCycles(aNewCycleCount) {
     if (gDebugItem.getSetName) { post("    --setCycles--\n"); }
     
-    setParameterProperty({
+    setParameter({
         key : gParameter.cycles.name,
         value : aNewCycleCount
     });
@@ -2540,7 +2458,7 @@ function setCycles(aNewCycleCount) {
 function setRootNote(aNewRoot) {
     if (gDebugItem.getSetName) { post("    --setRootNote--\n"); }
 
-    setParameterProperty({
+    setParameter({
         key : gParameter.rootNote.name,
         value : aNewRoot
     });
@@ -2652,99 +2570,181 @@ function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
 }
 
 function setInSuite(aNewValue) {
-    setParameterProperty({
+    setParameter({
         key : gParameter.inSuite.name,
         value : aNewValue
     });
 }
 
-function setParameterProperty(aObject) {
-    var aProperty = gParameter[aObject.key],
-        aValue = aObject.value,
-        aSlot = (aObject.slot === undefined) ? null : aObject.slot,
-        lPatcherObjectNameString,
-        lValue,
-        lMinimum = (aProperty.minValue instanceof Function) ? aProperty.minValue() : aProperty.minValue,
-        lMaximum = (aProperty.maxValue instanceof Function) ? aProperty.maxValue() : aProperty.maxValue,
-        lListenerKeys = aProperty.listeners,
-        lLength = lListenerKeys.length,
-        iCounter;
-            
-    //check validity of aValue
-    if ((aProperty.type == "number") || (aProperty.type == "toggle") || (aProperty.type == "slotArray")) {
-        if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
-        else if (aValue < lMinimum) { lValue = lMinimum; }
-        else if (aValue > lMaximum) { lValue = lMaximum; }
-        else { post("something has gane awry in setParameterProperty!\n"); }
-    }
-    else { lValue = aValue; }
+function gParameter() {
+    
+    this.show = function(aObject) {
 
-    //update HUD
-    if (aProperty.type == "slotArray") {
-        aProperty.value[aSlot] = lValue;
-        
-        if (aProperty.format != null) {
-            sendToHud({
-                key : aProperty.name,
-                value : aProperty.value[aSlot],
-                format : aProperty.format,
-                slot : aSlot
-            });
+        var lOutlet = 2,
+            aKey = aObject.key,
+            aValue = aObject.value,
+            aFormat = (aObject.format == undefined) ? 0 : aObject.format;        
+
+        if (gDebugItem.functionName) { post("    --sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
+        if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
+
+        switch (aFormat) {
+            case cHudFormat.set:
+                outlet(lOutlet, aKey, "set", aValue);
+                break;
+            case cHudFormat.trigger:
+                outlet(lOutlet, aKey, aValue);
+                break;
+            case cHudFormat.symbol:
+                outlet(lOutlet, aKey, "setsymbol", aValue);
+                break;
+            case cHudFormat.measures:
+                outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
+                break;
+            case HudFormat.slotSet:
+                outlet(lOutlet, aSlot, aKey, "set", aValue);
+                break;
+            case HudFormat.slotTrigger:
+                outlet(lOutlet, aSlot, "setsymbol", aValue);
+                break;
+            case HudFormat.slotSymbol:
+                outlet(lOutlet, aSlot, aKey, "setsymbol", aValue);
+                break;
+            default: 
+                post("error in sendToHud. aFormat:", aFormat, "\n");
+                break;
         }
     }
-    else {
-        aProperty.value = lValue;
+    
+    this.set = function(aObject) {
+        var aParameter = gParameter[aObject.key],
+            aValue = aObject.value,
+            aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+            lPatcherObjectNameString,
+            lValue,
+            lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
+            lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
+            lListenerKeys = aParameter.listeners,
+            lLength = lListenerKeys.length,
+            iCounter;
 
-        if (aProperty.format != null) {
+        //check validity of aValue
+        if ((aParameter.type == "number") || (aParameter.type == "toggle") || (aParameter.type == "slotArray")) {
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
+            else if (aValue < lMinimum) { lValue = lMinimum; }
+            else if (aValue > lMaximum) { lValue = lMaximum; }
+            else { post("something has gane awry in setParameter!\n"); }
+        }
+        else { lValue = aValue; }
+
+        if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
+        else { aParameter.value = lValue; }
+
+        sendParameterValueToHud(aParameter);
+
+        // call listeners
+        for (iCounter = 0; iCounter < lLength; iCounter++) {
+            gThis[lListenerKeys[iCounter]]();
+            post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n");
+        }
+
+        // Save.
+        if (aParameter.saveInPattr) {
+            patcherObjectNameString = aParameter.name + gParameter.patchString + "Pattr";
+            this.patcher.getnamed(patcherObjectNameString).setvalueof(aParameter.value);
+        }
+    }
+    
+    this.refresh = function(aParameter) {
+        if (aParameter.format != null) {
             sendToHud({
-                key: aProperty.name,
-                value: aProperty.value,
-                format: aProperty.format
+                key: aParameter.name,
+                value: (aParameter.type == "slotArray") ? aParameter.value[aSlot] : aParameter.value,
+                format: aParameter.format,
+                slot: aSlot
             });
         }
     }
     
-    // call listeners
-    for (iCounter = 0; iCounter < lLength; iCounter++) {
-        gThis[lListenerKeys[iCounter]]();
-        post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n");
+    this.toggle = function(aParameterName) {
+        if (gParameter[aParameterName].type == "toggle") {
+            setParameter({
+                key : aParameterName,
+                value : Number(!Boolean(gParameter[aParameterName].value))
+            });
+        }
+        else { post(aParameterName, "is not a toggle parameter\n");}
     }
     
-    // Save.
-    if (aProperty.saveInPattr) {
-        patcherObjectNameString = aProperty.name + gParameter.patchString + "Pattr";
-        this.patcher.getnamed(patcherObjectNameString).setvalueof(aProperty.value);
-    }
-}
+    this.change = function(aParameterName, aAmount) {
 
-function changeParameterProperty(aPropertyString, aAmount) {
-
-    setParameterProperty({
-        key : aPropertyString,
-        value : gParameter[aPropertyString].value + aAmount
-    });
-}
-
-function toggleParameterProperty(aPropertyString) {
-    if (gParameter[aPropertyString].type == "toggle") {
-        setParameterProperty({
-            key : aPropertyString,
-            value : Number(!Boolean(gParameter[aPropertyString].value))
+        setParameter({
+            key : aParameterName,
+            value : gParameter[aParameterName].value + aAmount
         });
     }
-    else { post(aPropertyString, "is not a toggle gParameter\n");}
-}
+    
+    this.store = function(aNumber) {
+        this.patcher.getnamed(gParameter.patchString + "-presetStore").message("store", aNumber);
+    }
 
-function store(aNumber) {
-    this.patcher.getnamed(gParameter.patchString + "-presetStore").message("store", aNumber);
-}
+    this.recall = function(aNumber) {
+        this.patcher.getnamed("gsClipStep-presetStore").message(aNumber);
+        grabAllPattrValues();
+        focusOnClip();
+        updateMonome();
+        updateHud();
+    }
+    
+    this.grab = function(aParameter) {
+        if (gDebugItem.functionName) { post("    --grabPattrValue " + aParameter.name + "--\n"); }
 
-function recall(aNumber) {
-    this.patcher.getnamed("gsClipStep-presetStore").message(aNumber);
-    grabAllPattrValues();
-    focusOnClip();
-    updateMonome();
-    updateHud();
+        var lPatcherObjectNameString = aParameter.name + gParameter.patchString + "Pattr",
+            lValue;
+
+        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
+        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+
+        switch (aParameter.type) {
+            case "number" : 
+                /*jsl:fallthru*/
+            case "toggle" :
+                lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                break;
+            case "string" :
+                lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                break;
+            case "slotArray" :
+                lValue = Array(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                break;
+            default :
+                post(aParameter.name + ".type:", aParameter.type , "\n");
+                break;
+        }
+
+        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+
+        if (aParameter.format != null) {
+            aParameter.value = lValue;
+            sendToHud({
+                key: aParameter.name,
+                value: aParameter.value,
+                format: aParameter.format
+            });
+        }
+
+        if (gDebugItem.endValue) { post(aParameter.name + ".value: ", aParameter.value, "\n"); }
+    }
+
+    this.grabAll = function() {    
+        var iProperty;
+
+        for (iProperty in gParameter) {
+            if (gParameter[iProperty].saveInPattr) {
+                grabPattrValue(gParameter[iProperty]);
+            }
+        }
+    }
 }
 
 function freebang() {
