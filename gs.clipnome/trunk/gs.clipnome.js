@@ -41,7 +41,7 @@ var gPlayingClipsArray;
 var gDebugLevel = [];
 
 function setDebugLevel(level) {
-    if (level > 0) { post("                           --setDebugLevel--\n"); }
+    if (level > 0) { post("    --setDebugLevel--\n"); }
     
     //gDebugLevel[1] = true;
     //gDebugLevel[2] = true;
@@ -73,7 +73,7 @@ function initialize() {
 
     setDebugLevel(0);
     if (gDebugLevel[1]) {
-        post("                     ---initialize-\n");
+        post("    ---initialize-\n");
     }    
     inSuite = 0;
 
@@ -134,7 +134,7 @@ function initialize() {
 
 function setXOffset(_newXOffset) {
     if (gDebugLevel[1]) {
-        post("                     ---setXOffset-\n");
+        post("    ---setXOffset-\n");
     }
 
     if (_newXOffset < 0) {
@@ -154,7 +154,7 @@ function setXOffset(_newXOffset) {
 }
 
 function setYOffset(_newYOffset) {
-    if (gDebugLevel[1]) { post("                     ---setYOffset-\n"); }
+    if (gDebugLevel[1]) { post("    ---setYOffset-\n"); }
     
     if (_newYOffset < 0) {
         yOffset = 0;
@@ -207,7 +207,7 @@ function updateClipWindow() {
         return;
     }
     
-    if (gDebugLevel[1]) { post("                     ---updateClipWindow-\n"); }
+    if (gDebugLevel[1]) { post("    ---updateClipWindow-\n"); }
     
     clearFlashingClips();
     clearClipWindow();
@@ -1029,7 +1029,7 @@ function clearFlashingClips() {
 }
 
 function mixer() {
-    if (gDebugLevel[1]) { post("                     --mixer--\n"); }
+    if (gDebugLevel[1]) { post("    --mixer--\n"); }
 
     clearFlashingClips();
     clearClipWindow();
