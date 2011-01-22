@@ -56,11 +56,11 @@ var gThis = this,
     gThereIsAClipInSlot, // not an attribute
 
     gDebugItem = {
-        argument : false,
+        functionArguments : false,
         endValue : false,
         frequentItem : false,
         frequentList: false,
-        functionName : true,
+        functionName : false,
         list : false,
         localValue : false,
         startValue : false,
@@ -428,7 +428,7 @@ var gThis = this,
     };
 
 function bang() {
-    if (true) { post("                     ---bang-\n"); }
+    if (true) { post("    ---bang-\n"); }
     
     gMonome.row(0, "blink");
 }
@@ -442,7 +442,7 @@ function bang() {
 
 function initialize() {
     
-    if (gDebugItem.functionName) { post("                     ---initialize-\n"); }
+    if (gDebugItem.functionName) { post("    ---initialize-\n"); }
     if (gDebugItem.list) { postPattrs("start"); }
     grabAllPattrValues();
     gMonome = new Monome(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
@@ -489,7 +489,7 @@ function grabAllPattrValues() {
 }
 
 function setClipFromGlobal(aTrack, aScene) {
-    if (gDebugItem.getSetName) { post("                     ---setClipFromGlobal-\n"); }
+    if (gDebugItem.getSetName) { post("    ---setClipFromGlobal-\n"); }
     
     var index = getIndexOfTrack(aTrack);
     if (index > -1) {
@@ -500,7 +500,7 @@ function setClipFromGlobal(aTrack, aScene) {
 //                                  ---===Prototype work===---
 
 Array.prototype.inArray = function (aNumber) {
-    if (gDebugItem.getSetName) { post("                               --inArray-\n"); }
+    if (gDebugItem.getSetName) { post("    --inArray-\n"); }
     
     // need this later for Folding Logic
     var g;
@@ -511,7 +511,7 @@ Array.prototype.inArray = function (aNumber) {
 };
 
 Array.prototype.noteToLiveAPI = function () {
-    if (gDebugItem.getSetName) { post("                               --noteToLiveAPI-\n"); }
+    if (gDebugItem.getSetName) { post("    --noteToLiveAPI-\n"); }
     
     // Typecasting? In javascript? Yessert!
     var timeNumber = Number(this[2]);
@@ -522,7 +522,7 @@ Array.prototype.noteToLiveAPI = function () {
 };
 
 Number.prototype.toLength = function (aLength) {
-       if (gDebugItem.getSetName) { post("                              --toLength--\n"); }
+       if (gDebugItem.getSetName) { post("    --toLength--\n"); }
 
     var lString = this.toString();
     if (lString.length < aLength) {
@@ -539,14 +539,14 @@ Number.prototype.toLength = function (aLength) {
 //                                  ---===track accessors===---
 
 function setTrack(aNewTrackNumber) {
-    if (gDebugItem.getSetName) { post("                               --setTrack--\n"); }
+    if (gDebugItem.getSetName) { post("    --setTrack--\n"); }
 
     setTrackIndex(getIndexOfTrack(aNewTrackNumber -1));    
 }
 
 //                                  ---===trackIndex accessors===---
 function setTrackIndex(aNewIndexNumber) {
-    if (gDebugItem.getSetName) { post("                               --setTrackIndex--\n"); }
+    if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
     setParameterProperty({
         key : "trackIndex",
@@ -556,7 +556,7 @@ function setTrackIndex(aNewIndexNumber) {
 }
 
 function changeTrackIndex(aAmount) {
-    if (gDebugItem.getSetName) { post("                               --changeTrackIndex--\n"); }
+    if (gDebugItem.getSetName) { post("    --changeTrackIndex--\n"); }
         
     setParameterProperty({
         key : "trackIndex",
@@ -567,7 +567,7 @@ function changeTrackIndex(aAmount) {
 }
 
 function getIndexOfTrack(aTrackToFind) {
-    if (gDebugItem.getSetName) { post("                               --getTrackIndex--\n"); }
+    if (gDebugItem.getSetName) { post("    --getTrackIndex--\n"); }
 
     if (gDebugItem.startValue) { post("looking for:", aTrackToFind, "\n");}
     var lIndex = gTrackArray.indexOf(aTrackToFind);
@@ -585,7 +585,7 @@ function getIndexOfTrack(aTrackToFind) {
 }
 
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
-    if (gDebugItem.getSetName) { post("                               --setTrackIndex--\n"); }
+    if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
     setParameterProperty({
         key : "trackIndex",
@@ -624,7 +624,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 
 //                                  ---===rowOffset accessors===---
 function setRowOffset(aNewOffsetNumber) {
-    if (gDebugItem.getSetName) { post("                               --setRowOffset--\n"); }
+    if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
     setParameterProperty({
         key : "rowOffset",
@@ -633,7 +633,7 @@ function setRowOffset(aNewOffsetNumber) {
     updateNoteDisplay();
 }
 function setFoldingRowOffset(aNewOffsetNumber) {
-    if (gDebugItem.getSetName) { post("                               --setRowOffset--\n"); }
+    if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
     setParameterProperty({
         key : "foldingRowOffset",
@@ -646,7 +646,7 @@ function getRowOffset() {
     return (gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value;
 }
 function changeRowOffset(aAmount) {
-    if (gDebugItem.functionName) { post("                               --changeRowOffset--\n"); }
+    if (gDebugItem.functionName) { post("    --changeRowOffset--\n"); }
     
     if(!aAmount) { aAmount = 1; }
             
@@ -666,7 +666,7 @@ function changeRowOffset(aAmount) {
 
 //                                  ---===clipScene accessors===---
 function setClipScene(aNewSceneNumber) {
-    if (gDebugItem.getSetName) { post("                               --setClipScene--\n"); }
+    if (gDebugItem.getSetName) { post("    --setClipScene--\n"); }
 
     setParameterProperty({
         key : "clipScene",
@@ -677,12 +677,12 @@ function setClipScene(aNewSceneNumber) {
 }
 
 function setClipSceneFromPatcher(aNewSceneNumber) {
-    if (gDebugItem.getSetName) { post("                               --setClipSceneFromPatcher--\n"); }
+    if (gDebugItem.getSetName) { post("    --setClipSceneFromPatcher--\n"); }
     setClipScene(aNewSceneNumber - 1);
 }
 
 function changeClipScene(aAmount) {
-    if (gDebugItem.getSetName) { post("                               --changeClipScene--\n"); }
+    if (gDebugItem.getSetName) { post("    --changeClipScene--\n"); }
     
     setParameterProperty({
         key : "clipScene",
@@ -703,7 +703,7 @@ function isValidClipSceneNumber() {
 
 //                                  ---===timeOffset accessors===---
 function setTimeOffset(aNewOffset){
-    if (gDebugItem.getSetName) { post("                               --setTimeOffset--\n"); }
+    if (gDebugItem.getSetName) { post("    --setTimeOffset--\n"); }
 
     setParameterProperty({
         key : "timeOffset",
@@ -714,7 +714,7 @@ function setTimeOffset(aNewOffset){
 }
 
 function changeTimeOffset(aAmount) {
-    if (gDebugItem.getSetName) { post("                               --changeTimeOffset-\n"); }
+    if (gDebugItem.getSetName) { post("    --changeTimeOffset-\n"); }
         
     if(!aAmount) { aAmount = gParameter.displayWidth.value; }
     else { aAmount *= gParameter.displayWidth.value; }
@@ -728,7 +728,7 @@ function changeTimeOffset(aAmount) {
 //                                  ---===newNoteLength accessors===---
 
 function setNewNoteLength(aLength) {
-    if (gDebugItem.getSetName) { post("                     --setNewNoteLength--\n"); }
+    if (gDebugItem.getSetName) { post("    --setNewNoteLength--\n"); }
     
     setParameterProperty({
         key : "newNoteLength",
@@ -740,7 +740,7 @@ function setNewNoteLength(aLength) {
 //                                  ---===newNoteVelocity===---
 
 function setNewNoteVelocity(aVelocity) {
-    if (gDebugItem.getSetName) { post("                     ---setNewNoteVelocity-\n"); }
+    if (gDebugItem.getSetName) { post("    ---setNewNoteVelocity-\n"); }
     
     sendToHud({
         key : "velocity",
@@ -751,7 +751,7 @@ function setNewNoteVelocity(aVelocity) {
 
 //                                  ---===functionMode accessors===---
 function setFunctionMode(aMode) {
-    if (gDebugItem.functionName) { post("                               --setFunctionMode--\n"); }
+    if (gDebugItem.functionName) { post("    --setFunctionMode--\n"); }
 
     setParameterProperty({
         key : "functionMode",
@@ -761,19 +761,19 @@ function setFunctionMode(aMode) {
 }
 
 function decrementFunctionMode() {
-    if (gDebugItem.getSetName) { post("                               --decrementFunctionMode--\n"); }
+    if (gDebugItem.getSetName) { post("    --decrementFunctionMode--\n"); }
     
     changeParameterProperty("functionMode", -1);
 }
 
 function incrementFunctionMode() {
-    if (gDebugItem.getSetName) { post("                               --incrementFunctionMode--\n"); }
+    if (gDebugItem.getSetName) { post("    --incrementFunctionMode--\n"); }
     
     changeParameterProperty("functionMode", 1);
 }
 
 function toggleFunctionBitButton(aButton) {
-    if (gDebugItem.functionName) { post("                               --toggleFunctionBitButton--\n"); }
+    if (gDebugItem.functionName) { post("    --toggleFunctionBitButton--\n"); }
 
     gFunctionToggle[aButton] = (gFunctionToggle[aButton]) ? false : true;
     
@@ -798,12 +798,12 @@ function toggleFunctionBitButton(aButton) {
 
 //                                  ---===folding accessors===---
 function toggleFolding() {
-    if (gDebugItem.functionName) { post("                               --toggleFolding--\n"); }
+    if (gDebugItem.functionName) { post("    --toggleFolding--\n"); }
     
     toggleParameterProperty("folding");
 }
 function setFolding(aValue) {
-    if (gDebugItem.getSetName) { post("                               --setFolding--\n"); }
+    if (gDebugItem.getSetName) { post("    --setFolding--\n"); }
     
     setPlayheadVisible("folding", aValue);
 
@@ -813,7 +813,7 @@ function setFolding(aValue) {
                     
 //                                  ---===Callbacks===---
 function onNewSlotPlaying(aApiArray) {
-    if (gDebugItem.functionName) { post("                               --onNewSlotPlaying--\n"); }
+    if (gDebugItem.functionName) { post("    --onNewSlotPlaying--\n"); }
     var playingClipSlot = parseInt(aApiArray[1], 10);
     if ((gFollowingPlayingClip) && (playingClipSlot >= 0)) {
         setClipScene(playingClipSlot);
@@ -841,7 +841,7 @@ function setPlayheadVisible() {
 }
 
 function setDisplayWidth(aWidth) {
-    if (gDebugItem.getSetName) { post("                               --setDisplayWidth--\n"); }
+    if (gDebugItem.getSetName) { post("    --setDisplayWidth--\n"); }
 
     setParameterProperty({
         key : "displayWidth",
@@ -860,7 +860,7 @@ function updatePlayhead(aTimeNumber) {
     var playheadTimeInt = Math.floor((aTimeNumber[1] - gParameter.timeOffset.value) * displayRatioToMonome()),
         mMonome = gMonome;
     
-    if (gDebugItem.frequentName) { post("                               --updatePlayhead--\n"); }
+    if (gDebugItem.frequentName) { post("    --updatePlayhead--\n"); }
     // View
     if (gPlayheadVisible) {
 
@@ -887,10 +887,11 @@ function countMidiTracks() {
     
     var j, lTrackCount;
     
-    if (gDebugItem.functionName) { post("                               --countMidiTracks--\n"); }
+    if (gDebugItem.functionName) { post("    --countMidiTracks--\n"); }
+    
     gTrackArray = [];
     lTrackCount = gCountAllTracks.getcount("tracks");
-    post("lTrackCount:", lTrackCount, "\n");
+    
     for (j = 0; j < lTrackCount; j++) {
         if (gIndexSet) { gIndexSet.goto("live_set tracks " + j); }
         else { gIndexSet = new LiveAPI(this.patcher, null, "live_set tracks " + j ); }
@@ -911,7 +912,7 @@ function countScenesWithClip() {
     // TODO - i can't implement this unless i figure out a way to observe a TRACK for an added clip.
     // or i can observe every slot in the current track, but that won't scale. at all.
     
-    if (gDebugItem.functionName) { post("                               --countScenesWithClip--\n"); }
+    if (gDebugItem.functionName) { post("    --countScenesWithClip--\n"); }
     sceneArray = [];
     sceneCount = gCountAllTracks.getcount("scenes");
     for (var k = 0; k < sceneCount; k++) {
@@ -936,7 +937,7 @@ function compareNumbers(a, b) {
 }
 
 function roundDisplayOffset() {
-    if (gDebugItem.functionName) { post("                               --roundDisplayOffset--\n"); }
+    if (gDebugItem.functionName) { post("    --roundDisplayOffset--\n"); }
     if(gDebugItem.startValue) { post("before round", gParameter.timeOffset.value,  "\n"); }
     var a = Math.round(gParameter.timeOffset.value / gParameter.displayWidth.value);
     gParameter.timeOffset.value = a * gParameter.displayWidth.value;
@@ -958,9 +959,9 @@ function displayRowMax() {
 
 //                                  ---===LiveApi Calls===---
 function focusOnClip() {
-    if (gDebugItem.functionName) { post("                               --focusOnClip--\n"); }          
+    if (gDebugItem.functionName) { post("    --focusOnClip--\n"); }          
     
-    if (true) { post("gTrackArray[" + gParameter.trackIndex.value + "]:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (gDebugItem.functionArguments) { post("gTrackArray[" + gParameter.trackIndex.value + "]:", gTrackArray[gParameter.trackIndex.value], "\n"); }
 
     if (gCheckForClip) { gCheckForClip.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value); }
     else { gCheckForClip = new LiveAPI(this.patcher, null, "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value); }
@@ -1008,7 +1009,7 @@ function focusOnClip() {
 }
 
 function getCurrentPosition() {
-    if (gDebugItem.functionName) { post("                               --getCurrentPosition--\n"); }
+    if (gDebugItem.functionName) { post("    --getCurrentPosition--\n"); }
     post("gWatchClipNotes.path = ", gWatchClipNotes.path, "\n");
     post("clipScene = ", getClipScene(), "\n");
     var currentPathArray = gWatchClipNotes.path.split(" ");
@@ -1046,7 +1047,7 @@ function playCurrentClip() {
 
 //                                  ---===Check Notes===---
 function timeIsDisplayed(aTimeInQuestion) {
-    if (gDebugItem.list) { post("                               --timeIsDisplayed--\n"); }
+    if (gDebugItem.list) { post("    --timeIsDisplayed--\n"); }
     if ((gParameter.timeOffset.value <= aTimeInQuestion) && (aTimeInQuestion < displayTimeMax())) {
         return true;
     }
@@ -1056,7 +1057,7 @@ function timeIsDisplayed(aTimeInQuestion) {
 }
 
 function rowIsDisplayed(aRowInQuestion) {
-    if (gDebugItem.list) { post("                               --rowIsDisplayed--\n"); }
+    if (gDebugItem.list) { post("    --rowIsDisplayed--\n"); }
     var currentOffset = (gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value;
     if (currentOffset <= aRowInQuestion && (aRowInQuestion < displayRowMax())) {
         return true;
@@ -1067,7 +1068,7 @@ function rowIsDisplayed(aRowInQuestion) {
 }
 
 function doesCoincide(aArray, aTone, aTime) {
-    if (gDebugItem.functionName) { post("                               --doesCoincide--\n"); }
+    if (gDebugItem.functionName) { post("    --doesCoincide--\n"); }
     var x, l;
     var a = [];
     for ( x = 0, l = aArray.length; x < l; x++) {
@@ -1102,7 +1103,7 @@ function getClipNotes() {
         sliceIndexLeft,
         sliceIndexRight;
     
-    if (gDebugItem.functionName) { post("                               --getClipNotes--\n"); }
+    if (gDebugItem.functionName) { post("    --getClipNotes--\n"); }
     
     if(!gThereIsAClipInSlot) { return; }
     
@@ -1168,7 +1169,7 @@ function getClipNotes() {
 }
 
 function publishNoteArray() {
-    if (gDebugItem.functionName) { post("                               --publishNoteArray--\n"); }
+    if (gDebugItem.functionName) { post("    --publishNoteArray--\n"); }
     // Model Controller
     var mNoteArray = gNoteArray,
         newLength = mNoteArray.length;
@@ -1190,7 +1191,7 @@ function publishNoteArray() {
 }
 
 function addNote(aPitch, aTime, aVelocity) {
-    if (gDebugItem.functionName) { post("                               --addNote--\n"); }
+    if (gDebugItem.functionName) { post("    --addNote--\n"); }
     // Model Controller
     // simply adds one note no need to get and replace every note.
     
@@ -1217,7 +1218,7 @@ function addNote(aPitch, aTime, aVelocity) {
 }
 
 function removeNote(aIndex) {
-    if (gDebugItem.functionName) { post("                               --removeNote--\n"); }
+    if (gDebugItem.functionName) { post("    --removeNote--\n"); }
     var noteRemoved = gNoteArray.splice(aIndex, 1);
     var noteRemovedIndex = aIndex;
     if (gDebugItem.functionEnd) { post("noteRemoved:" + noteRemoved + "\n"); }
@@ -1226,14 +1227,14 @@ function removeNote(aIndex) {
 
 //                                  ---===View Controller Methods===---
 function updateMonome() {
-    if (gDebugItem.functionName) { post("                               --updateMonome--\n"); }
+    if (gDebugItem.functionName) { post("    --updateMonome--\n"); }
     updateNoteDisplay();
     updateFunctionModeLeds();
     updateMultiPurposeLeds();
 }
 
 function updateNoteDisplay() {
-    if (gDebugItem.functionName) { post("                               --updateNoteDisplay--\n"); }
+    if (gDebugItem.functionName) { post("    --updateNoteDisplay--\n"); }
 
     if (gWatchersCreated) {
         gMonome.beginUpdates();
@@ -1329,7 +1330,7 @@ function updateHud() {
 
 
 function updateFunctionModeLeds() {
-    if (gDebugItem.functionName) { post("                               --updateFunctionModeLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --updateFunctionModeLeds--\n"); }
     clearFunctionModeLeds();
     
     switch(gParameter.functionMode.value) {
@@ -1364,7 +1365,7 @@ function updateFunctionModeLeds() {
 }
 
 function updateMultiPurposeLeds() {
-    if (gDebugItem.functionName) { post("                               --updateMultiPurposeLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --updateMultiPurposeLeds--\n"); }
     
     clearMultiPurposeLeds();
     switch(gParameter.functionMode.value) {
@@ -1397,7 +1398,7 @@ function updateMultiPurposeLeds() {
 }
 
 function updateControlLeds() {
-    if (gDebugItem.functionName) { post("                     ---updateControlLeds-\n"); }
+    if (gDebugItem.functionName) { post("    ---updateControlLeds-\n"); }
     
     updateFunctionModeLeds();
     updateMultiPurposeLeds();
@@ -1407,7 +1408,7 @@ function updateControlLeds() {
 
 //                                  ---===Display Methods===---
 function displayDisplayWidthLeds() {
-    if (gDebugItem.functionName) { post("                               --displayDisplayWidthLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --displayDisplayWidthLeds--\n"); }
     if ((gParameter.functionMode.value == cFunctionMode.widthMode) && (!gExtendedWidthOptions)) {
         switch(gParameter.displayWidth.value) {
             case cDisplayWidthOption._0:
@@ -1448,7 +1449,7 @@ function displayDisplayWidthLeds() {
 }
 
 function displayLengthLeds() {
-    if (gDebugItem.functionName) { post("                               --displayLengthLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --displayLengthLeds--\n"); }
         
     if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (!gExtendedLengthOptions)) {
         switch(gParameter.newNoteLength.value) {
@@ -1490,7 +1491,7 @@ function displayLengthLeds() {
 }
 
 function displayVelocityLeds() {
-    if (gDebugItem.functionName) { post("                               --displayVelocityLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --displayVelocityLeds--\n"); }
         
     if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (!gExtendedVelocityOptions)) {
         switch(gParameter.newNoteVelocity.value) {
@@ -1532,7 +1533,7 @@ function displayVelocityLeds() {
 }
 
 function displayNote(aNoteToDisplay, aIndex, aArray) {
-    if (gDebugItem.list) { post("                               --displayNote--\n"); }
+    if (gDebugItem.list) { post("    --displayNote--\n"); }
     // View
     // 1 = a quarter note. 4 equals a measure.
     
@@ -1566,7 +1567,7 @@ function displayNote(aNoteToDisplay, aIndex, aArray) {
 
 //                                  ---===Clear Methods===---
 function clearFunctionModeLeds() {
-    if (gDebugItem.functionName) { post("                               --clearFunctionModeLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --clearFunctionModeLeds--\n"); }
     
     //TODO Use Min and Max
     for (var o = 4; o <= 7; o++) {
@@ -1575,14 +1576,14 @@ function clearFunctionModeLeds() {
 }
 
 function clearMultiPurposeLeds() {
-    if (gDebugItem.functionName) { post("                               --clearMultiPurposeLeds--\n"); }
+    if (gDebugItem.functionName) { post("    --clearMultiPurposeLeds--\n"); }
     for (var p = 0; p < 4; p++) {
         gMonome[p][monomeLastRow()].ledOff();
     }
 }
 
 function clearNoteDisplay() {
-    if (gDebugItem.functionName) { post("                               --clearNoteDisplay--\n"); }
+    if (gDebugItem.functionName) { post("    --clearNoteDisplay--\n"); }
     for (var iCol = 0; iCol < gParameter.monomeWidth.value; iCol ++) {
         for (var iRow = 0; iRow < monomeLastRow(); iRow++) {
             gMonome[iCol][iRow].ledOff();
@@ -1593,7 +1594,7 @@ function clearNoteDisplay() {
 
 //                                  ---===NoteList===---
 function fillInNoteRows() {
-    if (gDebugItem.functionName) { post("                               --fillInNoteRows--\n"); }
+    if (gDebugItem.functionName) { post("    --fillInNoteRows--\n"); }
 
     var numberNeeded = (gParameter.monomeHeight.value - gDisplayNoteList.length), 
         lScaleLength = gParameter.currentScale.value.length;
@@ -1623,7 +1624,7 @@ function fillInNoteRows() {
 //      aRow - which row was pressed
 //      aPress - whether or not the buttons state changed to pressed (1) or released (0)
 function press(aCol, aRow, aPress) {
-    if (gDebugItem.functionName) { post("                               --press--\n"); }
+    if (gDebugItem.functionName) { post("    --press--\n"); }
     var lOutlet = 1,
         lNewNoteTime,
         lNewNotePitch;
@@ -1763,7 +1764,7 @@ function press(aCol, aRow, aPress) {
 }
 
 function shiftIsHeld() {
-    if (gDebugItem.functionName) { post("                     --shiftIsHeld--\n"); }
+    if (gDebugItem.functionName) { post("    --shiftIsHeld--\n"); }
 
     if (gMonome[cFunctionButton.shift][monomeLastRow()].isHeld() == 1) {
         return true;
@@ -1772,7 +1773,7 @@ function shiftIsHeld() {
 }
 
 function widthButtons(aButtonPressed) {
-    if (gDebugItem.functionName) { post("                               --widthButtons--\n"); }
+    if (gDebugItem.functionName) { post("    --widthButtons--\n"); }
     
     if (!gExtendedWidthOptions) {
         switch (aButtonPressed) {
@@ -1817,7 +1818,7 @@ function widthButtons(aButtonPressed) {
     if (gDebugItem.startValue) { post("dWidth = ", gParameter.displayWidth.value, "\n"); }
 }
 function lengthButtons(aButtonPressed) {
-    if (gDebugItem.functionName) { post("                               --lengthButtons--\n"); }
+    if (gDebugItem.functionName) { post("    --lengthButtons--\n"); }
     
     if (!gExtendedLengthOptions) {
         switch (aButtonPressed) {
@@ -1863,7 +1864,7 @@ function lengthButtons(aButtonPressed) {
 }
 
 function velocityButtons(aButtonPressed) {
-    if (gDebugItem.functionName) { post("                               --velocityButtons--\n"); }
+    if (gDebugItem.functionName) { post("    --velocityButtons--\n"); }
     
     if (!gExtendedVelocityOptions) {
         switch (aButtonPressed) {
@@ -1912,7 +1913,7 @@ function velocityButtons(aButtonPressed) {
 }
 
 function toggleWidthDisplayOptions() {
-    if (gDebugItem.functionName) { post("                               --toggleWidthDisplayOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --toggleWidthDisplayOptions--\n"); }
     
     gExtendedWidthOptions = (gExtendedWidthOptions) ? false : true;
     updateControlLeds();
@@ -1920,7 +1921,7 @@ function toggleWidthDisplayOptions() {
     if(gDebugItem.functionEnd) { post("gExtendedWidthOptions:", gExtendedWidthOptions, "\n"); }
 }
 function toggleLengthOptions() {
-    if (gDebugItem.functionName) { post("                               --toggleLengthOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --toggleLengthOptions--\n"); }
     
     gExtendedLengthOptions = (gExtendedLengthOptions) ? false : true;
     updateControlLeds();
@@ -1929,7 +1930,7 @@ function toggleLengthOptions() {
 }
 
 function toggleVelocityOptions() {
-    if (gDebugItem.functionName) { post("                               --toggleVelocityOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --toggleVelocityOptions--\n"); }
     
     gExtendedVelocityOptions = (gExtendedVelocityOptions) ? false : true;
     updateControlLeds();
@@ -1938,7 +1939,7 @@ function toggleVelocityOptions() {
 }
 
 function showVelocityOptions(aWhichOptions) {
-    if (gDebugItem.functionName) { post("                               --showVelocityOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --showVelocityOptions--\n"); }
     
     gExtendedVelocityOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
@@ -1947,7 +1948,7 @@ function showVelocityOptions(aWhichOptions) {
 }
 
 function showWidthOptions(aWhichOptions) {
-    if (gDebugItem.functionName) { post("                               --showWidthOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --showWidthOptions--\n"); }
     
     gExtendedWidthOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
@@ -1956,7 +1957,7 @@ function showWidthOptions(aWhichOptions) {
 }
 
 function showLengthOptions(aWhichOptions) {
-    if (gDebugItem.functionName) { post("                               --gExtendedLengthOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --gExtendedLengthOptions--\n"); }
     
     gExtendedLengthOptions = (!!aWhichOptions) ? true : false;
     updateControlLeds();
@@ -1965,7 +1966,7 @@ function showLengthOptions(aWhichOptions) {
 }
 
 function toggleFollowingPlayingClip() {
-    if (gDebugItem.functionName) { post("                               --toggleFollowingPlayingClip--\n"); }
+    if (gDebugItem.functionName) { post("    --toggleFollowingPlayingClip--\n"); }
     gFollowingPlayingClip = (gFollowingPlayingClip == true) ? false : true;
     updateFunctionModeLeds();
     getPlayingSlotNumber();
@@ -1988,7 +1989,7 @@ function getPlayingSlotNumber() {
 
 //                                  ---===Clip Navigation===---
 function clipArrows(aWhichArrow) {
-    if (gDebugItem.functionName) { post("                               --clipArrows--\n"); }
+    if (gDebugItem.functionName) { post("    --clipArrows--\n"); }
     switch (aWhichArrow) {
         
         case cFunctionButton.dynamic_0:
@@ -2015,7 +2016,7 @@ function clipArrows(aWhichArrow) {
 }
 
 function leftInClip(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --leftInClip--\n"); }
+    if (gDebugItem.functionName) { post("    --leftInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     
@@ -2024,21 +2025,21 @@ function leftInClip(aHowMuch) {
 
 
 function rightInClip(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --rightInClip--\n"); }
+    if (gDebugItem.functionName) { post("    --rightInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     
     changeTimeOffset(aHowMuch);
 }
 function upInClip(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --upInClip--\n"); }
+    if (gDebugItem.functionName) { post("    --upInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     changeRowOffset(-aHowMuch);
 
 }
 function downInClip(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --downInClip--\n"); }
+    if (gDebugItem.functionName) { post("    --downInClip--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     changeRowOffset(aHowMuch);
@@ -2047,7 +2048,7 @@ function downInClip(aHowMuch) {
 
 //                                  ---===Set Navigation===---
 function liveSetArrows(aWhichArrow) {
-    if (gDebugItem.functionName) { post("                               --liveSetArrows--\n"); }
+    if (gDebugItem.functionName) { post("    --liveSetArrows--\n"); }
     switch (aWhichArrow) {
         
         case cFunctionButton.dynamic_0:
@@ -2080,7 +2081,7 @@ function liveSetArrows(aWhichArrow) {
 
 
 function upInSet(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --upInSet--\n"); }
+    if (gDebugItem.functionName) { post("    --upInSet--\n"); }
     if(!aHowMuch) { aHowMuch = 1; }
 
     if (gDebugItem.endValue) { post("clipScene before upInSet:", getClipScene(), "\n"); }
@@ -2090,7 +2091,7 @@ function upInSet(aHowMuch) {
 }
 
 function downInSet(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --downInSet--\n"); }
+    if (gDebugItem.functionName) { post("    --downInSet--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     if (gDebugItem.functionEnd) { post("clipScene before downInSet:", getClipScene(), "\n"); }
@@ -2101,7 +2102,7 @@ function downInSet(aHowMuch) {
 }
 
 function rightInSet(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --rightInSet--\n"); }
+    if (gDebugItem.functionName) { post("    --rightInSet--\n"); }
     
     if(!aHowMuch) { aHowMuch = 1; }
     if (gDebugItem.startValue) {
@@ -2116,7 +2117,7 @@ function rightInSet(aHowMuch) {
     if (gDebugItem.startValue) {    post("track after rightInSet:", gTrackArray[gParameter.trackIndex.value], "\n"); }
 }
 function leftInSet(aHowMuch) {
-    if (gDebugItem.functionName) { post("                               --leftInSet--\n"); }
+    if (gDebugItem.functionName) { post("    --leftInSet--\n"); }
     if(!aHowMuch) { aHowMuch = 1; }
     if (gDebugItem.startValue) {
         post("trackIndex before leftInSet:", getTrackIndex(), "\n");
@@ -2140,8 +2141,8 @@ function sendToHud(aObject) {
         aSlot = (aObject.slot === undefined) ? null : aObject.slot;
         
     
-    if (gDebugItem.functionName) { post("                               --sendToHud - key: " + aKey + " value: " + aValue  + " --\n"); }
-    if (gDebugItem.argument) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
+    if (gDebugItem.functionName) { post("    --sendToHud - key: " + aKey + " value: " + aValue  + " --\n"); }
+    if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
     
     switch (aFormat) {
         case cHudFormat.set:
@@ -2173,7 +2174,7 @@ function sendToHud(aObject) {
 //    aWidth
 
 function setMonomeWidth(aWidth) {
-    if (gDebugItem.getSetName) { post("                               --setMonomeWidth--\n"); }
+    if (gDebugItem.getSetName) { post("    --setMonomeWidth--\n"); }
 
     setParameterProperty({
         key: "monomeWidth",
@@ -2193,7 +2194,7 @@ function setMonomeWidth(aWidth) {
 //    aHeight
 
 function setMonomeHeight(aHeight) {
-    if (gDebugItem.getSetName) { post("                               --setMonomeHeight--\n"); }
+    if (gDebugItem.getSetName) { post("    --setMonomeHeight--\n"); }
     
     setParameterProperty({
         key : "monomeHeight",
@@ -2223,7 +2224,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
         mRows = aRows,
         updating = false;
         
-    if (gDebugItem.functionName) { post("                               --Monome--\n"); }
+    if (gDebugItem.functionName) { post("    --Monome--\n"); }
     if (gDebugItem.startValue) {
         post("monomeWidth:", aColumns, "\n");
         post("monomeHeight:", aRows, "\n");
@@ -2401,7 +2402,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
 
 //                                  ---===cycles accessors===---
 function setCycles(aNewCycleCount) {
-    if (gDebugItem.getSetName) { post("                               --setCycles--\n"); }
+    if (gDebugItem.getSetName) { post("    --setCycles--\n"); }
     
     setParameterProperty({
         key : "cycles",
@@ -2413,7 +2414,7 @@ function setCycles(aNewCycleCount) {
 
 //                                  ---===rootNote accessors===---
 function setRootNote(aNewRoot) {
-    if (gDebugItem.getSetName) { post("                               --setRootNote--\n"); }
+    if (gDebugItem.getSetName) { post("    --setRootNote--\n"); }
 
     setParameterProperty({
         key : "rootNote",
@@ -2425,7 +2426,7 @@ function setRootNote(aNewRoot) {
 
 //                                  ---===onScaleVariableChange===---
 function onScaleVariableChange () {
-    if (gDebugItem.getSetName) { post("                               --onScaleVariableChange--\n"); }
+    if (gDebugItem.getSetName) { post("    --onScaleVariableChange--\n"); }
 
     if (gDebugItem.list) { post("my name is:", gParameter.currentScaleName.value, "\n"); }
 
@@ -2436,7 +2437,7 @@ function onScaleVariableChange () {
 //                                  ---===Scale Methods===---
 
 function generateFullScaleList(aMapString) {
-    if (gDebugItem.functionName) { post("                               --generateFullScaleList--\n"); }
+    if (gDebugItem.functionName) { post("    --generateFullScaleList--\n"); }
     
     if (gDebugItem.list) { post("maps[" + aMapString + "].value:", gMaps[aMapString].value, "\n"); }     
 
@@ -2486,7 +2487,7 @@ function generateFullScaleList(aMapString) {
 }
 
 function setCurrentScale(aScaleToUse, aScaleName) {
-    if (gDebugItem.getSetName) { post("                     --setCurrentScale--\n"); }
+    if (gDebugItem.getSetName) { post("    --setCurrentScale--\n"); }
     
     if (gParameter.currentScale.value != aScaleToUse) {
         gParameter.currentScale.value = aScaleToUse;
@@ -2496,7 +2497,7 @@ function setCurrentScale(aScaleToUse, aScaleName) {
 }
 
 function setCurrentScaleName(aNewName) {
-    if (gDebugItem.getSetName) { post("                     ---setCurrentScaleName-\n"); }
+    if (gDebugItem.getSetName) { post("    ---setCurrentScaleName-\n"); }
     gParameter.currentScaleName.value = aNewName;
     this.patcher.getnamed("currentScaleNameGsCssPattr").message(gParameter.currentScaleName.value);
 }
@@ -2513,7 +2514,7 @@ function isValidCCNumber (aNumberInQuestion) {
 }
 
 function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
-    if (gDebugItem.functionName) { post("                               --setCurrentScaleWithSymbol--\n"); }
+    if (gDebugItem.functionName) { post("    --setCurrentScaleWithSymbol--\n"); }
     if (gDebugItem.startValue) { post("           aSymbolFromPatcher:", aSymbolFromPatcher, "\n"); }
     if (!gThereIsAClipInSlot) { return; }
 
@@ -2604,7 +2605,7 @@ function toggleParameterProperty(aPropertyString) {
 }
 
 function grabPattrValue(aProperty) {
-    if (gDebugItem.functionName) { post("                     --grabPattrValue--\n"); }
+    if (gDebugItem.functionName) { post("    --grabPattrValue--\n"); }
     
     var lPatcherObjectNameString = aProperty.name + gParameter.patchString + "Pattr",
         lValue;
@@ -2656,7 +2657,7 @@ function recall(aNumber) {
 
 
 function freebang() {
-    if (gDebugItem.functionName) { post("                               --freebang--\n"); }
+    if (gDebugItem.functionName) { post("    --freebang--\n"); }
     if (gDebugItem.list) { postPattrs("end"); }
     if (gWatchSet) { gWatchSet = null; }
     if (gCountAllTracks) { gCountAllTracks = null; }
