@@ -35,7 +35,6 @@ have taken inspiration/insight from.
 /*jslint white:false, undef:false */
 /*globals post : false, inlets : true, outlets : true, outlet : false, inlet : false, autowatch : true */
 
-post("begin loading gs.clipStepSequencer\n");
 
 //                                  ---===Patcher/MaxMSP Stuff===---
 autowatch = 1;
@@ -56,16 +55,17 @@ var gThis = this,
     gThereIsAClipInSlot, // not an attribute
 
     gDebugItem = {
-        functionArguments : false,
         endValue : false,
         frequentItem : false,
         frequentList: false,
-        functionName : true,
-        list : false,
-        localValue : false,
-        startValue : false,
         frequentName : false,
-        loading : false
+        functionArguments : false,
+        functionName : false,
+        list : false,
+        loading : false,
+        localValue : false,
+        startValue : false
+
     },
 
         gMaps = {
@@ -264,6 +264,7 @@ var gThis = this,
         clipScene : {
             name : "clipScene",
             type : "number",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : function() {
@@ -275,6 +276,7 @@ var gThis = this,
         currentScale : {
             name : "currentScale",
             type : "array",
+            format : null,
             value : [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
             minValue : null,
             maxValue : null,
@@ -284,6 +286,7 @@ var gThis = this,
         currentScaleName : {
             name : "currentScaleName",
             type : "string",
+            format : cHudFormat.symbol,
             value : "Drums",
             minValue : null,
             maxValue : null,
@@ -293,15 +296,17 @@ var gThis = this,
         cycles : {
             name : "cycles",
             type : "number",
+            format : cHudFormat.set,
             value : 3,
             minValue : 1,
             maxValue : 127,
             saveInPattr : true,
-            listeners : ["bang"]
+            listeners : []
         },
         displayWidth : {
             name : "displayWidth",
             type : "number",
+            format : null,
             value : 1,
             minValue : 0.00625,
             maxValue : 127,
@@ -311,8 +316,19 @@ var gThis = this,
         width : {
             name : "width",
             type : "number",
-            value : 0,
-            minValue : 0,
+            format : cHudFormat.set,
+            value : null,
+            minValue : -Infinity,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
+        latest : {
+            name : "latest",
+            type : "number",
+            format : cHudFormat.set,
+            value : null,
+            minValue : -Infinity,
             maxValue : Infinity,
             saveInPattr : false,
             listeners : []
@@ -320,8 +336,9 @@ var gThis = this,
         clipLength : {
             name : "clipLength",
             type : "string",
-            value : 0,
-            minValue : 0,
+            format : cHudFormat.measures,
+            value : null,
+            minValue : -Infinity,
             maxValue : Infinity,
             saveInPattr : false,
             listeners : []
@@ -329,8 +346,9 @@ var gThis = this,
         top : {
             name : "top",
             type : "number",
-            value : 0,
-            minValue : 0,
+            format : cHudFormat.set,
+            value : null,
+            minValue : -Infinity,
             maxValue : Infinity,
             saveInPattr : false,
             listeners : []
@@ -338,6 +356,7 @@ var gThis = this,
         folding : {
             name : "folding",
             type : "toggle",
+            format : cHudFormat.set,
             value : 0,
             minValue : 0,
             maxValue : 1,
@@ -347,6 +366,7 @@ var gThis = this,
         foldingRowOffset : {
             name : "foldingRowOffset",
             type : "number",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : function() {
@@ -358,6 +378,7 @@ var gThis = this,
         functionMode : {
             name : "functionMode",
             type : "number",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : 4,
@@ -367,6 +388,7 @@ var gThis = this,
         inSuite : {
             name : "inSuite",
             type : "toggle",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : 1,
@@ -376,6 +398,7 @@ var gThis = this,
         monomeHeight : {
             name : "monomeHeight",
             type : "number",
+            format : cHudFormat.set,
             value : 8,
             minValue : 2,
             maxValue : 2048,
@@ -385,6 +408,7 @@ var gThis = this,
         monomeWidth : {
             name : "monomeWidth",
             type : "number",
+            format : cHudFormat.set,
             value : 8,
             minValue : 2,
             maxValue : 2048,
@@ -394,6 +418,7 @@ var gThis = this,
         newNoteLength : {
             name : "newNoteLength",
             type : "number",
+            format : cHudFormat.set,
             value : 0.125,
             minValue : 0.000390625,
             maxValue : 127,
@@ -403,6 +428,7 @@ var gThis = this,
         newNoteVelocity : {
             name : "newNoteVelocity",
             type : "number",
+            format : cHudFormat.set,
             value : 96,
             minValue : 0,
             maxValue : 127,
@@ -412,8 +438,9 @@ var gThis = this,
         scene : {
             name : "scene",
             type : "number",
-            value : 0,
-            minValue : 0,
+            format : cHudFormat.set,
+            value : null,
+            minValue : -Infinity,
             maxValue : Infinity,
             saveInPattr : false,
             listeners : []
@@ -421,8 +448,9 @@ var gThis = this,
         time : {
             name : "time",
             type : "number",
-            value : 0,
-            minValue : 0,
+            format : cHudFormat.set,
+            value : null,
+            minValue : -Infinity,
             maxValue : Infinity,
             saveInPattr : false,
             listeners : []
@@ -430,8 +458,9 @@ var gThis = this,
         track : {
             name : "track",
             type : "number",
-            value : 0,
-            minValue : 0,
+            format : cHudFormat.set,
+            value : null,
+            minValue : -Infinity,
             maxValue : Infinity,
             saveInPattr : false,
             listeners : []
@@ -439,6 +468,7 @@ var gThis = this,
         trackIndex : {
             name : "trackIndex",
             type : "number",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : function() {
@@ -450,15 +480,27 @@ var gThis = this,
         rootNote : {
             name : "rootNote",
             type : "number",
+            format : null,
             value : 60,
             minValue : 0,
             maxValue : 127,
             saveInPattr : true,
             listeners : []
         },
+        following : {
+            name : "following",
+            type : "number",
+            format : null,
+            value : null,
+            minValue : -Infinity,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
         rowOffset : {
             name : "rowOffset",
             type : "number",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : function() {
@@ -470,6 +512,7 @@ var gThis = this,
         timeOffset : {
             name : "timeOffset",
             type : "number",
+            format : null,
             value : 0,
             minValue : 0,
             maxValue : function() { 
@@ -491,8 +534,88 @@ function bang() {
 //      Initializes patch with current values from pattr
 //
 //  Note:
-//      Should not be called directly. 
+//      Should not be called directly.
 
+//                                  ---===Communicate with Patcher===---
+function sendToHud(aObject) {
+    
+    var lOutlet = 2,
+        aKey = aObject.key,
+        aValue = aObject.value,
+        aFormat = (aObject.format == undefined) ? 0 : aObject.format;        
+    
+    if (gDebugItem.functionName) { post("    --sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
+    if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
+    
+    switch (aFormat) {
+        case cHudFormat.set:
+            outlet(lOutlet, aKey, "set", aValue);
+            break;
+        case cHudFormat.trigger:
+            outlet(lOutlet, aKey, aValue);
+            break;
+        case cHudFormat.symbol:
+            outlet(lOutlet, aKey, "setsymbol", aValue);
+            break;
+        case cHudFormat.measures:
+            outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
+            break;
+        default: 
+            post("error in sendToHud. aFormat:", aFormat, "\n");
+            break;
+    }
+}
+
+function grabPattrValue(aProperty) {
+    if (gDebugItem.functionName) { post("    --grabPattrValue " + aProperty.name + "--\n"); }
+    
+    var lPatcherObjectNameString = aProperty.name + gParameter.patchString + "Pattr",
+        lValue;
+        
+    if (gDebugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
+    if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+    
+    switch (aProperty.type) {
+        case "number" : 
+            /*jsl:fallthru*/
+        case "toggle" :
+            lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        case "string" :
+            lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        case "slotArray" :
+            lValue = Array(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+            break;
+        default :
+            post(aProperty.name + ".type:", aProperty.type , "\n");
+            break;
+    }
+    
+    if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+    
+    if (aProperty.format != null) {
+        aProperty.value = lValue;
+        sendToHud({
+            key: aProperty.name,
+            value: aProperty.value,
+            format: aProperty.format
+        });
+    }
+        
+    if (gDebugItem.endValue) { post(aProperty.name + ".value: ", aProperty.value, "\n"); }
+}
+
+
+function grabAllPattrValues() {    
+    var iProperty;
+        
+    for (iProperty in gParameter) {
+        if (gParameter[iProperty].saveInPattr) {
+            grabPattrValue(gParameter[iProperty]);
+        }
+    }
+}
 
 function initialize() {
     
@@ -530,16 +653,6 @@ function initialize() {
     updateNoteDisplay();
     
     post("gs.ClipStepSequencer finished loading\n");
-}
-
-function grabAllPattrValues() {    
-    var iProperty;
-        
-    for (iProperty in gParameter) {
-        if (gParameter[iProperty].saveInPattr) {
-            grabPattrValue(gParameter[iProperty]);
-        }
-    }
 }
 
 function setClipFromGlobal(aTrack, aScene) {
@@ -686,6 +799,7 @@ function setRowOffset(aNewOffsetNumber) {
     });
     updateNoteDisplay();
 }
+
 function setFoldingRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
@@ -696,9 +810,11 @@ function setFoldingRowOffset(aNewOffsetNumber) {
     updateNoteDisplay();
 
 }
+
 function getRowOffset() {
     return (gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value;
 }
+
 function changeRowOffset(aAmount) {
     if (gDebugItem.functionName) { post("    --changeRowOffset--\n"); }
     
@@ -917,10 +1033,10 @@ function updatePlayhead(aTimeNumber) {
     // View
     if (gPlayheadVisible) {
 
-        if((playheadTimeInt === -1) || (playheadTimeInt == gParameter.monomeWidth.value)) {
+        if((playheadTimeInt == -1) || (playheadTimeInt == gParameter.monomeWidth.value)) {
             mMonome[monomeLastCol()][0].tempOff();            
         }
-        else if(playheadTimeInt === 0) {                      
+        else if(playheadTimeInt == 0) {                      
             mMonome[playheadTimeInt][0].blink();
         }
         else if((0 < playheadTimeInt) && (playheadTimeInt < gParameter.monomeWidth.value)) {
@@ -945,15 +1061,17 @@ function countMidiTracks() {
     gTrackArray = [];
     lTrackCount = gCountAllTracks.getcount("tracks");
     
+    if (gDebugItem.localValue) { post("lTrackCount:", lTrackCount, "\n"); }
+
     for (j = 0; j < lTrackCount; j++) {
         if (gIndexSet) { gIndexSet.goto("live_set tracks " + j); }
         else { gIndexSet = new LiveAPI(this.patcher, null, "live_set tracks " + j ); }
-        if (gIndexSet.get("has_midi_input") == 1 ) {
+        if (gIndexSet.get("has_midi_input") == 1) {
             gTrackArray.push(j);                      
         }
     }
     
-    if (gDebugItem.startValue) {
+    if (gDebugItem.endValue) {
         post("there are ", gTrackArray.length, " midi tracks\n");
         post("they are:", gTrackArray, "\n");
     }
@@ -1021,7 +1139,7 @@ function focusOnClip() {
     
     gThereIsAClipInSlot = (gCheckForClip.get("has_clip") == 1) ? true: false;
     
-    if (gDebugItem.list) { post("gThereIsAClipInSlot:", gThereIsAClipInSlot, "\n"); }
+    if (gDebugItem.list) { post("gThereIsAClipInSlot: ", gTrackArray[gParameter.trackIndex.value], gParameter.clipScene.value, gThereIsAClipInSlot, "\n"); }
 
     if (!gThereIsAClipInSlot) { return false; }
 
@@ -1083,11 +1201,11 @@ function getCurrentPosition() {
     }
     setParameterProperty({
         key : gParameter.track.name,
-        value : gTrackArray[gParameter.trackIndex.value] + 1,
+        value : gTrackArray[gParameter.trackIndex.value] + 1
     });
     setParameterProperty({
         key : gParameter.scene.name, 
-        value : Number(gParameter.clipScene.value) + 1, 
+        value : Number(gParameter.clipScene.value) + 1
     });
 }
 
@@ -1309,59 +1427,57 @@ function updateHud() {
         key : gParameter.track.name, 
         value : (gTrackArray[gParameter.trackIndex.value] + 1)
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.scene.name,
         value : (Number(gParameter.clipScene.value) + 1)
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.time.name,
         value : gParameter.timeOffset.value / 4
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.width.name,
         value : gParameter.displayWidth.value / 4
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.top.name,
         value : (gDisplayNoteList[gParameter.rowOffset.value]) ? gDisplayNoteList[gParameter.rowOffset.value] : 0
     });
     if (gThereIsAClipInSlot) {
-        sendToHud({
+        setParameterProperty({
             key : gParameter.clipLength.name,
-            value : (gEditClip.get("length") /4),
-            format : cHudFormat.measures
-        }); //TODO Fix this!
+            value : (gEditClip.get("length") /4)
+        });
     }
-    sendToHud({
+    setParameterProperty({
         key : gParameter.currentScaleName.name,
-        value : gParameter.currentScaleName.value,
-        format : cHudFormat.symbol
+        value : gParameter.currentScaleName.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.newNoteLength.name,
         value :gParameter.newNoteLength.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.monomeHeight.name,
         value : gParameter.monomeHeight.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.monomeWidth.name,
         value : gParameter.monomeWidth.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.cycles.name,
         value : gParameter.cycles.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.rootNote.name,
         value : gParameter.rootNote.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.folding.name,
         value : gParameter.folding.value
     });
-    sendToHud({
+    setParameterProperty({
         key : gParameter.newNoteVelocity.name,
         value : gParameter.newNoteVelocity.value
     });   
@@ -1676,7 +1792,7 @@ function press(aCol, aRow, aPress) {
     else if (aPress == 0) { gMonome[aCol][aRow].release(); }
     
     
-    if (aRow < monomeLastRow()) {
+    if ((aRow < monomeLastRow()) && gThereIsAClipInSlot) {
         var lNewNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
         var lNewNotePitch = gDisplayNoteList[aRow + ((gParameter.folding.value) ? gParameter.foldingRowOffset.value :gParameter.rowOffset.value)];
 
@@ -1697,10 +1813,9 @@ function press(aCol, aRow, aPress) {
                     addNote(lNewNotePitch, lNewNoteTime, gParameter.newNoteVelocity.value);
             }
         }
-        sendToHud({
+        setParameterProperty({
             key : "latest",
-            value : lNewNotePitch,
-            format : cHudFormat.set
+            value : lNewNotePitch
         });
     }
     // Arrow keys
@@ -2009,10 +2124,9 @@ function toggleFollowingPlayingClip() {
     gFollowingPlayingClip = (gFollowingPlayingClip == true) ? false : true;
     updateFunctionModeLeds();
     getPlayingSlotNumber();
-    sendToHud({
+    setParameterProperty({
         key : "following",
-        value : gFollowingPlayingClip,
-        format : cHudFormat.set
+        value : gFollowingPlayingClip
     });
 }
 function getPlayingSlotNumber() {
@@ -2168,38 +2282,6 @@ function leftInSet(aHowMuch) {
 
     if (gDebugItem.endValue) { post("trackIndex after leftInSet:", gParameter.trackIndex.value, "\n"); }
     if (gDebugItem.startValue) {    post("track after leftInSet:", gTrackArray[gParameter.trackIndex.value], "\n"); }
-}
-
-//                                  ---===Communicate with Patcher===---
-function sendToHud(aObject) {
-    
-    var lOutlet = 2,
-        aKey = aObject.key,
-        aValue = aObject.value,
-        aFormat = (aObject.format === undefined) ? 0 : aObject.format,
-        aSlot = (aObject.slot === undefined) ? null : aObject.slot;
-        
-    
-    if (gDebugItem.functionName) { post("    --sendToHud - key: " + aKey + " value: " + aValue  + " --\n"); }
-    if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
-    
-    switch (aFormat) {
-        case cHudFormat.set:
-            outlet(lOutlet, aKey, "set", aValue);
-            break;
-        case cHudFormat.trigger:
-            outlet(lOutlet, aKey, aValue);
-            break;
-        case cHudFormat.symbol:
-            outlet(lOutlet, aKey, "setsymbol", aValue);
-            break;
-        case cHudFormat.measures:
-            outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
-            break;
-        default: 
-            post("error in sendToHud. aFormat:", aFormat, "\n");
-            break;
-    }
 }
 
 //                                  ---===Monome Device Methods===---
@@ -2377,7 +2459,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
     
     this.rebuild = function(aColumns, aRows) {
         var iCol,
-            iRow
+            iRow,
             lMax = Math.max(aColumns, mColumns);
             
         for (iCol = 0; iCol < lMax; iCol++) {
@@ -2396,7 +2478,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
         if (gDebugItem.endValue) {
             post("Monome.length (width):", mMonome.length, "\n");
         }
-    }
+    };
     
     this.refresh = function() {
         var iCol,
@@ -2404,27 +2486,30 @@ function Monome(aColumns, aRows, aThirdParameter) {
             lHeight = gParameter.monomeHeight.value,
             lWidth = gParameter.monomeWidth.value;
 
+        post("refreshing!\n");
         for (iCol = 0; iCol < lWidth; iCol++) {
             for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
-                gMonome[iCol][iRow].checkActual();
+                mMonome[iCol][iRow].checkActual();
             }
         }
-    }
+    };
 
     this.beginUpdates = function() {
-        updating = true;
-    }
+        if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
+        
+        mMonome.updating = true;
+    };
     this.endUpdates = function() {
+        if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
+        
         var iCol;
         var iRow;
         
-        updating = false;
+        mMonome.updating = false;
         refresh();
-    }
+    };
     
     for (iCol = 0; iCol < aColumns; iCol++) {
-        var iCol,
-            iRow;
         
         mMonome[iCol] = [];
         for (iRow = 0; iRow < aRows; iRow++) {
@@ -2586,7 +2671,7 @@ function setParameterProperty(aObject) {
         iCounter;
             
     //check validity of aValue
-    if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
+    if ((aProperty.type == "number") || (aProperty.type == "toggle") || (aProperty.type == "slotArray")) {
         if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
         else if (aValue < lMinimum) { lValue = lMinimum; }
         else if (aValue > lMaximum) { lValue = lMaximum; }
@@ -2597,28 +2682,35 @@ function setParameterProperty(aObject) {
     //update HUD
     if (aProperty.type == "slotArray") {
         aProperty.value[aSlot] = lValue;
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value[aSlot],
-            format : cHudFormat.slotSet,
-            slot : aSlot
-        });
+        
+        if (aProperty.format != null) {
+            sendToHud({
+                key : aProperty.name,
+                value : aProperty.value[aSlot],
+                format : aProperty.format,
+                slot : aSlot
+            });
+        }
     }
-     else {
+    else {
         aProperty.value = lValue;
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value,
-            format : cHudFormat.set
-        });
+
+        if (aProperty.format != null) {
+            sendToHud({
+                key: aProperty.name,
+                value: aProperty.value,
+                format: aProperty.format
+            });
+        }
     }
     
+    // call listeners
     for (iCounter = 0; iCounter < lLength; iCounter++) {
         gThis[lListenerKeys[iCounter]]();
         post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n");
     }
     
-    // Save it.
+    // Save.
     if (aProperty.saveInPattr) {
         patcherObjectNameString = aProperty.name + gParameter.patchString + "Pattr";
         this.patcher.getnamed(patcherObjectNameString).setvalueof(aProperty.value);
@@ -2643,44 +2735,6 @@ function toggleParameterProperty(aPropertyString) {
     else { post(aPropertyString, "is not a toggle gParameter\n");}
 }
 
-function grabPattrValue(aProperty) {
-    if (gDebugItem.functionName) { post("    --grabPattrValue--\n"); }
-    
-    var lPatcherObjectNameString = aProperty.name + gParameter.patchString + "Pattr",
-        lValue;
-        
-    if (gDebugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
-    if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
-    
-    switch (aProperty.type) {
-        case "number" : 
-            /*jsl:fallthru*/
-        case "toggle" :
-            lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        case "string" :
-            lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        case "slotArray" :
-            lValue = Array(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        default :
-            post(aProperty.name + ".type:", aProperty.type , "\n");
-            break;
-    }
-    
-    if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
-    
-    aProperty.value = lValue;
-    sendToHud({
-        key : aProperty.name,
-        value : aProperty.value,
-        format : cHudFormat.set
-    });
-        
-    if (gDebugItem.endValue) { post(aProperty.name + ".value: ", aProperty.value, "\n"); }
-}
-
 function store(aNumber) {
     this.patcher.getnamed(gParameter.patchString + "-presetStore").message("store", aNumber);
 }
@@ -2692,8 +2746,6 @@ function recall(aNumber) {
     updateMonome();
     updateHud();
 }
-
-
 
 function freebang() {
     if (gDebugItem.functionName) { post("    --freebang--\n"); }
@@ -2711,4 +2763,3 @@ function freebang() {
     if (gWatchClipIsPlaying) { gWatchClipIsPlaying = null; }
     if (gWatchClipPlayhead) { gWatchClipPlayhead = null; }
 }
-
