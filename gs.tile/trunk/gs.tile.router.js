@@ -49,6 +49,7 @@ var mAppChannelsMade = false,
         frequentList: false,
         functionName : false,
         frequentFunctionName : false,
+        frequentFunctionName : false,
         list : false,
         startValue : false
     },
@@ -390,7 +391,7 @@ function findApp(aAppName, aAppChannel, aKeyOne, aKeyTwo) {
     var lListLength = gsTileGlobal.appList.length,
         iApp;
     
-    if (debugItem.list) { post("    ---findApp-\n"); }
+    if (debugItem.frequentFunctionName) { post("    ---findApp-\n"); }
     
     if (debugItem.endValue) { post("app array to find:", aAppName, aAppChannel, aKeyOne, aKeyTwo, "\n"); }
     if (debugItem.list) { 

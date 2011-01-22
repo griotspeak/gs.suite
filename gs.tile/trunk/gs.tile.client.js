@@ -38,6 +38,7 @@ var debugItem = {
     functionName : false,
     list : false,
     localValue : false,
+    frequentFunctionName : false,
     startValue : false
 };
 
@@ -399,7 +400,7 @@ function clientAcknowledgement(aName, aChannelNumber, aKey1, aKey2) {
 }
 
 function prepareLedForRouter(aColumnFromMonomeFunction, aRowFromMonomeFunction, aStateFromMonomeFunction) {    
-    if (debugItem.frequentList) { post("    ---prepareLedForRouter-\n"); }
+    if (debugItem.frequentFunctionName) { post("    ---prepareLedForRouter-\n"); }
     
     var lTranslatedColumn = aColumnFromMonomeFunction - parameter.windowColumnOffset.value;
     var lTranslatedRow = aRowFromMonomeFunction - parameter.windowRowOffset.value;
