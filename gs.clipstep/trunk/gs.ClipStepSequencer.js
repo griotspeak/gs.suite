@@ -60,7 +60,7 @@ var gThis = this,
         endValue : false,
         frequentItem : false,
         frequentList: false,
-        functionName : false,
+        functionName : true,
         list : false,
         localValue : false,
         startValue : false,
@@ -70,92 +70,92 @@ var gThis = this,
 
         gMaps = {
         Major : {
-            value: [0, 2, 2, 1, 2, 2, 2, 1],
+            value : [0, 2, 2, 1, 2, 2, 2, 1],
             name: "Major"
         },
         NaturalMinor: {
-            value: [0, 2, 1, 2, 2, 1, 2, 2],
+            value : [0, 2, 1, 2, 2, 1, 2, 2],
             name: "NaturalMinor"
         },
         HarmonicMinor: {
-            value: [0, 2, 1, 2, 2, 1, 3, 1],
+            value : [0, 2, 1, 2, 2, 1, 3, 1],
             name: "HarmonicMinor"
         },
         Chromatic: {
-            value: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            value : [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             name: "Chromatic"
         },
         MinorPentatonic: {
-            value: [0, 3, 2, 2, 3, 2],
+            value : [0, 3, 2, 2, 3, 2],
             name: "MinorPentatonic"
         },
         MajorPentatonic: {
-            value: [0, 2, 2, 3, 2, 3],
+            value : [0, 2, 2, 3, 2, 3],
             name: "MajorPentatonic"
         },
         BluesPentatonic: {
-            value: [0, 3, 2, 1, 1, 3, 2],
+            value : [0, 3, 2, 1, 1, 3, 2],
             name: "BluesPentatonic"
         },
         Ionian: {
-            value: [0, 2, 2, 1, 2, 2, 2, 1],
+            value : [0, 2, 2, 1, 2, 2, 2, 1],
             name: "Ionian"
         },
         Dorian: {
-            value: [0, 2, 1, 2, 2, 2, 1, 2],
+            value : [0, 2, 1, 2, 2, 2, 1, 2],
             name: "Dorian"
         },
         Phrygian: {
-            value: [0, 1, 2, 2, 2, 1, 2, 2],
+            value : [0, 1, 2, 2, 2, 1, 2, 2],
             name: "Phrygian"
         },
         Lydian: {
-            value: [0, 2, 2, 2, 1, 2, 2, 1],
+            value : [0, 2, 2, 2, 1, 2, 2, 1],
             name: "Lydian"
         },
         Mixolydian: {
-            value: [0, 2, 2, 1, 2, 2, 1, 2],
+            value : [0, 2, 2, 1, 2, 2, 1, 2],
             name: "Mixolydian"
         },
         Aeolian: {
-            value: [0, 2, 1, 2, 2, 1, 2, 2],
+            value : [0, 2, 1, 2, 2, 1, 2, 2],
             name: "Aeolian"
         },
         Locrian: {
-            value: [0, 1, 2, 2, 1, 2, 2, 2],
+            value : [0, 1, 2, 2, 1, 2, 2, 2],
             name: "Locrian"
         },
         WholeTone: {
-            value: [0, 2, 2, 2, 2, 2],
+            value : [0, 2, 2, 2, 2, 2],
             name: "WholeTone"
         },
         WholeHalfDiminished: {
-            value: [0, 2, 1, 2, 1, 2, 1, 2],
+            value : [0, 2, 1, 2, 1, 2, 1, 2],
             name: "WholeHalfDiminished"
         },
         HalfWholeDiminished: {
-            value: [0, 1, 2, 1, 2, 1, 2, 1],
+            value : [0, 1, 2, 1, 2, 1, 2, 1],
             name: "HalfWholeDiminished"
         },
         SymmetricalAugmented: {
-            value: [0, 3, 1, 3, 1, 3, 1],
+            value : [0, 3, 1, 3, 1, 3, 1],
             name: "SymmetricalAugmented"
         },
         Tritone: {
-            value: [0, 3, 2, 3, 1, 3, 2],
+            value : [0, 3, 2, 3, 1, 3, 2],
             name: "Tritone"
         },
         MajorQuartal: {
-            value: [0, 5, 6, 5, 5, 5, 5, 5],
+            value : [0, 5, 6, 5, 5, 5, 5, 5],
             name: "MajorQuartal"
         },
         MinorQuartal: {
-            value: [0, 5, 5, 5, 5, 6, 5, 5],
+            value : [0, 5, 5, 5, 5, 6, 5, 5],
             name: "MinorQuartal"
         },
         //                                  ---===Drum Mapping===---
         Drums: {
-            value: [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
+            value : [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
             name: "Drums"
         }
     },
@@ -308,6 +308,33 @@ var gThis = this,
             saveInPattr : true,
             listeners : []
         },
+        width : {
+            name : "width",
+            type : "number",
+            value : 0,
+            minValue : 0,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
+        clipLength : {
+            name : "clipLength",
+            type : "string",
+            value : 0,
+            minValue : 0,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
+        top : {
+            name : "top",
+            type : "number",
+            value : 0,
+            minValue : 0,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
         folding : {
             name : "folding",
             type : "toggle",
@@ -376,10 +403,37 @@ var gThis = this,
         newNoteVelocity : {
             name : "newNoteVelocity",
             type : "number",
-            value : 100,
+            value : 96,
             minValue : 0,
             maxValue : 127,
             saveInPattr : true,
+            listeners : []
+        },
+        scene : {
+            name : "scene",
+            type : "number",
+            value : 0,
+            minValue : 0,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
+        time : {
+            name : "time",
+            type : "number",
+            value : 0,
+            minValue : 0,
+            maxValue : Infinity,
+            saveInPattr : false,
+            listeners : []
+        },
+        track : {
+            name : "track",
+            type : "number",
+            value : 0,
+            minValue : 0,
+            maxValue : Infinity,
+            saveInPattr : false,
             listeners : []
         },
         trackIndex : {
@@ -549,7 +603,7 @@ function setTrackIndex(aNewIndexNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
     setParameterProperty({
-        key : "trackIndex",
+        key : gParameter.trackIndex.name,
         value : aNewIndexNumber
     });    
     focusOnClip();
@@ -559,7 +613,7 @@ function changeTrackIndex(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeTrackIndex--\n"); }
         
     setParameterProperty({
-        key : "trackIndex",
+        key : gParameter.trackIndex.name,
         value : gParameter.trackIndex.value + aAmount
     });
     
@@ -588,7 +642,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
     setParameterProperty({
-        key : "trackIndex",
+        key : gParameter.trackIndex.name,
         value : aNewIndexNumber
     });
         
@@ -599,7 +653,7 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (lLimit != 0) { 
         for (iCounter = aNewSceneNumber; iCounter < lLimit; iCounter++) {
             setParameterProperty({
-                key : "clipScene",
+                key : gParameter.clipScene.name,
                 value : iCounter
             });
             if (focusOnClip()) { return true; }
@@ -607,14 +661,14 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     
         for (iCounter = aNewSceneNumber; iCounter >=0; iCounter--) {
             setParameterProperty({
-                key : "clipScene",
+                key : gParameter.clipScene.name,
                 value : iCounter
             });
             if (focusOnClip()) { return true; }
         }
     
         setParameterProperty({
-            key : "clipScene",
+            key : gParameter.clipScene.name,
             value : 0
         });
     }
@@ -627,7 +681,7 @@ function setRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
     setParameterProperty({
-        key : "rowOffset",
+        key : gParameter.rowOffset.name,
         value : aNewOffsetNumber
     });
     updateNoteDisplay();
@@ -636,7 +690,7 @@ function setFoldingRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
     setParameterProperty({
-        key : "foldingRowOffset",
+        key : gParameter.foldingRowOffset.name,
         value : aNewOffsetNumber
     });
     updateNoteDisplay();
@@ -652,12 +706,12 @@ function changeRowOffset(aAmount) {
             
     if (gParameter.folding.value) {
         setParameterProperty({
-            key : "foldingRowOffset",
+            key : gParameter.foldingRowOffset.name,
             value : (gParameter.foldingRowOffset.value + aAmount)
         }); }
     else {
         setParameterProperty({
-            key : "rowOffset",
+            key : gParameter.rowOffset.name,
             value : (gParameter.rowOffset.value + aAmount)
         }); }
     
@@ -669,7 +723,7 @@ function setClipScene(aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setClipScene--\n"); }
 
     setParameterProperty({
-        key : "clipScene",
+        key : gParameter.clipScene.name,
         value : aNewSceneNumber
     });
     focusOnClip();
@@ -685,7 +739,7 @@ function changeClipScene(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeClipScene--\n"); }
     
     setParameterProperty({
-        key : "clipScene",
+        key : gParameter.clipScene.name,
         value : gParameter.clipScene.value + aAmount
     });
     
@@ -706,7 +760,7 @@ function setTimeOffset(aNewOffset){
     if (gDebugItem.getSetName) { post("    --setTimeOffset--\n"); }
 
     setParameterProperty({
-        key : "timeOffset",
+        key : gParameter.timeOffset.name,
         value : aNewOffset
     });
     updateNoteDisplay();
@@ -720,7 +774,7 @@ function changeTimeOffset(aAmount) {
     else { aAmount *= gParameter.displayWidth.value; }
 
     setParameterProperty({
-        key : "timeOffset",
+        key : gParameter.timeOffset.name,
         value : (gParameter.timeOffset.value + aAmount)
     });
 }
@@ -731,7 +785,7 @@ function setNewNoteLength(aLength) {
     if (gDebugItem.getSetName) { post("    --setNewNoteLength--\n"); }
     
     setParameterProperty({
-        key : "newNoteLength",
+        key : gParameter.newNoteLength.name,
         value : aLength
     });
     updateMultiPurposeLeds();
@@ -742,10 +796,9 @@ function setNewNoteLength(aLength) {
 function setNewNoteVelocity(aVelocity) {
     if (gDebugItem.getSetName) { post("    ---setNewNoteVelocity-\n"); }
     
-    sendToHud({
-        key : "velocity",
-        value : gParameter.newNoteVelocity.value,
-        format : cHudFormat.set
+    setParameterProperty({
+        key : gParameter.newNoteVelocity.name,
+        value : aVelocity
     });
 }
 
@@ -754,7 +807,7 @@ function setFunctionMode(aMode) {
     if (gDebugItem.functionName) { post("    --setFunctionMode--\n"); }
 
     setParameterProperty({
-        key : "functionMode",
+        key : gParameter.functionMode.name,
         value : aMode
     });
     updateControlLeds();
@@ -844,7 +897,7 @@ function setDisplayWidth(aWidth) {
     if (gDebugItem.getSetName) { post("    --setDisplayWidth--\n"); }
 
     setParameterProperty({
-        key : "displayWidth",
+        key : gParameter.displayWidth.name,
         value : aWidth
     });
     
@@ -1028,15 +1081,13 @@ function getCurrentPosition() {
         if (gDebugItem.endValue) { post("clipScene changed from:", gParameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
         gParameter.clipScene.value = currentSceneNumber;
     }
-    sendToHud({
-        key : "track",
+    setParameterProperty({
+        key : gParameter.track.name,
         value : gTrackArray[gParameter.trackIndex.value] + 1,
-        format : cHudFormat.set
     });
-    sendToHud({
-        key : "scene", 
+    setParameterProperty({
+        key : gParameter.scene.name, 
         value : Number(gParameter.clipScene.value) + 1, 
-        format : cHudFormat.set
     });
 }
 
@@ -1254,77 +1305,65 @@ Array.prototype.diff = function(a) {
 */
 
 function updateHud() {
-    sendToHud({
-        key : "track", 
-        value : (gTrackArray[gParameter.trackIndex.value] + 1), 
-        format : cHudFormat.set
+    setParameterProperty({
+        key : gParameter.track.name, 
+        value : (gTrackArray[gParameter.trackIndex.value] + 1)
     });
     sendToHud({
-        key : "scene",
-        value : (Number(gParameter.clipScene.value) + 1),
-        format : cHudFormat.set
+        key : gParameter.scene.name,
+        value : (Number(gParameter.clipScene.value) + 1)
     });
     sendToHud({
-        key : "time",
-        value : gParameter.timeOffset.value / 4,
-        format : cHudFormat.set
+        key : gParameter.time.name,
+        value : gParameter.timeOffset.value / 4
     });
     sendToHud({
-        key : "width",
-        value : gParameter.displayWidth.value / 4,
-        format : cHudFormat.set
+        key : gParameter.width.name,
+        value : gParameter.displayWidth.value / 4
     });
     sendToHud({
-        key : "top",
-        value : (gDisplayNoteList[gParameter.rowOffset.value]) ? gDisplayNoteList[gParameter.rowOffset.value] : 0,
-        format : cHudFormat.set
+        key : gParameter.top.name,
+        value : (gDisplayNoteList[gParameter.rowOffset.value]) ? gDisplayNoteList[gParameter.rowOffset.value] : 0
     });
     if (gThereIsAClipInSlot) {
         sendToHud({
-            key : "clipLength",
+            key : gParameter.clipLength.name,
             value : (gEditClip.get("length") /4),
             format : cHudFormat.measures
-        }); 
+        }); //TODO Fix this!
     }
     sendToHud({
-        key : "scale",
+        key : gParameter.currentScaleName.name,
         value : gParameter.currentScaleName.value,
         format : cHudFormat.symbol
     });
     sendToHud({
-        key : "noteLength",
-        value :gParameter.newNoteLength.value,
-        format : cHudFormat.set
+        key : gParameter.newNoteLength.name,
+        value :gParameter.newNoteLength.value
     });
     sendToHud({
-        key : "monomeHeight",
-        value : gParameter.monomeHeight.value,
-        format : cHudFormat.set
+        key : gParameter.monomeHeight.name,
+        value : gParameter.monomeHeight.value
     });
     sendToHud({
-        key : "monomeWidth",
-        value : gParameter.monomeWidth.value,
-        format : cHudFormat.set
+        key : gParameter.monomeWidth.name,
+        value : gParameter.monomeWidth.value
     });
     sendToHud({
-        key : "cycles",
-        value : gParameter.cycles.value,
-        format : cHudFormat.set
+        key : gParameter.cycles.name,
+        value : gParameter.cycles.value
     });
     sendToHud({
-        key : "root",
-        value : gParameter.rootNote.value,
-        format : cHudFormat.set
+        key : gParameter.rootNote.name,
+        value : gParameter.rootNote.value
     });
     sendToHud({
-        key : "folding",
-        value : gParameter.folding.value,
-        format : cHudFormat.set
+        key : gParameter.folding.name,
+        value : gParameter.folding.value
     });
     sendToHud({
-        key : "velocity",
-        value : gParameter.newNoteVelocity.value,
-        format : cHudFormat.set
+        key : gParameter.newNoteVelocity.name,
+        value : gParameter.newNoteVelocity.value
     });   
 }
 
@@ -1639,7 +1678,7 @@ function press(aCol, aRow, aPress) {
     
     if (aRow < monomeLastRow()) {
         var lNewNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
-        var lNewNotePitch = gDisplayNoteList[aRow + ((gParameter.folding.value) ? gParameter.foldingRowOffset.value:gParameter.rowOffset.value)];
+        var lNewNotePitch = gDisplayNoteList[aRow + ((gParameter.folding.value) ? gParameter.foldingRowOffset.value :gParameter.rowOffset.value)];
 
         // Debugging is fun!
         if (gDebugItem.functionEnd) {
@@ -2177,8 +2216,8 @@ function setMonomeWidth(aWidth) {
     if (gDebugItem.getSetName) { post("    --setMonomeWidth--\n"); }
 
     setParameterProperty({
-        key: "monomeWidth",
-        value: aWidth
+        key : gParameter.monomeWidth.name,
+        value : aWidth
     });
     
     gMonome.rebuild(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
@@ -2197,7 +2236,7 @@ function setMonomeHeight(aHeight) {
     if (gDebugItem.getSetName) { post("    --setMonomeHeight--\n"); }
     
     setParameterProperty({
-        key : "monomeHeight",
+        key : gParameter.monomeHeight.name,
         value : aHeight
     });
     
@@ -2405,7 +2444,7 @@ function setCycles(aNewCycleCount) {
     if (gDebugItem.getSetName) { post("    --setCycles--\n"); }
     
     setParameterProperty({
-        key : "cycles",
+        key : gParameter.cycles.name,
         value : aNewCycleCount
     });
 
@@ -2417,7 +2456,7 @@ function setRootNote(aNewRoot) {
     if (gDebugItem.getSetName) { post("    --setRootNote--\n"); }
 
     setParameterProperty({
-        key : "rootNote",
+        key : gParameter.rootNote.name,
         value : aNewRoot
     });
 
@@ -2529,7 +2568,7 @@ function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
 
 function setInSuite(aNewValue) {
     setParameterProperty({
-        key : "inSuite",
+        key : gParameter.inSuite.name,
         value : aNewValue
     });
 }
@@ -2639,7 +2678,7 @@ function grabPattrValue(aProperty) {
         format : cHudFormat.set
     });
         
-    if (gDebugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
+    if (gDebugItem.endValue) { post(aProperty.name + ".value: ", aProperty.value, "\n"); }
 }
 
 function store(aNumber) {
