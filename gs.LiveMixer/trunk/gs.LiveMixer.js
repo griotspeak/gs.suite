@@ -51,7 +51,7 @@ setDebugLevel(0);
 // 6 - setters and getters
 
 function setDebugLevel(level) {
-	if (level > 0) { post("								--setDebugLevel--\n"); }
+	if (level > 0) { post("    --setDebugLevel--\n"); }
 	debugLevel = new Array();
 	 for (var c = 0; c < 6; c++) {
 		if (c <= level) {
