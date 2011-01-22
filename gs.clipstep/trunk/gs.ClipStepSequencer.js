@@ -60,7 +60,7 @@ var gThis = this,
         endValue : false,
         frequentItem : false,
         frequentList: false,
-        functionName : false,
+        functionName : true,
         list : false,
         localValue : false,
         startValue : false,
@@ -885,12 +885,13 @@ updatePlayhead.immediate = 1;
 
 function countMidiTracks() {
     
-    var j;
+    var j, lTrackCount;
     
     if (gDebugItem.functionName) { post("                               --countMidiTracks--\n"); }
     gTrackArray = [];
-    trackCount = gCountAllTracks.getcount("tracks");
-    for (j = 0; j < trackCount; j++) {
+    lTrackCount = gCountAllTracks.getcount("tracks");
+    post("lTrackCount:", lTrackCount, "\n");
+    for (j = 0; j < lTrackCount; j++) {
         if (gIndexSet) { gIndexSet.goto("live_set tracks " + j); }
         else { gIndexSet = new LiveAPI(this.patcher, null, "live_set tracks " + j ); }
         if (gIndexSet.get("has_midi_input") == 1 ) {
@@ -959,7 +960,7 @@ function displayRowMax() {
 function focusOnClip() {
     if (gDebugItem.functionName) { post("                               --focusOnClip--\n"); }          
     
-    if (gDebugItem.startValue) { post("gTrackArray[" + gParameter.trackIndex.value + "]:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (true) { post("gTrackArray[" + gParameter.trackIndex.value + "]:", gTrackArray[gParameter.trackIndex.value], "\n"); }
 
     if (gCheckForClip) { gCheckForClip.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value); }
     else { gCheckForClip = new LiveAPI(this.patcher, null, "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value); }
@@ -2139,7 +2140,7 @@ function sendToHud(aObject) {
         aSlot = (aObject.slot === undefined) ? null : aObject.slot;
         
     
-    if (gDebugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (gDebugItem.functionName) { post("                               --sendToHud - key: " + aKey + " value: " + aValue  + " --\n"); }
     if (gDebugItem.argument) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
     
     switch (aFormat) {
