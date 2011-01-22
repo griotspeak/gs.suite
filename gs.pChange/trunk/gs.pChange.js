@@ -105,7 +105,7 @@ var HudFormat = {
 };
 
 function setDebugLevel(level) {
-    if (level > 0) { post("                           --setDebugLevel = ", level, "--\n"); }
+    if (level > 0) { post("    --setDebugLevel = ", level, "--\n"); }
     mDebugLevel = new Array();
      for (var c = 0; c < 6; c++) {
         if (c <= level) {
@@ -148,7 +148,7 @@ function sendToHud(aObject) {
         aSlot = (aObject.slot === undefined) ? null : aObject.slot;
         
     
-    if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (debugItem.functionName) { post("    --sendToHud - " + aKey + " --\n"); }
     if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
     
     switch (aFormat) {
@@ -164,7 +164,7 @@ function sendToHud(aObject) {
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
     var lNumber;
-    if (mDebugLevel[1]) { post("                               --press--\n"); }
+    if (mDebugLevel[1]) { post("    --press--\n"); }
     
     if (mDebugLevel[2]) {
         post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n");
@@ -274,7 +274,7 @@ function SingleCell(aCol, aRow, aOutlet) {
     };
 }
 function buildMonome() {    
-    if (mDebugLevel[1]) { post("                               --buildMonome--\n"); }
+    if (mDebugLevel[1]) { post("    --buildMonome--\n"); }
     if (mDebugLevel[2]) { post("buildMonome called\n"); }
     if (mDebugLevel[4]) {
         post("parameter.monomeWidth.value:", parameter.monomeWidth.value, "\n");
@@ -372,7 +372,7 @@ Monome.column = function(aColumn, aMethodToInvoke) {
 };
 
 function refreshMonome() {
-    if (mDebugLevel[1]) { post("                               --refreshMonome--\n"); }
+    if (mDebugLevel[1]) { post("    --refreshMonome--\n"); }
     var iCol;
     var iRow;
     for (iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
