@@ -138,7 +138,7 @@ function makeClientNumber(aCol, aRow) {
 }
 
 function setDebugLevel(aLevel) {
-    if (aLevel > 0) { post("                           --setDebugLevel = ", aLevel, "--\n"); }
+    if (aLevel > 0) { post("    --setDebugLevel = ", aLevel, "--\n"); }
     mDebugLevel = new Array();
      for (var c = 0; c < 9; c++) {
         if (c <= aLevel) {
@@ -173,7 +173,7 @@ function setDebugLevel(aLevel) {
 
 //                                  ---===Communicate with Patcher===---
 function sendToHud(aKey, aValue, aFormat) {
-    if (mDebugLevel[1]) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (mDebugLevel[1]) { post("    --sendToHud - " + aKey + " --\n"); }
     if (mDebugLevel[5]) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
     var lOutlet = 1;
     
@@ -208,7 +208,7 @@ function setMessageBank(aValue) {
 }
 
 function sendMessageNumber(aNumber, aPress) {
-    if (mDebugLevel[1]) { post("                     --sendMessageNumber--\n"); }
+    if (mDebugLevel[1]) { post("    --sendMessageNumber--\n"); }
 
     if (getBankType(parameter.messageBank.value) == eBankType.programChange) {
         if (aPress == 1) {messnamed("gs.channel", "channelProgramChange", parameter.currentClient.value, aNumber); }
@@ -257,7 +257,7 @@ function updateMessageBankOnMonome() {
 
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
-    if (mDebugLevel[1]) { post("                               --press--\n"); }
+    if (mDebugLevel[1]) { post("    --press--\n"); }
     
     if (mDebugLevel[2]) {
         post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n");
@@ -395,7 +395,7 @@ function SingleCell(aCol, aRow, aOutlet) {
     };
 }
 function buildMonome() {    
-    if (mDebugLevel[1]) { post("                               --buildMonome--\n"); }
+    if (mDebugLevel[1]) { post("    --buildMonome--\n"); }
     if (mDebugLevel[2]) { post("buildMonome called\n"); }
     if (mDebugLevel[4]) {
         post("mMonomeWidth:", mMonomeWidth, "\n");
@@ -493,7 +493,7 @@ Monome.column = function(aColumn, aMethodToInvoke) {
 };
 
 function refreshMonome() {
-    if (mDebugLevel[1]) { post("                               --refreshMonome--\n"); }
+    if (mDebugLevel[1]) { post("    --refreshMonome--\n"); }
     var iCol;
     var iRow;
     for (iCol = 0; iCol < mMonomeWidth; iCol++) {
