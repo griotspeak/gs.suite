@@ -50,7 +50,7 @@ var mDebugLevel;
 
 function setDebugLevel(aLevel) {
     if (aLevel > 0) {
-        post("                             --setDebugLevel = ", aLevel, "--\n");
+        post("    --setDebugLevel = ", aLevel, "--\n");
     }
     mDebugLevel = new Array();
     for (var c = 0; c < 6; c++) {
@@ -614,7 +614,7 @@ function grabAllPattrValues() {
 }
 
 function grabPattrValue(aProperty) {
-    if (debugItem.functionName) { post("                     --grabPattrValue--\n"); }
+    if (debugItem.functionName) { post("    --grabPattrValue--\n"); }
     
     var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr",
         iCounter,
@@ -706,7 +706,7 @@ function sendToHud(aObject) {
         aSlot = (aObject.slot === undefined) ? null : aObject.slot;
         
     
-    if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (debugItem.functionName) { post("    --sendToHud - " + aKey + " --\n"); }
     if (debugItem.arguments) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
     
     switch (aFormat) {
@@ -810,7 +810,7 @@ var gTemplateChord = {
 
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
-    if (mDebugLevel[1]) { post("                               --press--\n"); }
+    if (mDebugLevel[1]) { post("    --press--\n"); }
     
     if (mDebugLevel[2]) { post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n"); }
     
@@ -926,7 +926,7 @@ function SingleCell(aCol, aRow, aOutlet) {
     };
 }
 function buildMonome() {    
-    if (mDebugLevel[1]) { post("                               --buildMonome--\n"); }
+    if (mDebugLevel[1]) { post("    --buildMonome--\n"); }
     if (mDebugLevel[2]) { post("buildMonome called\n"); }
     if (mDebugLevel[4]) {
         post("mMonomeWidth:", mMonomeWidth, "\n");
@@ -1027,20 +1027,20 @@ Monome.column = function(aColumn, aMethodToInvoke) {
 
 
 function store(aNumber) {
-    if (mDebugLevel[1]) { post("                     --store--\n"); }
+    if (mDebugLevel[1]) { post("    --store--\n"); }
     
     this.patcher.getnamed("gsChordScale-presetStore").message("store", aNumber);
 }
 
 function recall(aNumber) {
-    if (mDebugLevel[1]) { post("                     --recall--\n"); }
+    if (mDebugLevel[1]) { post("    --recall--\n"); }
     this.patcher.getnamed("gsChordScale-presetStore").message(aNumber);
     grabAllPattrValues();
     updateHud;
 }
 
 function refreshMonome() {
-    if (mDebugLevel[1]) { post("                               --refreshMonome--\n"); }
+    if (mDebugLevel[1]) { post("    --refreshMonome--\n"); }
     var iCol;
     var iRow;
     for (iCol = 0; iCol < mMonomeWidth; iCol++) {
