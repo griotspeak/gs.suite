@@ -66,7 +66,7 @@ gsTileGlobal.led = processLed;
 gsTileGlobal.appWindow = updateWindowDimensions;
 
 function reconnect() {
-    if (debugItem.functionName) { post("                     --reconnect--\n"); }
+    if (debugItem.functionName) { post("    --reconnect--\n"); }
 
     gsTileGlobal = new Global("gsTileRouter");
     gsTileGlobal.appList = [];
@@ -85,7 +85,7 @@ function makeMonomeChannels(aHowManyChannels) {
         lRouteMessage,
         lLedPrependMessage;
     
-    if (debugItem.functionName) { post("                     ---makeMonomeChannels-\n"); }
+    if (debugItem.functionName) { post("    ---makeMonomeChannels-\n"); }
     
     if (aHowManyChannels < 1) {
         aHowManyChannels = 1;
@@ -139,7 +139,7 @@ function makeMonomeChannels(aHowManyChannels) {
 }
 
 function incomingMessages() {
-    if (debugItem.functionName) { post("                     ---incomingMessages-\n"); }
+    if (debugItem.functionName) { post("    ---incomingMessages-\n"); }
 }
 
 function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMonomeNumber, aWidth, aHeight, aDisplayColumnOffset, aDisplayRowOffset, aDisplayLayer) {
@@ -148,7 +148,7 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
         lListLength,
         lChannelNumbersUsed;
     
-    if (debugItem.functionName) { post("                                --processNewClientNotification--\n"); }
+    if (debugItem.functionName) { post("    --processNewClientNotification--\n"); }
     
     //UPDATED
     if (debugItem.list) {
@@ -219,7 +219,7 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
     makeAppChannels();
     
     if (debugItem.startValue) { post("list Length:", gsTileGlobal.appList.length, "\n"); }
-    if (debugItem.functionName) { post("                     ---end processNewClientNotification-\n"); }
+    if (debugItem.functionName) { post("    ---end processNewClientNotification-\n"); }
 }
 
 function isInAppLedWindow(aIndexOfApp, aColumnOfLed, aRowOfLed) {
@@ -241,7 +241,7 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
         lProperOutlet;
     
 
-    if (debugItem.frequentFunctionName) { post("                     --processLed--", aCol, aRow, "\n"); }
+    if (debugItem.frequentFunctionName) { post("    --processLed--", aCol, aRow, "\n"); }
     
     if(lAppIndex > -1) {
             lColumnValueAfterOffset = aCol + gsTileGlobal.appList[lAppIndex].displayColumnOffset; //!! columnOffset
@@ -267,7 +267,7 @@ function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonome
     var lAppIndex = findApp(aAppName, aAppChannel, aKeyOne, aKeyTwo);
 
 
-    if (debugItem.functionName) { post("                     ---updateWindowDimensions-\n"); }
+    if (debugItem.functionName) { post("    ---updateWindowDimensions-\n"); }
     
     // 0<name> 1<channelObject> 2<channelNumber> 3<key1> 4<key2> 5<orderNumber>
     // 6<monomeNumber> 7<width>, 8<heigth>, 9<displayColumnOffset>, 10<displayRowOffset> 11<displayLayer>
@@ -302,7 +302,7 @@ function clearMonomes() {
     var lClearMessage,
         iMonome;
     
-    if (debugItem.functionName) { post("                     ---clearMonomes-\n"); }
+    if (debugItem.functionName) { post("    ---clearMonomes-\n"); }
     
     for (iMonome = 0;iMonome <mNumberOfMonomeChannels; iMonome++) {
         lClearMessage = "/mMC" + iMonome + "/clear";
@@ -312,7 +312,7 @@ function clearMonomes() {
 
 
 function acknowledgeClient(element, index, array) {
-    if (debugItem.functionName) { post("                     ---acknowledgeClient-\n"); }
+    if (debugItem.functionName) { post("    ---acknowledgeClient-\n"); }
     
     if (debugItem.endValue) { post("acknowledging:", element.appName, element.channelNumber, element.keyOne, element.keyTwo, "\n"); }
     messnamed("gs.tile.allClients", "clientAcknowledgement", element.appName, element.channelNumber, element.keyOne, element.keyTwo); //!! name, number, keys
@@ -320,7 +320,7 @@ function acknowledgeClient(element, index, array) {
 }
 
 function doesShareName(element, index, array) {
-    if (debugItem.list) { post("                     ---doesShareName-\n"); }
+    if (debugItem.list) { post("    ---doesShareName-\n"); }
     
     if (debugItem.list) {
         post("name of element:", element.appName, "name i am looking for:", this.toString(), "\n"); //!! name
@@ -330,7 +330,7 @@ function doesShareName(element, index, array) {
 }
 
 function postClient(element, index, array) {
-    if (debugItem.list) { post("                     ---postClient-\n"); }
+    if (debugItem.list) { post("    ---postClient-\n"); }
         
     post("#" + index + ":", element.appName, "key1:", element.keyOne, "key2:", element.keyTwo, "order:", element.orderNumber, "monome:", element.monomeNumber, "channel #:", element.channelNumber, "\n", 
     "        width", element.windowWidth, "height", element.windowHeight, "widthOffset", element.displayColumnOffset, "heightOffset", element.displayRowOffset, "\n"); // !! everything
@@ -346,7 +346,7 @@ function makeAppChannels() {
         iApp,
         lChannelName;
     
-    if (debugItem.functionName) { post("                     ---makeAppChannels-\n"); }
+    if (debugItem.functionName) { post("    ---makeAppChannels-\n"); }
     
     if(mAppChannelsMade) {
         gsTileGlobal.appList.forEach(closeSingleChannel);
@@ -367,7 +367,7 @@ function makeAppChannels() {
 function removeClient(aAppName, aChannelNumber, aKey1, aKey2) {
     var lAppEntry = [aAppName, aChannelNumber, aKey1, aKey2]; // !!name, number, key1, key2 --this is all findApp needs.
 
-    if (debugItem.functionName) { post("                     ---removeClient-\n"); }
+    if (debugItem.functionName) { post("    ---removeClient-\n"); }
     
     if (debugItem.startValue) { post("entry of app to remove", lAppEntry, "\n"); }
     var lTheApp = findApp(aAppName, aAppChannel, aKey1, aKey2);
@@ -390,7 +390,7 @@ function findApp(aAppName, aAppChannel, aKeyOne, aKeyTwo) {
     var lListLength = gsTileGlobal.appList.length,
         iApp;
     
-    if (debugItem.list) { post("                     ---findApp-\n"); }
+    if (debugItem.list) { post("    ---findApp-\n"); }
     
     if (debugItem.endValue) { post("app array to find:", aAppName, aAppChannel, aKeyOne, aKeyTwo, "\n"); }
     if (debugItem.list) { 
@@ -417,7 +417,7 @@ function freebang() {
 }
 
 function press(aColumn, aRow, aState) {
-    if (debugItem.functionName) { post("                     --press--\n"); }
+    if (debugItem.functionName) { post("    --press--\n"); }
 
     if (debugItem.list) { post("column:", aColumn, "row:", aRow, "state:", aState, "inlet:", inlet, "\n"); }
     gsTileGlobal.appList.forEach(sendPressToWindows, [aColumn, aRow, aState, inlet]);
@@ -436,7 +436,7 @@ function sendPressToWindows(element, index, array) {
         aInlet = this[3];
     
     
-    if (debugItem.functionName) { post("                     ---sendPressToWindows-\n"); }
+    if (debugItem.functionName) { post("    ---sendPressToWindows-\n"); }
     if (debugItem.frequentList) { post("element:", element, "\n:", "passed array:", this, "\n"); }
 
     // this = [col, row, state]
@@ -474,7 +474,7 @@ function sendPressToWindows(element, index, array) {
 
 function testAppChannels(_ar) {
     var iApp;
-    if (debugItem.functionName) { post("                     ---testAppChannels-\n"); }
+    if (debugItem.functionName) { post("    ---testAppChannels-\n"); }
     
     if (debugItem.endValue) { post("list Length:", gsTileGlobal.appList.listLength, "\n"); }
     

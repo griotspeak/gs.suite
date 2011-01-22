@@ -165,7 +165,7 @@ var HudFormat = {
 
 
 function initialize() {
-    if (debugItem.functionName) { post("                     --initialize--\n"); }
+    if (debugItem.functionName) { post("    --initialize--\n"); }
     if (this.patcher.getnamed("parametersLoadedGsTileClientPattr").getvalueof() == 1) {
         grabAllPattrValues();
         
@@ -213,13 +213,13 @@ function bottomEdgeOfWindow() {
 //                        ---===Getter and Setter Functions===---
                         
 function setWindowWidth(aValue) {
-    if (debugItem.functionName) { post("                     --setWindowWidth--\n"); }
+    if (debugItem.functionName) { post("    --setWindowWidth--\n"); }
     setParameterProperty("windowWidth", aValue);
     updateAppWindow();
 }
 
 function setWindowHeight(aValue) {
-    if (debugItem.functionName) { post("                     --setWindowHeight--\n"); }
+    if (debugItem.functionName) { post("    --setWindowHeight--\n"); }
     setParameterProperty("windowHeight", aValue);
     updateAppWindow();
 }
@@ -243,7 +243,7 @@ function updateAppWindow() {
 
 
 function setWindowColumnOffset(aValue) {
-    if (debugItem.functionName) { post("                     --setWindowColumnOffset--\n"); }
+    if (debugItem.functionName) { post("    --setWindowColumnOffset--\n"); }
     
     setParameterProperty("windowColumnOffset", aValue);
     
@@ -253,7 +253,7 @@ function setWindowColumnOffset(aValue) {
 }
 
 function setWindowRowOffset(aValue) {
-    if (debugItem.functionName) { post("                     --setWindowRowOffset--\n"); }
+    if (debugItem.functionName) { post("    --setWindowRowOffset--\n"); }
     
     setParameterProperty("windowRowOffset", aValue);
     
@@ -270,50 +270,50 @@ function list() {
 
 
 function setDisplayColumnOffset(aValue) {
-    if (debugItem.functionName) { post("                     --setDisplayColumnOffset--\n"); }
+    if (debugItem.functionName) { post("    --setDisplayColumnOffset--\n"); }
     setParameterProperty("displayColumnOffset", aValue);
     updateAppWindow();
 }
 
 function setDisplayRowOffset(aValue) {
-    if (debugItem.functionName) { post("                     --setDisplayRowOffset--\n"); }
+    if (debugItem.functionName) { post("    --setDisplayRowOffset--\n"); }
     setParameterProperty("displayRowOffset", aValue);
     updateAppWindow();
 }
 
 function setAppMonomeNumber(aValue) {
-    if (debugItem.functionName) { post("                     --setAppMonomNumber--\n"); }
+    if (debugItem.functionName) { post("    --setAppMonomNumber--\n"); }
     setParameterProperty("appMonomeNumber", aValue);
     updateAppWindow();
 }
 
 function setAppMonomeLayer(aValue) {
-    if (debugItem.functionName) { post("                     --setAppMonomLayer--\n"); }
+    if (debugItem.functionName) { post("    --setAppMonomLayer--\n"); }
     setParameterProperty("appMonomeLayer", aValue);
     updateAppWindow();
 }
 
 
 function incrementDisplayColumnOffset() {
-    if (debugItem.functionName) { post("                     --incrementDisplayColumnOffset--\n"); }
+    if (debugItem.functionName) { post("    --incrementDisplayColumnOffset--\n"); }
     changeParameterProperty("displayColumnOffset", 1);
     updateAppWindow();
 }
 
 function decrementDisplayColumnOffset() {
-    if (debugItem.functionName) { post("                     --decrementDisplayColumnOffset--\n"); }
+    if (debugItem.functionName) { post("    --decrementDisplayColumnOffset--\n"); }
     changeParameterProperty("displayColumnOffset", -1);
     updateAppWindow();
 }
 
 function incrementDisplayRowOffset() {
-    if (debugItem.functionName) { post("                     --incrementDisplayRowOffset--\n"); }
+    if (debugItem.functionName) { post("    --incrementDisplayRowOffset--\n"); }
     changeParameterProperty("displayRowOffset", 1);
     updateAppWindow();
 }
 
 function decrementDisplayRowOffset() {
-    if (debugItem.functionName) { post("                     --decrementDisplayRowOffset--\n"); }
+    if (debugItem.functionName) { post("    --decrementDisplayRowOffset--\n"); }
     changeParameterProperty("displayRowOffset", -1);
     updateAppWindow();
 }
@@ -328,7 +328,7 @@ function hasChannel() {
 }
 
 function alertRouterOfNewClient() {
-    if (debugItem.functionName) { post("                                --alertRouterOfNewClient--\n"); }
+    if (debugItem.functionName) { post("    --alertRouterOfNewClient--\n"); }
     
     // send: "newClientNotification"
     // 0<appName> 1<randomKey> 2<hasChannel> 3<channelIfAssigned>
@@ -361,30 +361,30 @@ function alertRouterOfNewClient() {
 }
 
 function freebang () {
-    if (debugItem.functionName) { post("                     ---freebang-\n"); }
+    if (debugItem.functionName) { post("    ---freebang-\n"); }
     sendRemoveClient();
 }
 
 function sendRemoveClient() {
-    if (debugItem.functionName) { post("                     --sendRemoveClient--\n"); }
+    if (debugItem.functionName) { post("    --sendRemoveClient--\n"); }
     if (debugItem.list) { post("request removal of:", mAppName, parameter.randomKeyOne.value, parameter.randomKeyTwo.value, "\n"); }
     gsTileGlobal.removeClient(mAppName, parameter.appChannelNumber.value, parameter.randomKeyOne.value, parameter.randomKeyTwo.value);
 }
 
 
 function closebang() {
-    if (debugItem.functionName) { post("                     ---closebang-\n"); }
+    if (debugItem.functionName) { post("    ---closebang-\n"); }
 }
 
 
 function alertRouterofClientRemoval() {
-    if (debugItem.functionName) { post("                     ---alertRouterofClientRemoval-\n"); }
+    if (debugItem.functionName) { post("    ---alertRouterofClientRemoval-\n"); }
     sendRemoveClient();
 }
 
 
 function clientAcknowledgement(aName, aChannelNumber, aKey1, aKey2) {
-    if (debugItem.functionName) { post("                     ---processClientAcknowledgement-\n"); }
+    if (debugItem.functionName) { post("    ---processClientAcknowledgement-\n"); }
     
     if (debugItem.list) { 
         post("full array:", aName, aChannelNumber, aKey1, aKey2, "\n");
@@ -399,7 +399,7 @@ function clientAcknowledgement(aName, aChannelNumber, aKey1, aKey2) {
 }
 
 function prepareLedForRouter(aColumnFromMonomeFunction, aRowFromMonomeFunction, aStateFromMonomeFunction) {    
-    if (debugItem.frequentList) { post("                     ---prepareLedForRouter-\n"); }
+    if (debugItem.frequentList) { post("    ---prepareLedForRouter-\n"); }
     
     var lTranslatedColumn = aColumnFromMonomeFunction - parameter.windowColumnOffset.value;
     var lTranslatedRow = aRowFromMonomeFunction - parameter.windowRowOffset.value;
@@ -419,7 +419,7 @@ function prepareLedForRouter(aColumnFromMonomeFunction, aRowFromMonomeFunction, 
 }
 
 function isInWindow(aColumnInQuestion, aRowInQuestion) {
-    if (debugItem.functionName) { post("                     --isInWindow--\n"); }
+    if (debugItem.functionName) { post("    --isInWindow--\n"); }
     
     if (debugItem.frequentList) {
         post("col:", aColumnInQuestion, "row:", aRowInQuestion, "\n");
@@ -438,7 +438,7 @@ function isInWindow(aColumnInQuestion, aRowInQuestion) {
 }
 
 function makeChannel(aChannelNumber) {
-    if (debugItem.functionName) { post("                     ---makeChannel-\n"); }
+    if (debugItem.functionName) { post("    ---makeChannel-\n"); }
     
     appChannel = null;
     parameter.appChannelNumber.value = aChannelNumber;
@@ -455,7 +455,7 @@ function makeChannel(aChannelNumber) {
 }
 
 function processPress(aColumnFromRouter, aRowFromRouter, aStateFromRouter) {
-    if (debugItem.functionName) { post("                     ---press-\n"); }
+    if (debugItem.functionName) { post("    ---press-\n"); }
     if (debugItem.endValue) { post("column", aColumnFromRouter, "row", aRowFromRouter, "state", aStateFromRouter ); }
     
     var lTranslatedColumn = aColumnFromRouter + parameter.windowColumnOffset.value;
@@ -475,13 +475,13 @@ function processPress(aColumnFromRouter, aRowFromRouter, aStateFromRouter) {
 
 
 function processMessagesOnPrivateChannel(aArray) {
-    if (debugItem.functionName) { post("                     ---processMessagesOnPrivateChannel-\n"); }
+    if (debugItem.functionName) { post("    ---processMessagesOnPrivateChannel-\n"); }
 
     post("app:", mAppName, "array:", aArray, "\n");
 }
 
 function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
-    if (debugItem.functionName) { post("                     ---led-\n"); }
+    if (debugItem.functionName) { post("    ---led-\n"); }
     
     if (debugItem.startValue) { post("raw col:", aColumnFromPatcher, "row:", aRowFromPatcher, "\n"); }
 
@@ -495,7 +495,7 @@ function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
 }
 
 function ledCol (aColumnFromPatcher, aStateFromPatcher) {
-    if (debugItem.functionName) { post("                     ---ledCol-\n"); }
+    if (debugItem.functionName) { post("    ---ledCol-\n"); }
     
     var lDecimalNumberValue = Number(aStateFromPatcher);
     var lBinaryNumberValue = lDecimalNumberValue.toString(2); // little endian
@@ -514,7 +514,7 @@ function ledCol (aColumnFromPatcher, aStateFromPatcher) {
 }
 
 function ledRow (aRowFromPatcher, aStateFromPatcher) {
-    if (debugItem.functionName) { post("                     ---ledCol-\n"); }
+    if (debugItem.functionName) { post("    ---ledCol-\n"); }
     
     var lDecimalNumberValue = Number(aStateFromPatcher);
     var lBinaryNumberValue = lDecimalNumberValue.toString(2); // little endian
@@ -535,7 +535,7 @@ function ledRow (aRowFromPatcher, aStateFromPatcher) {
 //                                  ---===Monome Device Methods===---
 
 function setAppMonomeWidth(aValue) {
-    if (debugItem.functionName) { post("                     ---setAppMonomeWidth-\n"); }
+    if (debugItem.functionName) { post("    ---setAppMonomeWidth-\n"); }
     
     setParameterProperty("appMonomeWidth", aValue);
 
@@ -545,7 +545,7 @@ function setAppMonomeWidth(aValue) {
 }
 
 function setAppMonomeHeight(aValue) {
-    if (debugItem.functionName) { post("                     ---setAppMonomeHeight-\n"); }
+    if (debugItem.functionName) { post("    ---setAppMonomeHeight-\n"); }
     
     setParameterProperty("appMonomeHeight", aValue);
 
@@ -618,7 +618,7 @@ function SingleCell(col, row) {
 }
 
 function buildMonome() {
-    if (debugItem.functionName) { post("                               --buildMonome--\n"); }
+    if (debugItem.functionName) { post("    --buildMonome--\n"); }
     if (debugItem.startValue) {
         post("monomeWidth:", parameter.appMonomeWidth.value, "\n");
         post("monomeHeight:", parameter.appMonomeHeight.value, "\n");
@@ -711,7 +711,7 @@ Monome.column = function(aColumn, aMethodToInvoke) {
 };
 
 function clearWindow() {
-    if (debugItem.functionName) { post("                               --clearWindow--\n"); }
+    if (debugItem.functionName) { post("    --clearWindow--\n"); }
     var iColumn;
     var lBottom = Math.min(parameter.windowWidth.value + parameter.windowColumnOffset.value, parameter.appMonomeWidth.value);
     var iRow;
@@ -727,7 +727,7 @@ function clearWindow() {
 }
 
 function refreshWindow() {
-    if (debugItem.functionName) { post("                               --refreshWindow--\n"); }
+    if (debugItem.functionName) { post("    --refreshWindow--\n"); }
     
     clearWindow();
     var iColumn;
@@ -782,7 +782,7 @@ function grabAllPattrValues() {
 
 function grabPattrValue(aProperty) {
     if (debugItem.functionName) {
-        post("                     --grabPattrValue--\n");
+        post("    --grabPattrValue--\n");
     }
     if (debugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
     
@@ -803,7 +803,7 @@ function grabPattrValue(aProperty) {
 
 
 function sendToHud(aKey, aValue, aFormat) {
-    if (debugItem.functionName) { post("                               --sendToHud - " + aKey + " --\n"); }
+    if (debugItem.functionName) { post("    --sendToHud - " + aKey + " --\n"); }
     if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
     var lOutlet = 1;
     
