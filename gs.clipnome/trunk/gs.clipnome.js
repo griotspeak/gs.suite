@@ -32,19 +32,23 @@ var inlets = 1;
 var outlets = 2;
 var post;
 var outlet;
-var mWatchersConstructed = false;
+var gWatchersConstructed = false;
+var monomeWidth;
+var monomeHeight;
+var Monome;
 
-var debugLevel = new Array();
+var gPlayingClipsArray;
+var gDebugLevel = [];
 
 function setDebugLevel(level) {
     if (level > 0) { post("                           --setDebugLevel--\n"); }
     
-    //debugLevel[1] = true;
-    //debugLevel[2] = true;
-    //debugLevel[3] = true;
-    //debugLevel[4] = true;
-    //debugLevel[5] = true;
-    //debugLevel[6] = true;
+    //gDebugLevel[1] = true;
+    //gDebugLevel[2] = true;
+    //gDebugLevel[3] = true;
+    //gDebugLevel[4] = true;
+    //gDebugLevel[5] = true;
+    //gDebugLevel[6] = true;
 
     // 0 - silence
     // 1 - function name at start
@@ -54,13 +58,13 @@ function setDebugLevel(level) {
     // 5 - lists. so many lists.
     // 6 - setters and getters
     
-    debugLevel = new Array();
+    gDebugLevel = [];
      for (var c = 0; c < 6; c++) {
         if (c <= level) {
-            debugLevel[c] = true;
+            gDebugLevel[c] = true;
         }
         else {
-            debugLevel[c] = false;
+            gDebugLevel[c] = false;
         }
     }
 }
@@ -68,7 +72,7 @@ function setDebugLevel(level) {
 function initialize() {
 
     setDebugLevel(0);
-    if (debugLevel[1]) {
+    if (gDebugLevel[1]) {
         post("                     ---initialize-\n");
     }    
     inSuite = 0;
@@ -83,7 +87,7 @@ function initialize() {
 
     glob = new Global("clipStepGlobalController");
 
-    colOrder = (jsarguments[1] != null) ? jsarguments[1] : 0;
+    var colOrder = (jsarguments[1] != null) ? jsarguments[1] : 0;
 
     if (colOrder === "switch") {
         sceneLaunchCol = function() {
@@ -104,13 +108,13 @@ function initialize() {
     }
 
     // Prepare flashing arrays
-    playingClipsArray = new Array(monomeWidth);
-    triggeredClipsArray = new Array(monomeWidth);
+    gPlayingClipsArray = [];
+    gTriggeredClipsArray = [];
 
     // Start the show
-    clipPlayingStatus = new Array();
-    Monome = new Array();
-    clipslot = new Array();
+    clipPlayingStatus = [];
+    Monome = [];
+    clipslot = [];
     buildMonome();
 
     // Setup basic LiveAPI objects
@@ -124,12 +128,12 @@ function initialize() {
     watchMetro = new LiveAPI(this.patcher, api_callback, "live_set");
     watchMetro.property = "metronome";
     
-    mWatchersConstructed = true;
+    gWatchersConstructed = true;
     updateClipWindow();
 }
 
 function setXOffset(_newXOffset) {
-    if (debugLevel[1]) {
+    if (gDebugLevel[1]) {
         post("                     ---setXOffset-\n");
     }
 
@@ -150,7 +154,7 @@ function setXOffset(_newXOffset) {
 }
 
 function setYOffset(_newYOffset) {
-    if (debugLevel[1]) { post("                     ---setYOffset-\n"); }
+    if (gDebugLevel[1]) { post("                     ---setYOffset-\n"); }
     
     if (_newYOffset < 0) {
         yOffset = 0;
@@ -199,11 +203,11 @@ function displayHeight() {
 // Main View
 function updateClipWindow() {
 
-    if (!mWatchersConstructed) {
+    if (!gWatchersConstructed) {
         return;
     }
     
-    if (debugLevel[1]) { post("                     ---updateClipWindow-\n"); }
+    if (gDebugLevel[1]) { post("                     ---updateClipWindow-\n"); }
     
     clearFlashingClips();
     clearClipWindow();
@@ -212,17 +216,17 @@ function updateClipWindow() {
     outlet(1, "track", "set", trackOffset() );
     outlet(1, "scene", "set", sceneOffset() );
 
-    var trackCount = watchSet.getcount("tracks");
-    var sceneCount= watchSet.getcount("scenes");
-    var trackDisplayLimit = trackOffset() + displayWidth();
-    var sceneDisplayLimit = sceneOffset() + displayHeight();
-    var c = Math.min(trackDisplayLimit, trackCount);
-    var d = Math.min(sceneDisplayLimit, sceneCount);
+    var lTrackCount = watchSet.getcount("tracks");
+    var lSceneCount= watchSet.getcount("scenes");
+    var lTrackDisplayLimit = trackOffset() + displayWidth();
+    var lSceneDisplayLimit = sceneOffset() + displayHeight();
+    var c = Math.min(lTrackDisplayLimit, lTrackCount);
+    var d = Math.min(lSceneDisplayLimit, lSceneCount);
     
     clipslot = [];
     clipPlayingStatus = [];
-    playingClipsArray = [];
-    triggeredClipsArray = [];
+    gPlayingClipsArray = [];
+    gTriggeredClipsArray = [];
 
     var checkplay = watchPlay.get("is_playing");
 
@@ -234,8 +238,8 @@ function updateClipWindow() {
 
     //              clip slots
     /***************************************************/         
-        clipslot[a] = new Array(watchSet.getcount("scenes") );
-        clipPlayingStatus[a]= new Array();
+        clipslot[a] = [];
+        clipPlayingStatus[a]= [];
         
         for (var b = sceneOffset(); b < d; b++) {
             clipslot[a][b] = new LiveAPI(this.patcher, api_callback,  "live_set tracks " + a + " clip_slots " + b);
@@ -500,7 +504,7 @@ function tempOff() {
 
 function buildMonome() {       
     for (var w = 0; w < (monomeWidth); w++) {
-        Monome[w] = new Array();
+        Monome[w] = [];
         for (var h = 0; h < (monomeHeight); h++) {
             Monome[w][h] = new singleCell(w , h);
         }
@@ -526,7 +530,7 @@ function press(_column, _row, _updown) {
                 var track_fire = _column + trackOffset();
                 var scene_fire = _row + sceneOffset();
                 clipslot[track_fire][scene_fire].call("fire");
-                if (debugLevel[3]) { post("launch clip", track_fire, scene_fire, "\n");}
+                if (gDebugLevel[3]) { post("launch clip", track_fire, scene_fire, "\n");}
                 Monome[_column][_row].push();
                 break;
             }
@@ -540,7 +544,7 @@ function press(_column, _row, _updown) {
                 var track_send = _column + trackOffset();
                 var scene_send = _row + sceneOffset();
                 glob.setClip(track_send, scene_send);
-                if (debugLevel[3]) { post("send clip", track_send, scene_send,"\n");}
+                if (gDebugLevel[3]) { post("send clip", track_send, scene_send,"\n");}
                 Monome[_column][_row].push();
                 break;
             }
@@ -553,7 +557,7 @@ function press(_column, _row, _updown) {
             if (trackStopDisabled == 0) {
                 if (_updown == 1) {
                     _track.call("stop_all_clips");
-                    if (debugLevel[3]) { post("stop track", what_track, "\n");}
+                    if (gDebugLevel[3]) { post("stop track", what_track, "\n");}
                     Monome[_column][_row].push();
                     break;
                 }
@@ -571,7 +575,7 @@ function press(_column, _row, _updown) {
                 var what_scene = _row + sceneOffset();
                 var _scene = new LiveAPI(this.patcher, "live_set scenes " + what_scene);
                 _scene.call("fire");
-                if (debugLevel[3]) { post("launch scene", what_scene, "\n"); }
+                if (gDebugLevel[3]) { post("launch scene", what_scene, "\n"); }
                 Monome[_column][_row].push();
                 break;
             }
@@ -680,8 +684,8 @@ function press(_column, _row, _updown) {
                 
                 Monome[displayWidth()][yOffset].tempOn();
                 Monome[xOffset][hardLastRow()].tempOn();
-                if (debugLevel[3]) { post("xOffset:", xOffset, "\n"); }
-                if (debugLevel[3]) { post("yOffset:", yOffset, "\n"); }
+                if (gDebugLevel[3]) { post("xOffset:", xOffset, "\n"); }
+                if (gDebugLevel[3]) { post("yOffset:", yOffset, "\n"); }
                 break;
             }
             else {
@@ -978,8 +982,8 @@ function flashPlaying() {
     var e;
     var f = monomeWidth;
     for (e = 0; e < f; e++) {
-        if (playingClipsArray[e] != undefined) {
-            var g = playingClipsArray[e];
+        if (gPlayingClipsArray[e] != undefined) {
+            var g = gPlayingClipsArray[e];
             Monome[e][g].blink();
         }
     }
@@ -989,8 +993,8 @@ function flashTriggered() {
     var h;
     var i = monomeWidth;
     for (h = 0; h < i; h++) {
-        if (triggeredClipsArray[h] != undefined) {
-            var j = triggeredClipsArray[h];
+        if (gTriggeredClipsArray[h] != undefined) {
+            var j = gTriggeredClipsArray[h];
             Monome[h][j].blink();
         }
     }
@@ -999,20 +1003,20 @@ function flashTriggered() {
 //              Add buttons to arrays for flashing
 function visibleClipPlay(p_col, p_row, playing) {
     if (playing == 1) {
-        playingClipsArray[p_col] = p_row;              
+        gPlayingClipsArray[p_col] = p_row;              
     }
-    else if ((playing == 0) &&          (p_row == playingClipsArray[p_col]) ) {
+    else if ((playing == 0) &&          (p_row == gPlayingClipsArray[p_col]) ) {
         Monome[p_col][p_row].checkActual();
-        playingClipsArray[p_col] = undefined;
+        gPlayingClipsArray[p_col] = undefined;
     }
 }
 function visibleClipTrigger(p_col, p_row, triggered) {
     if (triggered == 1) {
-        triggeredClipsArray[p_col] = p_row;                
+        gTriggeredClipsArray[p_col] = p_row;                
     }
     else if (triggered == 0) {
         Monome[p_col][p_row].checkActual();
-        triggeredClipsArray[p_col] = undefined;
+        gTriggeredClipsArray[p_col] = undefined;
     }
     else {
         post("this should never happen. triggered ==", triggered, "\n");
@@ -1020,22 +1024,22 @@ function visibleClipTrigger(p_col, p_row, triggered) {
 }
 //              Remove buttons from arrays for flashing
 function clearFlashingClips() {
-    playingClipsArray = [];
-    triggeredClipsArray =[];
+    gPlayingClipsArray = [];
+    gTriggeredClipsArray =[];
 }
 
 function mixer() {
-    if (debugLevel[1]) { post("                     --mixer--\n"); }
+    if (gDebugLevel[1]) { post("                     --mixer--\n"); }
 
     clearFlashingClips();
     clearClipWindow();
 
-    var trackCount = watchSet.getcount("tracks");
-    var sceneCount = watchSet.getcount("scenes");
-    var trackDisplayLimit = trackOffset() + displayWidth();
-    var sceneDisplayLimit = sceneOffset() + displayHeight();
-    var c = Math.min(trackDisplayLimit, trackCount);
-    var d = Math.min(sceneDisplayLimit, sceneCount);
+    var lTrackCount = watchSet.getcount("tracks");
+    var lSceneCount = watchSet.getcount("scenes");
+    var lTrackDisplayLimit = trackOffset() + displayWidth();
+    var lSceneDisplayLimit = sceneOffset() + displayHeight();
+    var c = Math.min(lTrackDisplayLimit, lTrackCount);
+    var d = Math.min(lSceneDisplayLimit, lSceneCount);
 
     var checkplay = watchPlay.get("is_playing");
 
@@ -1044,28 +1048,28 @@ function mixer() {
     }
 
     // Prepare arrays
-    watchArmed = new Array(displayWidth() );
-    watchSolo = new Array(displayWidth() );
-    watchMute = new Array(displayWidth() );
+    gWatchArmed = [];
+    gWatchSolo = [];
+    gWatchMute = [];
 
     for (var a = trackOffset(); a < c; a++) {
-        watchMute[a] = new LiveAPI(this.patcher, api_callback,        "live_set tracks " + a);
-        watchMute[a].mode = 0;
-        watchMute[a].track = a;
-        watchMute[a].scene = 0;
-        watchMute[a].property = "mute";                 
+        gWatchMute[a] = new LiveAPI(this.patcher, api_callback,        "live_set tracks " + a);
+        gWatchMute[a].mode = 0;
+        gWatchMute[a].track = a;
+        gWatchMute[a].scene = 0;
+        gWatchMute[a].property = "mute";                 
 
-        watchSolo[a] = new LiveAPI(this.patcher, api_callback,        "live_set tracks " + a);
-        watchSolo[a].mode = 0;
-        watchSolo[a].track = a;
-        watchSolo[a].scene = 0;
-        watchSolo[a].property = "solo";
+        gWatchSolo[a] = new LiveAPI(this.patcher, api_callback,        "live_set tracks " + a);
+        gWatchSolo[a].mode = 0;
+        gWatchSolo[a].track = a;
+        gWatchSolo[a].scene = 0;
+        gWatchSolo[a].property = "solo";
 
-        watchArmed[a] = new LiveAPI(this.patcher, api_callback,           "live_set tracks " + a);
-        watchArmed[a].mode = 0;
-        watchArmed[a].track = a;
-        watchArmed[a].scene = 0;
-        watchArmed[a].property = "arm";
+        gWatchArmed[a] = new LiveAPI(this.patcher, api_callback,           "live_set tracks " + a);
+        gWatchArmed[a].mode = 0;
+        gWatchArmed[a].track = a;
+        gWatchArmed[a].scene = 0;
+        gWatchArmed[a].property = "arm";
     }
 }
 
@@ -1074,7 +1078,7 @@ function setMonomeWidth( mWidth) {
     monomeWidth = mWidth;
     this.patcher.getnamed("monomeWidthGsClipnomeObject").message("set", monomeWidth);
     outlet(1, "monomeWidth", "set", monomeWidth );
-    if (debugLevel[3]) { post("monomeWidth:", monomeWidth, "\n"); }
+    if (gDebugLevel[3]) { post("monomeWidth:", monomeWidth, "\n"); }
 }
 
 function setMonomeHeight( mHeight) {
@@ -1082,5 +1086,5 @@ function setMonomeHeight( mHeight) {
     monomeHeight = mHeight;
     this.patcher.getnamed("monomeHeightGsClipnomeObject").message("set", monomeHeight);
     outlet(1, "monomeHeight", "set", monomeHeight );
-    if (debugLevel[3]) { post("monomeHeight:", monomeHeight, "\n"); }
+    if (gDebugLevel[3]) { post("monomeHeight:", monomeHeight, "\n"); }
 }
