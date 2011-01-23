@@ -158,6 +158,10 @@ var gThis = this,
         Drums: {
             value : [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
             name: "Drums"
+        },
+        __noSuchMethod__: {
+            value : [1, 1, 2, 3, 5, 8, 13],
+            name: "_"
         }
     },
 
@@ -264,7 +268,7 @@ gParameters.clipScene = {
         return (gWatchersCreated) ? (gWatchSet.getcount("scenes") - 1) : 2048;
     },
     saveInPattr: true,
-    listeners: []
+    listeners: ["focusOnClip"]
 };
 gParameters.currentScale = {
     name: "currentScale",
@@ -274,7 +278,7 @@ gParameters.currentScale = {
     minValue: null,
     maxValue: null,
     saveInPattr: false,
-    listeners: []
+    listeners: ["updateNoteDisplay"]
 };
 gParameters.currentScaleName = {
     name: "currentScaleName",
@@ -294,7 +298,7 @@ gParameters.cycles = {
     minValue: 1,
     maxValue: 127,
     saveInPattr: true,
-    listeners: []
+    listeners: ["onScaleVariableChange"]
 };
 gParameters.displayWidth = {
     name: "displayWidth",
@@ -337,7 +341,7 @@ gParameters.clipLength = {
             return (gEditClip.get("length") /4);
         }
         else {
-            return -0;
+            return 0;
         }
     },
     minValue: -Infinity,
@@ -365,8 +369,9 @@ gParameters.folding = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateFunctionModeLeds", "updateNoteDisplay"]
 };
+
 gParameters.foldingRowOffset = {
     name: "foldingRowOffset",
     type: "number",
@@ -377,7 +382,7 @@ gParameters.foldingRowOffset = {
         return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
     },
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateNoteDisplay"]
 };
 gParameters.functionMode = {
     name: "functionMode",
@@ -387,7 +392,7 @@ gParameters.functionMode = {
     minValue: 0,
     maxValue: 4,
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateControlLeds"]
 };
 gParameters.inSuite = {
     name: "inSuite",
@@ -427,7 +432,7 @@ gParameters.newNoteLength = {
     minValue: 0.000390625,
     maxValue: 127,
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateMultiPurposeLeds"]
 };
 gParameters.newNoteVelocity = {
     name: "newNoteVelocity",
@@ -437,7 +442,7 @@ gParameters.newNoteVelocity = {
     minValue: 0,
     maxValue: 127,
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateMultiPurposeLeds"]
 };
 gParameters.scene = {
     name: "scene",
@@ -485,17 +490,17 @@ gParameters.trackIndex = {
         return (gWatchersCreated) ? (gTrackArray.length - 1) : 2048;
     },
     saveInPattr: true,
-    listeners: []
+    listeners: ["focusOnClip"]
 };
 gParameters.rootNote = {
     name: "rootNote",
     type: "number",
-    format: null,
+    format: cHudFormat.set,
     value: 60,
     minValue: 0,
     maxValue: 127,
     saveInPattr: true,
-    listeners: []
+    listeners: ["onScaleVariableChange"]
 };
 gParameters.following = {
     name: "following",
@@ -517,7 +522,7 @@ gParameters.rowOffset = {
         return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
     },
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateNoteDisplay"]
 };
 gParameters.timeOffset = {
     name: "timeOffset",
@@ -529,7 +534,7 @@ gParameters.timeOffset = {
         return (gWatchersCreated) ? (gEditClip.get("length") - gParameters.displayWidth.value) : 2048;
     },
     saveInPattr: true,
-    listeners: []
+    listeners: ["updateNoteDisplay"]
 };
 gParameters.patchString = "GsCss";
 //                                  ---===conditions===---
@@ -653,7 +658,6 @@ function setTrackIndex(aNewIndexNumber) {
         key : gParameters.trackIndex.name,
         value : aNewIndexNumber
     });    
-    focusOnClip();
 }
 
 function changeTrackIndex(aAmount) {
@@ -663,8 +667,6 @@ function changeTrackIndex(aAmount) {
         key : gParameters.trackIndex.name,
         value : gParameters.trackIndex.value + aAmount
     });
-    
-    focusOnClip();
 }
 
 function getIndexOfTrack(aTrackToFind) {
@@ -688,13 +690,9 @@ function getIndexOfTrack(aTrackToFind) {
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
-    gParameters.set({
-        key : gParameters.trackIndex.name,
-        value : aNewIndexNumber
-    });
-        
-    var iCounter;
+    gParameters.trackIndex.value = aNewIndexNumber;        
     
+    var iCounter;
     var lLimit = gWatchSet.getcount("scenes");
 
     if (lLimit) { 
@@ -731,7 +729,6 @@ function setRowOffset(aNewOffsetNumber) {
         key : gParameters.rowOffset.name,
         value : aNewOffsetNumber
     });
-    updateNoteDisplay();
 }
 
 function setFoldingRowOffset(aNewOffsetNumber) {
@@ -741,8 +738,6 @@ function setFoldingRowOffset(aNewOffsetNumber) {
         key : gParameters.foldingRowOffset.name,
         value : aNewOffsetNumber
     });
-    updateNoteDisplay();
-
 }
 
 function getRowOffset() {
@@ -776,8 +771,6 @@ function setClipScene(aNewSceneNumber) {
         key : gParameters.clipScene.name,
         value : aNewSceneNumber
     });
-    focusOnClip();
-    
 }
 
 function setClipSceneFromPatcher(aNewSceneNumber) {
@@ -792,8 +785,6 @@ function changeClipScene(aAmount) {
         key : gParameters.clipScene.name,
         value : gParameters.clipScene.value + aAmount
     });
-    
-    focusOnClip();
 }
 
 function isValidClipSceneNumber() {
@@ -813,8 +804,6 @@ function setTimeOffset(aNewOffset){
         key : gParameters.timeOffset.name,
         value : aNewOffset
     });
-    updateNoteDisplay();
-
 }
 
 function changeTimeOffset(aAmount) {
@@ -838,7 +827,6 @@ function setNewNoteLength(aLength) {
         key : gParameters.newNoteLength.name,
         value : aLength
     });
-    updateMultiPurposeLeds();
 }
 
 //                                  ---===newNoteVelocity===---
@@ -860,7 +848,6 @@ function setFunctionMode(aMode) {
         key : gParameters.functionMode.name,
         value : aMode
     });
-    updateControlLeds();
 }
 
 function decrementFunctionMode() {
@@ -908,10 +895,11 @@ function toggleFolding() {
 function setFolding(aValue) {
     if (gDebugItem.getSetName) { post("    --setFolding--\n"); }
     
-    setPlayheadVisible("folding", aValue);
+    gParameters.set({
+        key : "folding",
+        value : aValue
+    });
 
-    updateFunctionModeLeds();
-    updateNoteDisplay();
 }
                     
 //                                  ---===Callbacks===---
@@ -978,7 +966,7 @@ function updatePlayhead(aTimeNumber) {
             mMonome[playheadTimeInt -1][0].tempOff();
         }
 
-        if (playheadTimeInt % 4 == 0) {
+        if (playheadTimeInt % 2 == 0) {
             mMonome.row(0, "tempOff");
         }
     }
@@ -2217,204 +2205,6 @@ function rebuildAndUpdateMonome() {
     updateMonome();
 }
 
-
-
-   // Method: Monome
-   // 
-   // Monome abstraction
-   // 
-   // Parameters:
-   // 
-   //    aColumns - The number of columns to initialize with.
-   //    aRows - The number of rows to initialize with.
-
-
-function Monome(aColumns, aRows, aThirdParameter) {
-    var iCol,
-        iRow,
-        mMonome = this, 
-        mColumns = aColumns,
-        mRows = aRows,
-        updating = false;
-        
-    if (gDebugItem.functionName) { post("    --Monome--\n"); }
-    if (gDebugItem.startValue) {
-        post("monomeWidth:", aColumns, "\n");
-        post("monomeHeight:", aRows, "\n");
-    }
-
-    function SingleCell(aCol, aRow, aOutlet) {
-        var outletNumber = aOutlet;
-
-        var col = aCol;
-        var row = aRow;
-
-        // local variables
-        var actualState = 0;
-        var tempState = 0;
-        var held = 0;
-
-        // Method: Monome[column][row].isHeld
-        // 
-        // Returns wether or not a button is currently held (1) or not (0)
-        
-        this.isHeld = function() {
-            return held;
-        };
-        
-        // Method: Monome[column][row].push
-        //
-        // (This Method should not be called directly except by <press>)
-        //
-        // Change the state of the button to held 
-
-        this.push = function() {
-            held = 1;
-            return held;
-        };
-
-        // Method: Monome[column][row].release
-        //
-        // (This Method should not be called directly except by <press>)
-        //
-        // Change the state of the button to NOT held    
-        
-        this.release = function() {
-            held = 0;
-            return held;
-        };
-        
-        // Method: Monome[column][row].ledOn
-        //
-        // Change the state of the button to lit (sends message out of designated outlet)
-
-        this.ledOn = function() {
-            actualState = 1;
-            if(!updating) {
-                outlet(outletNumber, col, row, actualState);
-            }
-        };
-
-        this.ledOff = function() {
-            actualState = 0;
-            
-            if (!updating) {
-                outlet(outletNumber, col, row, actualState);
-            }
-        };
-
-        this.checkActual = function() {
-            outlet(outletNumber, col, row, actualState);
-            tempState = 0;
-        };
-
-        this.blink = function() {
-            tempState = (tempState == 1) ? 0: 1;
-            outlet(outletNumber, col, row, tempState);
-        };
-
-        this.blinkIfOff = function() {
-            if (actualState == 0) {
-                tempState = (tempState == 1) ? 0: 1;
-                outlet(outletNumber, col, row, tempState);
-            }
-        };
-
-        this.tempOn = function() {
-            tempState = 1;
-            outlet(outletNumber, col, row, tempState);
-        };
-
-        this.tempOff = function() {
-            tempState = 0;
-            outlet(outletNumber, col, row, actualState);
-        };
-    }
-
-    this.column = function(aColumn, aMethodToInvoke) {
-        var iRow, 
-            lHeight = gParameters.monomeHeight.value;
-        
-        for (iRow = 0; iRow < lHeight; iRow++) {
-            mMonome[aColumn][iRow][aMethodToInvoke]();
-        }
-    };
-
-    this.row = function(aRow, aMethodToInvoke) {
-        var iColumn,
-            lWidth = gParameters.monomeWidth.value;
-            
-        for (iColumn = 0; iColumn < lWidth; iColumn++) {
-            mMonome[iColumn][aRow][aMethodToInvoke]();
-        }
-    };
-    
-    this.rebuild = function(aColumns, aRows) {
-        var iCol,
-            iRow,
-            lMax = Math.max(aColumns, mColumns);
-            
-        for (iCol = 0; iCol < lMax; iCol++) {
-            
-            if((!mMonome[iCol]) && (iCol < aColumns)) { mMonome[iCol] = []; }
-            else if ((mMonome[iCol]) && (iCol >= aColumns)) { mMonome[iCol] = null; }
-            
-            for (iRow = 0; iRow < aRows; iRow++) {
-                if((!mMonome[iCol][iRow]) && (iRow < aRows)) { mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0); }
-                else if ((mMonome[iCol][iRow]) && (iRow >= aRows)) { mMonome[iCol][iRow] = null; }
-            }
-            if (gDebugItem.endValue) {
-                post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
-            }
-        }
-        if (gDebugItem.endValue) {
-            post("Monome.length (width):", mMonome.length, "\n");
-        }
-    };
-    
-    this.refresh = function() {
-        var iCol,
-            iRow,
-            lHeight = gParameters.monomeHeight.value,
-            lWidth = gParameters.monomeWidth.value;
-
-        for (iCol = 0; iCol < lWidth; iCol++) {
-            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
-                mMonome[iCol][iRow].checkActual();
-            }
-        }
-    };
-
-    this.beginUpdates = function() {
-        if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
-        
-        mMonome.updating = true;
-    };
-    this.endUpdates = function() {
-        if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
-        
-        var iCol;
-        var iRow;
-        
-        mMonome.updating = false;
-        refresh();
-    };
-    
-    for (iCol = 0; iCol < aColumns; iCol++) {
-        
-        mMonome[iCol] = [];
-        for (iRow = 0; iRow < aRows; iRow++) {
-            mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0);
-        }
-        if (gDebugItem.startValue) {
-            post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
-        }
-    }
-    if (gDebugItem.startValue) {
-        post("Monome.length (width):", mMonome.length, "\n");
-    }
-}
-
 //                                  ---===cycles accessors===---
 function setCycles(aNewCycleCount) {
     if (gDebugItem.getSetName) { post("    --setCycles--\n"); }
@@ -2423,8 +2213,6 @@ function setCycles(aNewCycleCount) {
         key : gParameters.cycles.name,
         value : aNewCycleCount
     });
-
-    onScaleVariableChange();
 }
 
 //                                  ---===rootNote accessors===---
@@ -2435,8 +2223,6 @@ function setRootNote(aNewRoot) {
         key : gParameters.rootNote.name,
         value : aNewRoot
     });
-
-    onScaleVariableChange();
 }
 
 //                                  ---===onScaleVariableChange===---
@@ -2505,9 +2291,14 @@ function setCurrentScale(aScaleToUse, aScaleName) {
     if (gDebugItem.getSetName) { post("    --setCurrentScale--\n"); }
     
     if (gParameters.currentScale.value != aScaleToUse) {
-        gParameters.currentScale.value = aScaleToUse;
-        setCurrentScaleName(aScaleName);
-        updateNoteDisplay();
+        gParameters.set({
+            key : gParameters.currentScaleName.name,
+            value : aScaleName
+        });
+        gParameters.set({
+            key : gParameters.currentScale.name,
+            value : aScaleToUse
+        });
     }
 }
 
@@ -2531,9 +2322,9 @@ function isValidCCNumber (aNumberInQuestion) {
 function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
     if (gDebugItem.functionName) { post("    --setCurrentScaleWithSymbol--\n"); }
     if (gDebugItem.startValue) { post("           aSymbolFromPatcher:", aSymbolFromPatcher, "\n"); }
-    if (!gThereIsAClipInSlot) { return; }
+    if ((!gThereIsAClipInSlot) || (aSymbolFromPatcher[0] == "_")) { return; }
 
-    if (aSymbolFromPatcher == "Drums") {
+    else if (aSymbolFromPatcher == "Drums") {
         setCurrentScale(cMaps.Drums, aSymbolFromPatcher);
     }
     
@@ -2547,6 +2338,207 @@ function setInSuite(aNewValue) {
         key : gParameters.inSuite.name,
         value : aNewValue
     });
+}
+
+   // Method: Monome
+   // 
+   // Monome abstraction
+   // 
+   // Parameters:
+   // 
+   //    aColumns - The number of columns to initialize with.
+   //    aRows - The number of rows to initialize with.
+
+
+function Monome(aColumns, aRows, aThirdParameter) {
+    var iCol,
+        iRow,
+        mMonome = this, 
+        mColumns = aColumns,
+        mRows = aRows,
+        mUpdating = false;
+        
+    if (gDebugItem.functionName) { post("    --Monome--\n"); }
+    if (gDebugItem.startValue) {
+        post("monomeWidth:", aColumns, "\n");
+        post("monomeHeight:", aRows, "\n");
+    }
+
+    function SingleCell(aCol, aRow, aOutlet) {
+        var outletNumber = aOutlet;
+
+        var col = aCol;
+        var row = aRow;
+
+        // local variables
+        var actualState = 0;
+        var tempState = 0;
+        var held = 0;
+
+        // Method: Monome[column][row].isHeld
+        // 
+        // Returns wether or not a button is currently held (1) or not (0)
+        
+        this.isHeld = function() {
+            return held;
+        };
+        
+        // Method: Monome[column][row].push
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to held 
+
+        this.push = function() {
+            held = 1;
+            return held;
+        };
+
+        // Method: Monome[column][row].release
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to NOT held    
+        
+        this.release = function() {
+            held = 0;
+            return held;
+        };
+        
+        // Method: Monome[column][row].ledOn
+        //
+        // Change the state of the button to lit (sends message out of designated outlet)
+
+        this.ledOn = function() {
+            actualState = 1;
+            if(!mUpdating) {
+                outlet(outletNumber, col, row, actualState);
+            }
+        };
+
+        this.ledOff = function() {
+            actualState = 0;
+            if (!mUpdating) {
+                outlet(outletNumber, col, row, actualState);
+            }
+        };
+
+        this.checkActual = function() {
+            //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
+            outlet(outletNumber, col, row, actualState);
+            tempState = 0;
+        };
+
+        this.blink = function() {
+            tempState = (tempState == 1) ? 0: 1;
+            outlet(outletNumber, col, row, tempState);
+        };
+
+        this.blinkIfOff = function() {
+            if (actualState == 0) {
+                tempState = (tempState == 1) ? 0: 1;
+                outlet(outletNumber, col, row, tempState);
+            }
+        };
+
+        this.tempOn = function() {
+            tempState = 1;
+            outlet(outletNumber, col, row, tempState);
+        };
+
+        this.tempOff = function() {
+            tempState = 0;
+            outlet(outletNumber, col, row, actualState);
+        };
+    }
+
+    this.column = function(aColumn, aMethodToInvoke) {
+        var iRow, 
+            lHeight = mRows;
+        
+        for (iRow = 0; iRow < lHeight; iRow++) {
+            mMonome[aColumn][iRow][aMethodToInvoke]();
+        }
+    };
+
+    this.row = function(aRow, aMethodToInvoke) {
+        var iColumn,
+            lWidth = mColumns;
+            
+        for (iColumn = 0; iColumn < lWidth; iColumn++) {
+            mMonome[iColumn][aRow][aMethodToInvoke]();
+        }
+    };
+    
+    this.rebuild = function(aColumns, aRows) {
+        var iCol,
+            iRow,
+            lMax = Math.max(aColumns, mColumns);
+            
+            mColumns = aColumns;
+            mRows = aRows;
+            
+        for (iCol = 0; iCol < lMax; iCol++) {
+            
+            if((!mMonome[iCol]) && (iCol < aColumns)) { mMonome[iCol] = []; }
+            else if ((mMonome[iCol]) && (iCol >= aColumns)) { mMonome[iCol] = null; }
+            
+            for (iRow = 0; iRow < aRows; iRow++) {
+                if((!mMonome[iCol][iRow]) && (iRow < aRows)) { mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0); }
+                else if ((mMonome[iCol][iRow]) && (iRow >= aRows)) { mMonome[iCol][iRow] = null; }
+            }
+            if (gDebugItem.endValue) {
+                post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
+            }
+        }
+        if (gDebugItem.endValue) {
+            post("Monome.length (width):", mMonome.length, "\n");
+        }
+    };
+    
+    this.refresh = function() {
+        if (gDebugItem.functionName) { post("    --refresh--\n"); }
+        
+        var iCol,
+            iRow,
+            lHeight = gParameters.monomeHeight.value,
+            lWidth = gParameters.monomeWidth.value;
+
+        for (iCol = 0; iCol < lWidth; iCol++) {
+            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
+                mMonome[iCol][iRow].checkActual();
+            }
+        }
+    };
+
+    this.beginUpdates = function() {
+        if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
+        
+        mUpdating = true;
+    };
+    this.endUpdates = function() {
+        if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
+        
+        var iCol;
+        var iRow;
+        
+        mUpdating = false;
+        mMonome.refresh();
+    };
+    
+    for (iCol = 0; iCol < aColumns; iCol++) {
+        
+        mMonome[iCol] = [];
+        for (iRow = 0; iRow < aRows; iRow++) {
+            mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0);
+        }
+        if (gDebugItem.startValue) {
+            post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
+        }
+    }
+    if (gDebugItem.startValue) {
+        post("Monome.length (width):", mMonome.length, "\n");
+    }
 }
 
 function store(aNumber) {
@@ -2606,7 +2598,7 @@ function Parameters() {
     
     this.set = function(aObject) {
         if (gDebugItem.functionName) { post("    --Parameters.set--\n"); }
-        
+        if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             aSlot = (aObject.slot === undefined) ? null : aObject.slot,
@@ -2635,7 +2627,7 @@ function Parameters() {
         // call listeners
         for (iCounter = 0; iCounter < lLength; iCounter++) {
             gThis[lListenerKeys[iCounter]]();
-            post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n");
+            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n"); }
         }
 
         // Save.
