@@ -540,9 +540,36 @@ gParameters.patchString = "GsCss";
 //                                  ---===conditions===---
 gParameters.playheadVisible = false;
 gParameters.followingPlayingClip = false;
-gParameters.extendedWidthOptions = false;
-gParameters.extendedLengthOptions = false;
-gParameters.extendedVelocityOptions = false;
+gParameters.extendedLengthOptions = {
+    name: "extendedLengthOptions",
+    type: "toggle",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    saveInPattr: false,
+    listeners: ["updateControlLeds"]
+};
+gParameters.extendedWidthOptions = {
+    name: "extendedWidthOptions",
+    type: "toggle",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    saveInPattr: false,
+    listeners: ["updateControlLeds"]
+};
+gParameters.extendedVelocityOptions = {
+    name: "extendedVelocityOptions",
+    type: "toggle",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    saveInPattr: false,
+    listeners: ["updateControlLeds"]
+};
 
 function bang() {
     if (true) { post("    ---bang-\n"); }
@@ -1444,7 +1471,7 @@ function updateControlLeds() {
 //                                  ---===Display Methods===---
 function displayDisplayWidthLeds() {
     if (gDebugItem.functionName) { post("    --displayDisplayWidthLeds--\n"); }
-    if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (!gParameters.extendedWidthOptions)) {
+    if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (!gParameters.extendedWidthOptions.value)) {
         switch(gParameters.displayWidth.value) {
             case cDisplayWidthOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1462,7 +1489,7 @@ function displayDisplayWidthLeds() {
                 break;
         }
     }
-    else if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (gParameters.extendedWidthOptions)) {
+    else if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (gParameters.extendedWidthOptions.value)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameters.displayWidth.value) {
             case cDisplayWidthOption._4:
@@ -1486,7 +1513,7 @@ function displayDisplayWidthLeds() {
 function displayLengthLeds() {
     if (gDebugItem.functionName) { post("    --displayLengthLeds--\n"); }
         
-    if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (!gParameters.extendedLengthOptions)) {
+    if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (!gParameters.extendedLengthOptions.value)) {
         switch(gParameters.newNoteLength.value) {
             case cLengthOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1504,7 +1531,7 @@ function displayLengthLeds() {
                 break;
         }
     }
-    else if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (gParameters.extendedLengthOptions)) {
+    else if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (gParameters.extendedLengthOptions.value)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameters.newNoteLength.value) {
             case cLengthOption._4:
@@ -1528,7 +1555,7 @@ function displayLengthLeds() {
 function displayVelocityLeds() {
     if (gDebugItem.functionName) { post("    --displayVelocityLeds--\n"); }
         
-    if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (!gParameters.extendedVelocityOptions)) {
+    if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (!gParameters.extendedVelocityOptions.value)) {
         switch(gParameters.newNoteVelocity.value) {
             case cVelocityOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1546,7 +1573,7 @@ function displayVelocityLeds() {
                 break;
         }
     }
-    else if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (gParameters.extendedVelocityOptions)) {
+    else if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (gParameters.extendedVelocityOptions.value)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameters.newNoteVelocity.value) {
             case cVelocityOption._4:
@@ -1729,7 +1756,7 @@ function press(aCol, aRow, aPress) {
                         updateControlLeds();
                         break;
                     case cFunctionMode.lengthMode:
-                        gParameters.extendedLengthOptions(aPress);
+                        showLengthOptions(aPress);
                         break;
                     case cFunctionMode.velocityMode:
                         showVelocityOptions(aPress);
@@ -1808,7 +1835,7 @@ function shiftIsHeld() {
 function widthButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("    --widthButtons--\n"); }
     
-    if (!gParameters.extendedWidthOptions) {
+    if (!gParameters.extendedWidthOptions.value) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1824,11 +1851,11 @@ function widthButtons(aButtonPressed) {
                 setDisplayWidth(cDisplayWidthOption._3);
                 break;
             default :
-                post("error in widthButtons(no gParameters.extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in widthButtons(gParameters.extendedWidthOptions.value == 0). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
-    else if (gParameters.extendedWidthOptions) {
+    else if (gParameters.extendedWidthOptions.value) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1844,7 +1871,7 @@ function widthButtons(aButtonPressed) {
                 setDisplayWidth(cDisplayWidthOption._7);
                 break;
             default :
-                post("error in widthButtons(with gParameters.extendedWidthOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in widthButtons(with gParameters.extendedWidthOptions.value == 1). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
@@ -1853,7 +1880,7 @@ function widthButtons(aButtonPressed) {
 function lengthButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("    --lengthButtons--\n"); }
     
-    if (!gParameters.extendedLengthOptions) {
+    if (!gParameters.extendedLengthOptions.value) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1869,11 +1896,11 @@ function lengthButtons(aButtonPressed) {
                 setNewNoteLength(cLengthOption._3);
                 break;
             default :
-                post("error in lengthButtons(no gParameters.extendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in lengthButtons(gParameters.extendedLengthOptions.value == 0). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
-    else if (gParameters.extendedLengthOptions) {
+    else if (gParameters.extendedLengthOptions.value) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1889,7 +1916,7 @@ function lengthButtons(aButtonPressed) {
                 setNewNoteLength(cLengthOption._7);
                 break;
             default :
-                post("error in lengthButtons(with gParameters.extendedLengthOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in lengthButtons(gParameters.extendedLengthOptions.value == 1). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
@@ -1899,7 +1926,7 @@ function lengthButtons(aButtonPressed) {
 function velocityButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("    --velocityButtons--\n"); }
     
-    if (!gParameters.extendedVelocityOptions) {
+    if (!gParameters.extendedVelocityOptions.value) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1915,11 +1942,11 @@ function velocityButtons(aButtonPressed) {
                 setNewNoteVelocity(cVelocityOption._3);
                 break;
             default :
-                post("error in velocityButtons(no gParameters.extendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in velocityButtons(no gParameters.extendedVelocityOptions.value). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
-    else if (gParameters.extendedVelocityOptions) {
+    else if (gParameters.extendedVelocityOptions.value) {
         switch (aButtonPressed) {
         
             case cFunctionButton.dynamic_0 :
@@ -1935,7 +1962,7 @@ function velocityButtons(aButtonPressed) {
                 setNewNoteVelocity(cVelocityOption._7);
                 break;
             default :
-                post("error in velocityButtons(with gParameters.extendedVelocityOptions). buttonPressed:", aButtonPressed, "\n");
+                post("error in velocityButtons(with gParameters.extendedVelocityOptions.value). buttonPressed:", aButtonPressed, "\n");
                 break;
         }
     }
@@ -1948,54 +1975,47 @@ function velocityButtons(aButtonPressed) {
 function toggleWidthDisplayOptions() {
     if (gDebugItem.functionName) { post("    --toggleWidthDisplayOptions--\n"); }
     
-    gParameters.extendedWidthOptions = (gParameters.extendedWidthOptions) ? false : true;
-    updateControlLeds();
+    gParameters.toggle(gParameters.extendedWidthOptions.name);
     
-    if(gDebugItem.functionEnd) { post("gParameters.extendedWidthOptions:", gParameters.extendedWidthOptions, "\n"); }
 }
 function toggleLengthOptions() {
     if (gDebugItem.functionName) { post("    --toggleLengthOptions--\n"); }
     
-    gParameters.extendedLengthOptions = (gParameters.extendedLengthOptions) ? false : true;
-    updateControlLeds();
+    gParameters.toggle(gParameters.extendedLengthOptions.name);
     
-    if(gDebugItem.endValue) { post("gParameters.extendedWidthOptions:", gParameters.extendedWidthOptions, "\n"); }
 }
 
 function toggleVelocityOptions() {
     if (gDebugItem.functionName) { post("    --toggleVelocityOptions--\n"); }
     
-    gParameters.extendedVelocityOptions = (gParameters.extendedVelocityOptions) ? false : true;
-    updateControlLeds();
-    
-    if(gDebugItem.endValue) { post("gParameters.extendedVelocityOptions:", gParameters.extendedVelocityOptions, "\n"); }
+    gParameters.toggle(gParameters.extendedVelocityOptions.name);
 }
 
 function showVelocityOptions(aWhichOptions) {
     if (gDebugItem.functionName) { post("    --showVelocityOptions--\n"); }
     
-    gParameters.extendedVelocityOptions = (!!aWhichOptions) ? true : false;
+    gParameters.extendedVelocityOptions.value = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(gDebugItem.endValue) { post("gParameters.extendedVelocityOptions:", gParameters.extendedVelocityOptions, "\n"); }
+    if(gDebugItem.endValue) { post("gParameters.extendedVelocityOptions.value:", gParameters.extendedVelocityOptions.value, "\n"); }
 }
 
 function showWidthOptions(aWhichOptions) {
     if (gDebugItem.functionName) { post("    --showWidthOptions--\n"); }
     
-    gParameters.extendedWidthOptions = (!!aWhichOptions) ? true : false;
+    gParameters.extendedWidthOptions.value = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(gDebugItem.endValue) { post("gParameters.extendedWidthOptions:", gParameters.extendedWidthOptions, "\n"); }
+    if(gDebugItem.endValue) { post("gParameters.extendedWidthOptions.value:", gParameters.extendedWidthOptions.value, "\n"); }
 }
 
 function showLengthOptions(aWhichOptions) {
-    if (gDebugItem.functionName) { post("    --gParameters.extendedLengthOptions--\n"); }
+    if (gDebugItem.functionName) { post("    --showLengthOptions--\n"); }
     
-    gParameters.extendedLengthOptions = (!!aWhichOptions) ? true : false;
+    gParameters.extendedLengthOptions.value = (!!aWhichOptions) ? true : false;
     updateControlLeds();
     
-    if(gDebugItem.endValue) { post("gParameters.extendedLengthOptions:", gParameters.extendedLengthOptions, "\n"); }
+    if(gDebugItem.endValue) { post("gParameters.extendedLengthOptions.value:", gParameters.extendedLengthOptions.value, "\n"); }
 }
 
 function toggleFollowingPlayingClip() {
