@@ -43,6 +43,7 @@ inlets = 1;
 outlets = 3;
 
 var gThis = this,
+    gThisPatcher = this.patcher,
     gWatchSet,
     gCountAllTracks,
     gTrackArray,
@@ -68,7 +69,7 @@ var gThis = this,
 
     },
 
-        gMaps = {
+    cMaps = {
         Major : {
             value : [0, 2, 2, 1, 2, 2, 2, 1],
             name: "Major"
@@ -259,270 +260,286 @@ var gThis = this,
     gWatchClipPlayhead = false,
     gIndexSet = false,
     gFunctionToggle = [ false, false],
+    gParameters = new Parameters();
     
-    gParameter = {
-        clipScene : {
-            name : "clipScene",
-            type : "number",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : function() {
-                return (gWatchersCreated) ? (gWatchSet.getcount("scenes") - 1) : 2048;
-            },
-            saveInPattr : true,
-            listeners : []
-        },
-        currentScale : {
-            name : "currentScale",
-            type : "array",
-            format : null,
-            value : [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
-            minValue : null,
-            maxValue : null,
-            saveInPattr : false,
-            listeners : []
-        },
-        currentScaleName : {
-            name : "currentScaleName",
-            type : "string",
-            format : cHudFormat.symbol,
-            value : "Drums",
-            minValue : null,
-            maxValue : null,
-            saveInPattr : true,
-            listeners : []
-        },
-        cycles : {
-            name : "cycles",
-            type : "number",
-            format : cHudFormat.set,
-            value : 3,
-            minValue : 1,
-            maxValue : 127,
-            saveInPattr : true,
-            listeners : []
-        },
-        displayWidth : {
-            name : "displayWidth",
-            type : "number",
-            format : null,
-            value : 1,
-            minValue : 0.00625,
-            maxValue : 127,
-            saveInPattr : true,
-            listeners : []
-        },
-        width : {
-            name : "width",
-            type : "number",
-            format : cHudFormat.set,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        latest : {
-            name : "latest",
-            type : "number",
-            format : cHudFormat.set,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        clipLength : {
-            name : "clipLength",
-            type : "string",
-            format : cHudFormat.measures,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        top : {
-            name : "top",
-            type : "number",
-            format : cHudFormat.set,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        folding : {
-            name : "folding",
-            type : "toggle",
-            format : cHudFormat.set,
-            value : 0,
-            minValue : 0,
-            maxValue : 1,
-            saveInPattr : true,
-            listeners : []
-        },
-        foldingRowOffset : {
-            name : "foldingRowOffset",
-            type : "number",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : function() {
-                return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
-            },
-            saveInPattr : true,
-            listeners : []
-        },
-        functionMode : {
-            name : "functionMode",
-            type : "number",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : 4,
-            saveInPattr : true,
-            listeners : []
-        },
-        inSuite : {
-            name : "inSuite",
-            type : "toggle",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : 1,
-            saveInPattr : true,
-            listeners : []
-        },
-        monomeHeight : {
-            name : "monomeHeight",
-            type : "number",
-            format : cHudFormat.set,
-            value : 8,
-            minValue : 2,
-            maxValue : 2048,
-            saveInPattr : true,
-            listeners : []
-        },
-        monomeWidth : {
-            name : "monomeWidth",
-            type : "number",
-            format : cHudFormat.set,
-            value : 8,
-            minValue : 2,
-            maxValue : 2048,
-            saveInPattr : true,
-            listeners : []
-        },
-        newNoteLength : {
-            name : "newNoteLength",
-            type : "number",
-            format : cHudFormat.set,
-            value : 0.125,
-            minValue : 0.000390625,
-            maxValue : 127,
-            saveInPattr : true,
-            listeners : []
-        },
-        newNoteVelocity : {
-            name : "newNoteVelocity",
-            type : "number",
-            format : cHudFormat.set,
-            value : 96,
-            minValue : 0,
-            maxValue : 127,
-            saveInPattr : true,
-            listeners : []
-        },
-        scene : {
-            name : "scene",
-            type : "number",
-            format : cHudFormat.set,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        time : {
-            name : "time",
-            type : "number",
-            format : cHudFormat.set,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        track : {
-            name : "track",
-            type : "number",
-            format : cHudFormat.set,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        trackIndex : {
-            name : "trackIndex",
-            type : "number",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : function() {
-                return (gWatchersCreated) ? (gTrackArray.length - 1) : 2048;
-            },
-            saveInPattr : true,
-            listeners : []
-        },
-        rootNote : {
-            name : "rootNote",
-            type : "number",
-            format : null,
-            value : 60,
-            minValue : 0,
-            maxValue : 127,
-            saveInPattr : true,
-            listeners : []
-        },
-        following : {
-            name : "following",
-            type : "number",
-            format : null,
-            value : null,
-            minValue : -Infinity,
-            maxValue : Infinity,
-            saveInPattr : false,
-            listeners : []
-        },
-        rowOffset : {
-            name : "rowOffset",
-            type : "number",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : function() {
-                return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
-            },
-            saveInPattr : true,
-            listeners : []
-        },
-        timeOffset : {
-            name : "timeOffset",
-            type : "number",
-            format : null,
-            value : 0,
-            minValue : 0,
-            maxValue : function() { 
-                return (gWatchersCreated) ? (gEditClip.get("length") - gParameter.displayWidth.value) : 2048;
-            },
-            saveInPattr : true,
-            listeners : []
-        },
-        patchString : "GsCss"
-    };
+gParameters.clipScene = {
+    name: "clipScene",
+    type: "number",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: function() {
+        return (gWatchersCreated) ? (gWatchSet.getcount("scenes") - 1) : 2048;
+    },
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.currentScale = {
+    name: "currentScale",
+    type: "array",
+    format: null,
+    value: [36, 37, 38, 41, 42, 44, 45, 46, 48, 50, 53, 55, 56, 57, 59],
+    minValue: null,
+    maxValue: null,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.currentScaleName = {
+    name: "currentScaleName",
+    type: "string",
+    format: cHudFormat.symbol,
+    value: "Drums",
+    minValue: null,
+    maxValue: null,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.cycles = {
+    name: "cycles",
+    type: "number",
+    format: cHudFormat.set,
+    value: 3,
+    minValue: 1,
+    maxValue: 127,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.displayWidth = {
+    name: "displayWidth",
+    type: "number",
+    format: null,
+    value: 1,
+    minValue: 0.00625,
+    maxValue: 127,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.width = {
+    name: "width",
+    type: "number",
+    format: cHudFormat.set,
+    value: function() {
+        return (gParameters.displayWidth.value / 4);
+    },
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.latest = {
+    name: "latest",
+    type: "number",
+    format: cHudFormat.set,
+    value: null,
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.clipLength = {
+    name: "clipLength",
+    type: "string",
+    format: cHudFormat.measures,
+    value: function() {
+        if (gThereIsAClipInSlot) {
+            return (gEditClip.get("length") /4);
+        }
+        else {
+            return -0;
+        }
+    },
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.top = {
+    name: "top",
+    type: "number",
+    format: cHudFormat.set,
+    value: function() {
+        return (gDisplayNoteList[gParameters.rowOffset.value]) ? gDisplayNoteList[gParameters.rowOffset.value] : 0;
+    },
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.folding = {
+    name: "folding",
+    type: "toggle",
+    format: cHudFormat.set,
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.foldingRowOffset = {
+    name: "foldingRowOffset",
+    type: "number",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: function() {
+        return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
+    },
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.functionMode = {
+    name: "functionMode",
+    type: "number",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: 4,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.inSuite = {
+    name: "inSuite",
+    type: "toggle",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.monomeHeight = {
+    name: "monomeHeight",
+    type: "number",
+    format: cHudFormat.set,
+    value: 8,
+    minValue: 2,
+    maxValue: 2048,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.monomeWidth = {
+    name: "monomeWidth",
+    type: "number",
+    format: cHudFormat.set,
+    value: 8,
+    minValue: 2,
+    maxValue: 2048,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.newNoteLength = {
+    name: "newNoteLength",
+    type: "number",
+    format: cHudFormat.set,
+    value: 0.125,
+    minValue: 0.000390625,
+    maxValue: 127,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.newNoteVelocity = {
+    name: "newNoteVelocity",
+    type: "number",
+    format: cHudFormat.set,
+    value: 96,
+    minValue: 0,
+    maxValue: 127,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.scene = {
+    name: "scene",
+    type: "number",
+    format: cHudFormat.set,
+    value: function() {
+        return (Number(gParameters.clipScene.value) + 1);
+    },
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.time = {
+    name: "time",
+    type: "number",
+    format: cHudFormat.set,
+    value: function() {
+        return (gParameters.timeOffset.value / 4);
+    },
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.track = {
+    name: "track",
+    type: "number",
+    format: cHudFormat.set,
+    value: function() {
+        return (gTrackArray[gParameters.trackIndex.value] + 1);
+    },
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.trackIndex = {
+    name: "trackIndex",
+    type: "number",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: function() {
+        return (gWatchersCreated) ? (gTrackArray.length - 1) : 2048;
+    },
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.rootNote = {
+    name: "rootNote",
+    type: "number",
+    format: null,
+    value: 60,
+    minValue: 0,
+    maxValue: 127,
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.following = {
+    name: "following",
+    type: "number",
+    format: null,
+    value: null,
+    minValue: -Infinity,
+    maxValue: Infinity,
+    saveInPattr: false,
+    listeners: []
+};
+gParameters.rowOffset = {
+    name: "rowOffset",
+    type: "number",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: function() {
+        return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
+    },
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.timeOffset = {
+    name: "timeOffset",
+    type: "number",
+    format: null,
+    value: 0,
+    minValue: 0,
+    maxValue: function() {
+        return (gWatchersCreated) ? (gEditClip.get("length") - gParameters.displayWidth.value) : 2048;
+    },
+    saveInPattr: true,
+    listeners: []
+};
+gParameters.patchString = "GsCss";
 
 function bang() {
     if (true) { post("    ---bang-\n"); }
@@ -540,11 +557,11 @@ function initialize() {
     
     if (gDebugItem.functionName) { post("    ---initialize-\n"); }
     if (gDebugItem.list) { postPattrs("start"); }
-    grabAllPattrValues();
-    gMonome = new Monome(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
+    gParameters.grabAll();
+    gMonome = new Monome(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
     
-    gWatchSet = new LiveAPI(this.patcher, null, "live_set");
-    gCountAllTracks = new LiveAPI(this.patcher, null, "live_set");
+    gWatchSet = new LiveAPI(gThisPatcher, null, "live_set");
+    gCountAllTracks = new LiveAPI(gThisPatcher, null, "live_set");
     
     updateFunctionModeLeds();
     updateMultiPurposeLeds();
@@ -552,20 +569,20 @@ function initialize() {
     countMidiTracks();
         
     if (gDebugItem.startValue) {
-        post("trackNumber:", gTrackArray[gParameter.trackIndex.value], "\n");
-        post("clipScene:", gParameter.clipScene.value, "\n"); 
+        post("trackNumber:", gTrackArray[gParameters.trackIndex.value], "\n");
+        post("clipScene:", gParameters.clipScene.value, "\n"); 
     }
     
     // those with callbacks 
-    gWatchSetTracks = new LiveAPI(this.patcher, countMidiTracks, "live_set");
+    gWatchSetTracks = new LiveAPI(gThisPatcher, countMidiTracks, "live_set");
     gWatchSetTracks.property = "tracks";
-    gWatchSetPlaying = new LiveAPI(this.patcher, setPlayheadVisible, "live_set");
+    gWatchSetPlaying = new LiveAPI(gThisPatcher, setPlayheadVisible, "live_set");
     gWatchSetPlaying.property = "is_playing";
     
     glob = new Global("clipStepGlobalController");
     glob.setClip = setClipFromGlobal;
     
-    setTrackIndexAndScene(gParameter.trackIndex.value, gParameter.clipScene.value);
+    setTrackIndexAndScene(gParameters.trackIndex.value, gParameters.clipScene.value);
     
     gWatchersCreated = true;
 
@@ -634,8 +651,8 @@ function setTrack(aNewTrackNumber) {
 function setTrackIndex(aNewIndexNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
-    setParameter({
-        key : gParameter.trackIndex.name,
+    gParameters.set({
+        key : gParameters.trackIndex.name,
         value : aNewIndexNumber
     });    
     focusOnClip();
@@ -644,9 +661,9 @@ function setTrackIndex(aNewIndexNumber) {
 function changeTrackIndex(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeTrackIndex--\n"); }
         
-    setParameter({
-        key : gParameter.trackIndex.name,
-        value : gParameter.trackIndex.value + aAmount
+    gParameters.set({
+        key : gParameters.trackIndex.name,
+        value : gParameters.trackIndex.value + aAmount
     });
     
     focusOnClip();
@@ -673,8 +690,8 @@ function getIndexOfTrack(aTrackToFind) {
 function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setTrackIndex--\n"); }
     
-    setParameter({
-        key : gParameter.trackIndex.name,
+    gParameters.set({
+        key : gParameters.trackIndex.name,
         value : aNewIndexNumber
     });
         
@@ -684,23 +701,23 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 
     if (lLimit != 0) { 
         for (iCounter = aNewSceneNumber; iCounter < lLimit; iCounter++) {
-            setParameter({
-                key : gParameter.clipScene.name,
+            gParameters.set({
+                key : gParameters.clipScene.name,
                 value : iCounter
             });
             if (focusOnClip()) { return true; }
         }
     
         for (iCounter = aNewSceneNumber; iCounter >=0; iCounter--) {
-            setParameter({
-                key : gParameter.clipScene.name,
+            gParameters.set({
+                key : gParameters.clipScene.name,
                 value : iCounter
             });
             if (focusOnClip()) { return true; }
         }
     
-        setParameter({
-            key : gParameter.clipScene.name,
+        gParameters.set({
+            key : gParameters.clipScene.name,
             value : 0
         });
     }
@@ -712,8 +729,8 @@ function setTrackIndexAndScene(aNewIndexNumber, aNewSceneNumber) {
 function setRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
-    setParameter({
-        key : gParameter.rowOffset.name,
+    gParameters.set({
+        key : gParameters.rowOffset.name,
         value : aNewOffsetNumber
     });
     updateNoteDisplay();
@@ -722,8 +739,8 @@ function setRowOffset(aNewOffsetNumber) {
 function setFoldingRowOffset(aNewOffsetNumber) {
     if (gDebugItem.getSetName) { post("    --setRowOffset--\n"); }
 
-    setParameter({
-        key : gParameter.foldingRowOffset.name,
+    gParameters.set({
+        key : gParameters.foldingRowOffset.name,
         value : aNewOffsetNumber
     });
     updateNoteDisplay();
@@ -731,7 +748,7 @@ function setFoldingRowOffset(aNewOffsetNumber) {
 }
 
 function getRowOffset() {
-    return (gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value;
+    return (gParameters.folding.value) ? gParameters.foldingRowOffset.value : gParameters.rowOffset.value;
 }
 
 function changeRowOffset(aAmount) {
@@ -739,15 +756,15 @@ function changeRowOffset(aAmount) {
     
     if(!aAmount) { aAmount = 1; }
             
-    if (gParameter.folding.value) {
-        setParameter({
-            key : gParameter.foldingRowOffset.name,
-            value : (gParameter.foldingRowOffset.value + aAmount)
+    if (gParameters.folding.value) {
+        gParameters.set({
+            key : gParameters.foldingRowOffset.name,
+            value : (gParameters.foldingRowOffset.value + aAmount)
         }); }
     else {
-        setParameter({
-            key : gParameter.rowOffset.name,
-            value : (gParameter.rowOffset.value + aAmount)
+        gParameters.set({
+            key : gParameters.rowOffset.name,
+            value : (gParameters.rowOffset.value + aAmount)
         }); }
     
     updateNoteDisplay();
@@ -757,8 +774,8 @@ function changeRowOffset(aAmount) {
 function setClipScene(aNewSceneNumber) {
     if (gDebugItem.getSetName) { post("    --setClipScene--\n"); }
 
-    setParameter({
-        key : gParameter.clipScene.name,
+    gParameters.set({
+        key : gParameters.clipScene.name,
         value : aNewSceneNumber
     });
     focusOnClip();
@@ -773,16 +790,16 @@ function setClipSceneFromPatcher(aNewSceneNumber) {
 function changeClipScene(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeClipScene--\n"); }
     
-    setParameter({
-        key : gParameter.clipScene.name,
-        value : gParameter.clipScene.value + aAmount
+    gParameters.set({
+        key : gParameters.clipScene.name,
+        value : gParameters.clipScene.value + aAmount
     });
     
     focusOnClip();
 }
 
 function isValidClipSceneNumber() {
-    if ((gParameter.clipScene.value >= 0) || (gParameter.clipScene.value < gWatchSet.getcount("scenes"))) { 
+    if ((gParameters.clipScene.value >= 0) || (gParameters.clipScene.value < gWatchSet.getcount("scenes"))) { 
         return true;
     }
     else {
@@ -794,8 +811,8 @@ function isValidClipSceneNumber() {
 function setTimeOffset(aNewOffset){
     if (gDebugItem.getSetName) { post("    --setTimeOffset--\n"); }
 
-    setParameter({
-        key : gParameter.timeOffset.name,
+    gParameters.set({
+        key : gParameters.timeOffset.name,
         value : aNewOffset
     });
     updateNoteDisplay();
@@ -805,12 +822,12 @@ function setTimeOffset(aNewOffset){
 function changeTimeOffset(aAmount) {
     if (gDebugItem.getSetName) { post("    --changeTimeOffset-\n"); }
         
-    if(!aAmount) { aAmount = gParameter.displayWidth.value; }
-    else { aAmount *= gParameter.displayWidth.value; }
+    if(!aAmount) { aAmount = gParameters.displayWidth.value; }
+    else { aAmount *= gParameters.displayWidth.value; }
 
-    setParameter({
-        key : gParameter.timeOffset.name,
-        value : (gParameter.timeOffset.value + aAmount)
+    gParameters.set({
+        key : gParameters.timeOffset.name,
+        value : (gParameters.timeOffset.value + aAmount)
     });
 }
 
@@ -819,8 +836,8 @@ function changeTimeOffset(aAmount) {
 function setNewNoteLength(aLength) {
     if (gDebugItem.getSetName) { post("    --setNewNoteLength--\n"); }
     
-    setParameter({
-        key : gParameter.newNoteLength.name,
+    gParameters.set({
+        key : gParameters.newNoteLength.name,
         value : aLength
     });
     updateMultiPurposeLeds();
@@ -831,8 +848,8 @@ function setNewNoteLength(aLength) {
 function setNewNoteVelocity(aVelocity) {
     if (gDebugItem.getSetName) { post("    ---setNewNoteVelocity-\n"); }
     
-    setParameter({
-        key : gParameter.newNoteVelocity.name,
+    gParameters.set({
+        key : gParameters.newNoteVelocity.name,
         value : aVelocity
     });
 }
@@ -841,8 +858,8 @@ function setNewNoteVelocity(aVelocity) {
 function setFunctionMode(aMode) {
     if (gDebugItem.functionName) { post("    --setFunctionMode--\n"); }
 
-    setParameter({
-        key : gParameter.functionMode.name,
+    gParameters.set({
+        key : gParameters.functionMode.name,
         value : aMode
     });
     updateControlLeds();
@@ -851,13 +868,13 @@ function setFunctionMode(aMode) {
 function decrementFunctionMode() {
     if (gDebugItem.getSetName) { post("    --decrementFunctionMode--\n"); }
     
-    changeParameterProperty("functionMode", -1);
+    gParameters.change("functionMode", -1);
 }
 
 function incrementFunctionMode() {
     if (gDebugItem.getSetName) { post("    --incrementFunctionMode--\n"); }
     
-    changeParameterProperty("functionMode", 1);
+    gParameters.change("functionMode", 1);
 }
 
 function toggleFunctionBitButton(aButton) {
@@ -888,7 +905,7 @@ function toggleFunctionBitButton(aButton) {
 function toggleFolding() {
     if (gDebugItem.functionName) { post("    --toggleFolding--\n"); }
     
-    toggleParameterProperty("folding");
+    gParameters.toggle("folding");
 }
 function setFolding(aValue) {
     if (gDebugItem.getSetName) { post("    --setFolding--\n"); }
@@ -931,34 +948,34 @@ function setPlayheadVisible() {
 function setDisplayWidth(aWidth) {
     if (gDebugItem.getSetName) { post("    --setDisplayWidth--\n"); }
 
-    setParameter({
-        key : gParameter.displayWidth.name,
+    gParameters.set({
+        key : gParameters.displayWidth.name,
         value : aWidth
     });
     
     roundDisplayOffset();
     updateNoteDisplay();
-    if (gParameter.functionMode.value == cFunctionMode.widthMode) {
+    if (gParameters.functionMode.value == cFunctionMode.widthMode) {
         updateMultiPurposeLeds();
     }
 
 }
 
 function updatePlayhead(aTimeNumber) {
-    var playheadTimeInt = Math.floor((aTimeNumber[1] - gParameter.timeOffset.value) * displayRatioToMonome()),
+    var playheadTimeInt = Math.floor((aTimeNumber[1] - gParameters.timeOffset.value) * displayRatioToMonome()),
         mMonome = gMonome;
     
     if (gDebugItem.frequentName) { post("    --updatePlayhead--\n"); }
     // View
     if (gPlayheadVisible) {
 
-        if((playheadTimeInt == -1) || (playheadTimeInt == gParameter.monomeWidth.value)) {
+        if((playheadTimeInt == -1) || (playheadTimeInt == gParameters.monomeWidth.value)) {
             mMonome[monomeLastCol()][0].tempOff();            
         }
         else if(playheadTimeInt == 0) {                      
             mMonome[playheadTimeInt][0].blink();
         }
-        else if((0 < playheadTimeInt) && (playheadTimeInt < gParameter.monomeWidth.value)) {
+        else if((0 < playheadTimeInt) && (playheadTimeInt < gParameters.monomeWidth.value)) {
             mMonome[playheadTimeInt][0].blink();
             mMonome[playheadTimeInt -1][0].tempOff();
         }
@@ -984,7 +1001,7 @@ function countMidiTracks() {
 
     for (j = 0; j < lTrackCount; j++) {
         if (gIndexSet) { gIndexSet.goto("live_set tracks " + j); }
-        else { gIndexSet = new LiveAPI(this.patcher, null, "live_set tracks " + j ); }
+        else { gIndexSet = new LiveAPI(gThisPatcher, null, "live_set tracks " + j ); }
         if (gIndexSet.get("has_midi_input") == 1) {
             gTrackArray.push(j);                      
         }
@@ -1006,8 +1023,8 @@ function countScenesWithClip() {
     sceneArray = [];
     sceneCount = gCountAllTracks.getcount("scenes");
     for (var k = 0; k < sceneCount; k++) {
-        if (gIndexTrack) { gIndexTrack.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + "clip_slots" + k); }
-        else { gIndexTrack = new LiveAPI(this.patcher, null, "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + "clip_slots" + k); }
+        if (gIndexTrack) { gIndexTrack.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + "clip_slots" + k); }
+        else { gIndexTrack = new LiveAPI(gThisPatcher, null, "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + "clip_slots" + k); }
         
         if (gIndexTrack.get("has_midi_input") == 1 ) {
             sceneCount.push(k);                      
@@ -1028,22 +1045,22 @@ function compareNumbers(a, b) {
 
 function roundDisplayOffset() {
     if (gDebugItem.functionName) { post("    --roundDisplayOffset--\n"); }
-    if(gDebugItem.startValue) { post("before round", gParameter.timeOffset.value,  "\n"); }
-    var a = Math.round(gParameter.timeOffset.value / gParameter.displayWidth.value);
-    gParameter.timeOffset.value = a * gParameter.displayWidth.value;
-    if(gDebugItem.endValue) {post("after round", gParameter.timeOffset.value,                   "\n"); }
+    if(gDebugItem.startValue) { post("before round", gParameters.timeOffset.value,  "\n"); }
+    var a = Math.round(gParameters.timeOffset.value / gParameters.displayWidth.value);
+    gParameters.timeOffset.value = a * gParameters.displayWidth.value;
+    if(gDebugItem.endValue) {post("after round", gParameters.timeOffset.value,                   "\n"); }
 }
 
 //                                  ---===Dynamic Time/Column Variables===---
-function displayTimeMax() { return gParameter.displayWidth.value + gParameter.timeOffset.value; }
-function colOffset() { return gParameter.timeOffset.value * displayRatioToMonome(); }
-function displayRatioFromMonome() { return gParameter.displayWidth.value / gParameter.monomeWidth.value; }
-function displayRatioToMonome() { return gParameter.monomeWidth.value / gParameter.displayWidth.value; }
-function monomeLastRow() { return gParameter.monomeHeight.value - 1; }
-function monomeLastCol() { return gParameter.monomeWidth.value - 1; }
+function displayTimeMax() { return gParameters.displayWidth.value + gParameters.timeOffset.value; }
+function colOffset() { return gParameters.timeOffset.value * displayRatioToMonome(); }
+function displayRatioFromMonome() { return gParameters.displayWidth.value / gParameters.monomeWidth.value; }
+function displayRatioToMonome() { return gParameters.monomeWidth.value / gParameters.displayWidth.value; }
+function monomeLastRow() { return gParameters.monomeHeight.value - 1; }
+function monomeLastCol() { return gParameters.monomeWidth.value - 1; }
 
 function displayRowMax() {
-    var currentOffset = (gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value;
+    var currentOffset = (gParameters.folding.value) ? gParameters.foldingRowOffset.value : gParameters.rowOffset.value;
     return monomeLastRow() + currentOffset;
 }
 
@@ -1051,44 +1068,44 @@ function displayRowMax() {
 function focusOnClip() {
     if (gDebugItem.functionName) { post("    --focusOnClip--\n"); }          
     
-    if (gDebugItem.functionArguments) { post("gTrackArray[" + gParameter.trackIndex.value + "]:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (gDebugItem.functionArguments) { post("gTrackArray[" + gParameters.trackIndex.value + "]:", gTrackArray[gParameters.trackIndex.value], "\n"); }
 
-    if (gCheckForClip) { gCheckForClip.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value); }
-    else { gCheckForClip = new LiveAPI(this.patcher, null, "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value); }
+    if (gCheckForClip) { gCheckForClip.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value); }
+    else { gCheckForClip = new LiveAPI(gThisPatcher, null, "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value); }
     
     gThereIsAClipInSlot = (gCheckForClip.get("has_clip") == 1) ? true: false;
     
-    if (gDebugItem.list) { post("gThereIsAClipInSlot: ", gTrackArray[gParameter.trackIndex.value], gParameter.clipScene.value, gThereIsAClipInSlot, "\n"); }
+    if (gDebugItem.list) { post("gThereIsAClipInSlot: ", gTrackArray[gParameters.trackIndex.value], gParameters.clipScene.value, gThereIsAClipInSlot, "\n"); }
 
     if (!gThereIsAClipInSlot) { return false; }
 
-    if (gEditClip) { gEditClip.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
-    else { gEditClip = new LiveAPI(this.patcher, null, "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
+    if (gEditClip) { gEditClip.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
+    else { gEditClip = new LiveAPI(gThisPatcher, null, "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
     
-    if (gWatchTrack) { gWatchTrack.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value]); }
-    else { gWatchTrack = new LiveAPI(this.patcher, null, "live_set tracks " + gTrackArray[gParameter.trackIndex.value]); }
+    if (gWatchTrack) { gWatchTrack.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
+    else { gWatchTrack = new LiveAPI(gThisPatcher, null, "live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
 
-    if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value]); }
-    else { gWatchTrackForPlayingClip = new LiveAPI(this.patcher, onNewSlotPlaying, "live_set tracks " + gTrackArray[gParameter.trackIndex.value]); }
+    if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
+    else { gWatchTrackForPlayingClip = new LiveAPI(gThisPatcher, onNewSlotPlaying, "live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
     gWatchTrackForPlayingClip.mode = 0; // in case the track is moved
 //              gWatchTrackForPlayingClip.property = "playing_slot_index";
 
-    if (gWatchClipNotes) { gWatchClipNotes.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); } 
-    else { gWatchClipNotes = new LiveAPI(this.patcher, updateNoteDisplay,  "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
+    if (gWatchClipNotes) { gWatchClipNotes.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); } 
+    else { gWatchClipNotes = new LiveAPI(gThisPatcher, updateNoteDisplay,  "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
     gWatchClipNotes.mode = 0; // in case the track is moved
     gWatchClipNotes.property = "notes";
 
-    if (gWatchClipPlayingStatus) { gWatchClipPlayingStatus.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
-    else { gWatchClipPlayingStatus = new LiveAPI(this.patcher, setPlayheadVisible, "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
+    if (gWatchClipPlayingStatus) { gWatchClipPlayingStatus.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
+    else { gWatchClipPlayingStatus = new LiveAPI(gThisPatcher, setPlayheadVisible, "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
     gWatchClipPlayingStatus.mode = 0; // in case the track is moved
     gWatchClipPlayingStatus.property = "playing_status";
 
-    if (gWatchClipIsPlaying) { gWatchClipIsPlaying.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
-    else { gWatchClipIsPlaying = new LiveAPI(this.patcher, null,  "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
+    if (gWatchClipIsPlaying) { gWatchClipIsPlaying.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
+    else { gWatchClipIsPlaying = new LiveAPI(gThisPatcher, null,  "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
     gWatchClipIsPlaying.mode = 0; // in case the track is moved
 
-    if (gWatchClipPlayhead) { gWatchClipPlayhead.goto("live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
-    else { gWatchClipPlayhead = new LiveAPI(this.patcher, updatePlayhead,  "live_set tracks " + gTrackArray[gParameter.trackIndex.value] + " clip_slots " + gParameter.clipScene.value + " clip"); }
+    if (gWatchClipPlayhead) { gWatchClipPlayhead.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
+    else { gWatchClipPlayhead = new LiveAPI(gThisPatcher, updatePlayhead,  "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
     gWatchClipPlayhead.mode = 0; // in case the track is moved
     gWatchClipPlayhead.property = "playing_position";
 
@@ -1105,26 +1122,26 @@ function getCurrentPosition() {
     var currentPathArray = gWatchClipNotes.path.split(" ");
     // Get current track number
     var currentTrackNumber = parseInt(currentPathArray[2], 10);
-    gParameter.trackIndex.value = gTrackArray.indexOf(currentTrackNumber);
+    gParameters.trackIndex.value = gTrackArray.indexOf(currentTrackNumber);
     
     // Debugging is Fun!
     if (gDebugItem.functionEnd) { post("current track number is:", currentTrackNumber, "\n"); }
-    if (gDebugItem.startValue) { post("trackIndex is:", gParameter.trackIndex.value, "\n"); }
+    if (gDebugItem.startValue) { post("trackIndex is:", gParameters.trackIndex.value, "\n"); }
     
     // Get current scene number
     var currentSceneNumber = parseInt(currentPathArray[4], 10);
     post("currentSceneNumber = ", currentSceneNumber, "\n");
-    if (gParameter.clipScene.value != currentSceneNumber) {
-        if (gDebugItem.endValue) { post("clipScene changed from:", gParameter.clipScene.value, "to:", currentSceneNumber, "\n"); }
-        gParameter.clipScene.value = currentSceneNumber;
+    if (gParameters.clipScene.value != currentSceneNumber) {
+        if (gDebugItem.endValue) { post("clipScene changed from:", gParameters.clipScene.value, "to:", currentSceneNumber, "\n"); }
+        gParameters.clipScene.value = currentSceneNumber;
     }
-    setParameter({
-        key : gParameter.track.name,
-        value : gTrackArray[gParameter.trackIndex.value] + 1
+    gParameters.set({
+        key : gParameters.track.name,
+        value : gTrackArray[gParameters.trackIndex.value] + 1
     });
-    setParameter({
-        key : gParameter.scene.name, 
-        value : Number(gParameter.clipScene.value) + 1
+    gParameters.set({
+        key : gParameters.scene.name, 
+        value : Number(gParameters.clipScene.value) + 1
     });
 }
 
@@ -1136,7 +1153,7 @@ function playCurrentClip() {
 //                                  ---===Check Notes===---
 function timeIsDisplayed(aTimeInQuestion) {
     if (gDebugItem.list) { post("    --timeIsDisplayed--\n"); }
-    if ((gParameter.timeOffset.value <= aTimeInQuestion) && (aTimeInQuestion < displayTimeMax())) {
+    if ((gParameters.timeOffset.value <= aTimeInQuestion) && (aTimeInQuestion < displayTimeMax())) {
         return true;
     }
     else {
@@ -1146,7 +1163,7 @@ function timeIsDisplayed(aTimeInQuestion) {
 
 function rowIsDisplayed(aRowInQuestion) {
     if (gDebugItem.list) { post("    --rowIsDisplayed--\n"); }
-    var currentOffset = (gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value;
+    var currentOffset = (gParameters.folding.value) ? gParameters.foldingRowOffset.value : gParameters.rowOffset.value;
     if (currentOffset <= aRowInQuestion && (aRowInQuestion < displayRowMax())) {
         return true;
     }
@@ -1247,7 +1264,7 @@ function getClipNotes() {
     }
 
     if (gDebugItem.startValue) { post("gDisplayNoteList before padding =", gDisplayNoteList, '\n'); }
-    if (!gParameter.folding.value) { fillInNoteRows(); }
+    if (!gParameters.folding.value) { fillInNoteRows(); }
     gDisplayNoteList.sort(compareNumbers);
     if (gDebugItem.endValue) { post("gDisplayNoteList after padding =", gDisplayNoteList, '\n'); }
     gClipNotes = gEditClip.call("deselect_all_notes");
@@ -1283,7 +1300,7 @@ function addNote(aPitch, aTime, aVelocity) {
     // Model Controller
     // simply adds one note no need to get and replace every note.
     
-    var tempNoteArray = ["note", aPitch, aTime, gParameter.newNoteLength.value, aVelocity, 0];
+    var tempNoteArray = ["note", aPitch, aTime, gParameters.newNoteLength.value, aVelocity, 0];
     var newLength = gNoteArray.length + 1;
 
     gEditClip.call("deselect_all_notes"); // CALL
@@ -1342,64 +1359,22 @@ Array.prototype.diff = function(a) {
 */
 
 function updateHud() {
-    setParameter({
-        key : gParameter.track.name, 
-        value : (gTrackArray[gParameter.trackIndex.value] + 1)
-    });
-    setParameter({
-        key : gParameter.scene.name,
-        value : (Number(gParameter.clipScene.value) + 1)
-    });
-    setParameter({
-        key : gParameter.time.name,
-        value : gParameter.timeOffset.value / 4
-    });
-    setParameter({
-        key : gParameter.width.name,
-        value : gParameter.displayWidth.value / 4
-    });
-    setParameter({
-        key : gParameter.top.name,
-        value : (gDisplayNoteList[gParameter.rowOffset.value]) ? gDisplayNoteList[gParameter.rowOffset.value] : 0
-    });
-    if (gThereIsAClipInSlot) {
-        setParameter({
-            key : gParameter.clipLength.name,
-            value : (gEditClip.get("length") /4)
-        });
-    }
-    setParameter({
-        key : gParameter.currentScaleName.name,
-        value : gParameter.currentScaleName.value
-    });
-    setParameter({
-        key : gParameter.newNoteLength.name,
-        value :gParameter.newNoteLength.value
-    });
-    setParameter({
-        key : gParameter.monomeHeight.name,
-        value : gParameter.monomeHeight.value
-    });
-    setParameter({
-        key : gParameter.monomeWidth.name,
-        value : gParameter.monomeWidth.value
-    });
-    setParameter({
-        key : gParameter.cycles.name,
-        value : gParameter.cycles.value
-    });
-    setParameter({
-        key : gParameter.rootNote.name,
-        value : gParameter.rootNote.value
-    });
-    setParameter({
-        key : gParameter.folding.name,
-        value : gParameter.folding.value
-    });
-    setParameter({
-        key : gParameter.newNoteVelocity.name,
-        value : gParameter.newNoteVelocity.value
-    });   
+    if (gDebugItem.functionName) { post("    --updateHud--\n"); }
+
+    gParameters.show("track");
+    gParameters.show("scene");
+    gParameters.show("time");
+    gParameters.show("width");
+    gParameters.show("top");
+    gParameters.show("clipLength");
+    gParameters.show("currentScaleName");
+    gParameters.show("newNoteLength");
+    gParameters.show("monomeHeight");
+    gParameters.show("monomeWidth");
+    gParameters.show("cycles");
+    gParameters.show("rootNote");
+    gParameters.show("folding");
+    gParameters.show("newNoteVelocity");
 }
 
 
@@ -1407,7 +1382,7 @@ function updateFunctionModeLeds() {
     if (gDebugItem.functionName) { post("    --updateFunctionModeLeds--\n"); }
     clearFunctionModeLeds();
     
-    switch(gParameter.functionMode.value) {
+    switch(gParameters.functionMode.value) {
         case cFunctionMode.moveMode:
             //      00
             break;
@@ -1428,21 +1403,21 @@ function updateFunctionModeLeds() {
             gMonome[cFunctionButton.bit1][monomeLastRow()].ledOn();
             break;
         default :
-            post("error in updateFunctionModeLeds functionMode:", gParameter.functionMode.value, "\n");
+            post("error in updateFunctionModeLeds functionMode:", gParameters.functionMode.value, "\n");
             break;
     }
 
     if (shiftIsHeld()) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
     }
-    if (gParameter.folding.value){ gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
+    if (gParameters.folding.value){ gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
 }
 
 function updateMultiPurposeLeds() {
     if (gDebugItem.functionName) { post("    --updateMultiPurposeLeds--\n"); }
     
     clearMultiPurposeLeds();
-    switch(gParameter.functionMode.value) {
+    switch(gParameters.functionMode.value) {
         case cFunctionMode.moveMode:
             // Arrows
             if (shiftIsHeld()) {
@@ -1465,7 +1440,7 @@ function updateMultiPurposeLeds() {
             displayLengthLeds();
             break;
         default :
-            post("error in updateMultiPurposeLeds, functionMode:", gParameter.functionMode.value, "\n");
+            post("error in updateMultiPurposeLeds, functionMode:", gParameters.functionMode.value, "\n");
             break;
     }
     
@@ -1483,8 +1458,8 @@ function updateControlLeds() {
 //                                  ---===Display Methods===---
 function displayDisplayWidthLeds() {
     if (gDebugItem.functionName) { post("    --displayDisplayWidthLeds--\n"); }
-    if ((gParameter.functionMode.value == cFunctionMode.widthMode) && (!gExtendedWidthOptions)) {
-        switch(gParameter.displayWidth.value) {
+    if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (!gExtendedWidthOptions)) {
+        switch(gParameters.displayWidth.value) {
             case cDisplayWidthOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1501,9 +1476,9 @@ function displayDisplayWidthLeds() {
                 break;
         }
     }
-    else if ((gParameter.functionMode.value == cFunctionMode.widthMode) && (gExtendedWidthOptions)) {
+    else if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (gExtendedWidthOptions)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
-        switch(gParameter.displayWidth.value) {
+        switch(gParameters.displayWidth.value) {
             case cDisplayWidthOption._4:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1525,8 +1500,8 @@ function displayDisplayWidthLeds() {
 function displayLengthLeds() {
     if (gDebugItem.functionName) { post("    --displayLengthLeds--\n"); }
         
-    if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (!gExtendedLengthOptions)) {
-        switch(gParameter.newNoteLength.value) {
+    if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (!gExtendedLengthOptions)) {
+        switch(gParameters.newNoteLength.value) {
             case cLengthOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1543,9 +1518,9 @@ function displayLengthLeds() {
                 break;
         }
     }
-    else if ((gParameter.functionMode.value == cFunctionMode.lengthMode) && (gExtendedLengthOptions)) {
+    else if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (gExtendedLengthOptions)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
-        switch(gParameter.newNoteLength.value) {
+        switch(gParameters.newNoteLength.value) {
             case cLengthOption._4:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1567,8 +1542,8 @@ function displayLengthLeds() {
 function displayVelocityLeds() {
     if (gDebugItem.functionName) { post("    --displayVelocityLeds--\n"); }
         
-    if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (!gExtendedVelocityOptions)) {
-        switch(gParameter.newNoteVelocity.value) {
+    if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (!gExtendedVelocityOptions)) {
+        switch(gParameters.newNoteVelocity.value) {
             case cVelocityOption._0:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1585,9 +1560,9 @@ function displayVelocityLeds() {
                 break;
         }
     }
-    else if ((gParameter.functionMode.value == cFunctionMode.velocityMode) && (gExtendedVelocityOptions)) {
+    else if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (gExtendedVelocityOptions)) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
-        switch(gParameter.newNoteVelocity.value) {
+        switch(gParameters.newNoteVelocity.value) {
             case cVelocityOption._4:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
                 break;
@@ -1617,11 +1592,11 @@ function displayNote(aNoteToDisplay, aIndex, aArray) {
     
     // Formatted Notes for Monome
         rowIndex = gDisplayNoteList.indexOf(aNoteToDisplay[1]),
-        rowOnMonome = rowIndex - ((gParameter.folding.value) ? gParameter.foldingRowOffset.value : gParameter.rowOffset.value);
+        rowOnMonome = rowIndex - ((gParameters.folding.value) ? gParameters.foldingRowOffset.value : gParameters.rowOffset.value);
     
     if(gDebugItem.startValue) {
         post("rowIndex:", rowIndex, "\n");
-        post("rowOnMonome:", rowOnMonome, "rowOffset:", gParameter.rowOffset.value, "foldingRowOffset", gParameter.foldingRowOffset.value, "\n");
+        post("rowOnMonome:", rowOnMonome, "rowOffset:", gParameters.rowOffset.value, "foldingRowOffset", gParameters.foldingRowOffset.value, "\n");
         post("colOnMonome:", colOnMonome, "colOffset:", colOffset(), "\n");
     }
     
@@ -1657,7 +1632,7 @@ function clearMultiPurposeLeds() {
 
 function clearNoteDisplay() {
     if (gDebugItem.functionName) { post("    --clearNoteDisplay--\n"); }
-    for (var iCol = 0; iCol < gParameter.monomeWidth.value; iCol ++) {
+    for (var iCol = 0; iCol < gParameters.monomeWidth.value; iCol ++) {
         for (var iRow = 0; iRow < monomeLastRow(); iRow++) {
             gMonome[iCol][iRow].ledOff();
         }
@@ -1669,13 +1644,13 @@ function clearNoteDisplay() {
 function fillInNoteRows() {
     if (gDebugItem.functionName) { post("    --fillInNoteRows--\n"); }
 
-    var numberNeeded = (gParameter.monomeHeight.value - gDisplayNoteList.length), 
-        lScaleLength = gParameter.currentScale.value.length;
+    var numberNeeded = (gParameters.monomeHeight.value - gDisplayNoteList.length), 
+        lScaleLength = gParameters.currentScale.value.length;
     for (var m = 0; m < lScaleLength; m++) {
-        if (!gDisplayNoteList.inArray(gParameter.currentScale.value[m]) ) {
-            gDisplayNoteList.push(gParameter.currentScale.value[m]);
+        if (!gDisplayNoteList.inArray(gParameters.currentScale.value[m]) ) {
+            gDisplayNoteList.push(gParameters.currentScale.value[m]);
             if (gDebugItem.startValue) {
-                post("added row for note:", gParameter.currentScale.value[m], "\n");
+                post("added row for note:", gParameters.currentScale.value[m], "\n");
             }
         }
     }
@@ -1712,7 +1687,7 @@ function press(aCol, aRow, aPress) {
     
     if ((aRow < monomeLastRow()) && gThereIsAClipInSlot) {
         var lNewNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
-        var lNewNotePitch = gDisplayNoteList[aRow + ((gParameter.folding.value) ? gParameter.foldingRowOffset.value :gParameter.rowOffset.value)];
+        var lNewNotePitch = gDisplayNoteList[aRow + ((gParameters.folding.value) ? gParameters.foldingRowOffset.value :gParameters.rowOffset.value)];
 
         // Debugging is fun!
         if (gDebugItem.functionEnd) {
@@ -1728,10 +1703,10 @@ function press(aCol, aRow, aPress) {
             }
         
             else if (!isAlreadyInNoteArray[0]) {
-                    addNote(lNewNotePitch, lNewNoteTime, gParameter.newNoteVelocity.value);
+                    addNote(lNewNotePitch, lNewNoteTime, gParameters.newNoteVelocity.value);
             }
         }
-        setParameter({
+        gParameters.set({
             key : "latest",
             value : lNewNotePitch
         });
@@ -1739,7 +1714,7 @@ function press(aCol, aRow, aPress) {
     // Arrow keys
     else if ((aRow == monomeLastRow()) && (aPress == 1) && (aCol >= 0) && (aCol <= 3)) {
 
-        switch (gParameter.functionMode.value) {
+        switch (gParameters.functionMode.value) {
             case cFunctionMode.moveMode:
                 if (shiftIsHeld()) { liveSetArrows(aCol); }
                 else { clipArrows(aCol); }
@@ -1754,7 +1729,7 @@ function press(aCol, aRow, aPress) {
                 widthButtons(aCol);
                 break;
             default :
-                post("error in press, functionMode:", gParameter.functionMode.value, "\n");
+                post("error in press, functionMode:", gParameters.functionMode.value, "\n");
                 break;
         }
     }
@@ -1763,7 +1738,7 @@ function press(aCol, aRow, aPress) {
         // Change arrow mode
         switch (aCol) {
             case cFunctionButton.shift:
-                switch(gParameter.functionMode.value) {    
+                switch(gParameters.functionMode.value) {    
                     case cFunctionMode.moveMode:
                         updateControlLeds();
                         break;
@@ -1777,7 +1752,7 @@ function press(aCol, aRow, aPress) {
                         showWidthOptions(aPress);
                         break;
                     default:
-                        post("error in cFunctionButton.shift. functionMode:", gParameter.functionMode.value, "\n");
+                        post("error in cFunctionButton.shift. functionMode:", gParameters.functionMode.value, "\n");
                         post("aCol:", aCol, "\n");
                         break;
                 }
@@ -1797,7 +1772,7 @@ function press(aCol, aRow, aPress) {
                 if (aPress == 1) { toggleFolding(); }
                 break;
             default:
-                post("error in press. functionMode:", gParameter.functionMode.value, "\n");
+                post("error in press. functionMode:", gParameters.functionMode.value, "\n");
                 post("aCol:", aCol, "\n");
                 break;
         }
@@ -1887,7 +1862,7 @@ function widthButtons(aButtonPressed) {
                 break;
         }
     }
-    if (gDebugItem.endValue) { post("displayWidth = ", gParameter.displayWidth.value, "\n"); }
+    if (gDebugItem.endValue) { post("displayWidth = ", gParameters.displayWidth.value, "\n"); }
 }
 function lengthButtons(aButtonPressed) {
     if (gDebugItem.functionName) { post("    --lengthButtons--\n"); }
@@ -1932,7 +1907,7 @@ function lengthButtons(aButtonPressed) {
                 break;
         }
     }
-    if (gDebugItem.endValue) { post("new notes will be created with length:", gParameter.newNoteLength.value, "\n"); }
+    if (gDebugItem.endValue) { post("new notes will be created with length:", gParameters.newNoteLength.value, "\n"); }
 }
 
 function velocityButtons(aButtonPressed) {
@@ -1981,7 +1956,7 @@ function velocityButtons(aButtonPressed) {
     
     updateMultiPurposeLeds();
 
-    if (gDebugItem.endValue) { post("new notes will be created with velocity:", gParameter.newNoteVelocity.value, "\n"); }
+    if (gDebugItem.endValue) { post("new notes will be created with velocity:", gParameters.newNoteVelocity.value, "\n"); }
 }
 
 function toggleWidthDisplayOptions() {
@@ -2042,7 +2017,7 @@ function toggleFollowingPlayingClip() {
     gFollowingPlayingClip = (gFollowingPlayingClip == true) ? false : true;
     updateFunctionModeLeds();
     getPlayingSlotNumber();
-    setParameter({
+    gParameters.set({
         key : "following",
         value : gFollowingPlayingClip
     });
@@ -2158,7 +2133,7 @@ function upInSet(aHowMuch) {
     if (gDebugItem.endValue) { post("clipScene before upInSet:", getClipScene(), "\n"); }
     
     changeClipScene(-aHowMuch);
-    if (gDebugItem.functionEnd) { post("clipScene after upInSet:", gParameter.clipScene.value, "\n"); }
+    if (gDebugItem.functionEnd) { post("clipScene after upInSet:", gParameters.clipScene.value, "\n"); }
 }
 
 function downInSet(aHowMuch) {
@@ -2169,7 +2144,7 @@ function downInSet(aHowMuch) {
 
     changeClipScene(aHowMuch);
 
-    if (gDebugItem.functionEnd) { post("clipScene after downInSet:", gParameter.clipScene.value, "\n"); }
+    if (gDebugItem.functionEnd) { post("clipScene after downInSet:", gParameters.clipScene.value, "\n"); }
 }
 
 function rightInSet(aHowMuch) {
@@ -2179,13 +2154,13 @@ function rightInSet(aHowMuch) {
     if (gDebugItem.startValue) {
         post("trackIndex before rightInSet:", getTrackIndex(), "\n");
     }
-    if (gDebugItem.startValue) {    post("track before rightInSet:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (gDebugItem.startValue) {    post("track before rightInSet:", gTrackArray[gParameters.trackIndex.value], "\n"); }
     
     changeTrackIndex(aHowMuch);
     focusOnClip();
     
-    if (gDebugItem.endValue) { post("trackIndex after rightInSet:", gParameter.trackIndex.value, "\n"); }
-    if (gDebugItem.startValue) {    post("track after rightInSet:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (gDebugItem.endValue) { post("trackIndex after rightInSet:", gParameters.trackIndex.value, "\n"); }
+    if (gDebugItem.startValue) {    post("track after rightInSet:", gTrackArray[gParameters.trackIndex.value], "\n"); }
 }
 function leftInSet(aHowMuch) {
     if (gDebugItem.functionName) { post("    --leftInSet--\n"); }
@@ -2193,13 +2168,13 @@ function leftInSet(aHowMuch) {
     if (gDebugItem.startValue) {
         post("trackIndex before leftInSet:", getTrackIndex(), "\n");
     }
-    if (gDebugItem.startValue) {    post("track before leftInSet:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (gDebugItem.startValue) {    post("track before leftInSet:", gTrackArray[gParameters.trackIndex.value], "\n"); }
 
     changeTrackIndex(-aHowMuch);
     focusOnClip();
 
-    if (gDebugItem.endValue) { post("trackIndex after leftInSet:", gParameter.trackIndex.value, "\n"); }
-    if (gDebugItem.startValue) {    post("track after leftInSet:", gTrackArray[gParameter.trackIndex.value], "\n"); }
+    if (gDebugItem.endValue) { post("trackIndex after leftInSet:", gParameters.trackIndex.value, "\n"); }
+    if (gDebugItem.startValue) {    post("track after leftInSet:", gTrackArray[gParameters.trackIndex.value], "\n"); }
 }
 
 //                                  ---===Monome Device Methods===---
@@ -2215,12 +2190,12 @@ function leftInSet(aHowMuch) {
 function setMonomeWidth(aWidth) {
     if (gDebugItem.getSetName) { post("    --setMonomeWidth--\n"); }
 
-    setParameter({
-        key : gParameter.monomeWidth.name,
+    gParameters.set({
+        key : gParameters.monomeWidth.name,
         value : aWidth
     });
     
-    gMonome.rebuild(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
+    gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
     updateMonome();
 }
 
@@ -2235,12 +2210,12 @@ function setMonomeWidth(aWidth) {
 function setMonomeHeight(aHeight) {
     if (gDebugItem.getSetName) { post("    --setMonomeHeight--\n"); }
     
-    setParameter({
-        key : gParameter.monomeHeight.name,
+    gParameters.set({
+        key : gParameters.monomeHeight.name,
         value : aHeight
     });
     
-    gMonome.rebuild(gParameter.monomeWidth.value, gParameter.monomeHeight.value);
+    gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
     updateMonome();
 }
 
@@ -2359,7 +2334,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
 
     this.column = function(aColumn, aMethodToInvoke) {
         var iRow, 
-            lHeight = gParameter.monomeHeight.value;
+            lHeight = gParameters.monomeHeight.value;
         
         for (iRow = 0; iRow < lHeight; iRow++) {
             mMonome[aColumn][iRow][aMethodToInvoke]();
@@ -2368,7 +2343,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
 
     this.row = function(aRow, aMethodToInvoke) {
         var iColumn,
-            lWidth = gParameter.monomeWidth.value;
+            lWidth = gParameters.monomeWidth.value;
             
         for (iColumn = 0; iColumn < lWidth; iColumn++) {
             mMonome[iColumn][aRow][aMethodToInvoke]();
@@ -2401,8 +2376,8 @@ function Monome(aColumns, aRows, aThirdParameter) {
     this.refresh = function() {
         var iCol,
             iRow,
-            lHeight = gParameter.monomeHeight.value,
-            lWidth = gParameter.monomeWidth.value;
+            lHeight = gParameters.monomeHeight.value,
+            lWidth = gParameters.monomeWidth.value;
 
         post("refreshing!\n");
         for (iCol = 0; iCol < lWidth; iCol++) {
@@ -2446,8 +2421,8 @@ function Monome(aColumns, aRows, aThirdParameter) {
 function setCycles(aNewCycleCount) {
     if (gDebugItem.getSetName) { post("    --setCycles--\n"); }
     
-    setParameter({
-        key : gParameter.cycles.name,
+    gParameters.set({
+        key : gParameters.cycles.name,
         value : aNewCycleCount
     });
 
@@ -2458,8 +2433,8 @@ function setCycles(aNewCycleCount) {
 function setRootNote(aNewRoot) {
     if (gDebugItem.getSetName) { post("    --setRootNote--\n"); }
 
-    setParameter({
-        key : gParameter.rootNote.name,
+    gParameters.set({
+        key : gParameters.rootNote.name,
         value : aNewRoot
     });
 
@@ -2470,10 +2445,10 @@ function setRootNote(aNewRoot) {
 function onScaleVariableChange () {
     if (gDebugItem.getSetName) { post("    --onScaleVariableChange--\n"); }
 
-    if (gDebugItem.list) { post("my name is:", gParameter.currentScaleName.value, "\n"); }
+    if (gDebugItem.list) { post("my name is:", gParameters.currentScaleName.value, "\n"); }
 
-    if(gParameter.currentScaleName.value != "Drums") {
-        setCurrentScaleWithSymbol(gParameter.currentScaleName.value);
+    if(gParameters.currentScaleName.value != "Drums") {
+        setCurrentScaleWithSymbol(gParameters.currentScaleName.value);
     }
 }
 //                                  ---===Scale Methods===---
@@ -2481,9 +2456,9 @@ function onScaleVariableChange () {
 function generateFullScaleList(aMapString) {
     if (gDebugItem.functionName) { post("    --generateFullScaleList--\n"); }
     
-    if (gDebugItem.list) { post("maps[" + aMapString + "].value:", gMaps[aMapString].value, "\n"); }     
+    if (gDebugItem.list) { post("maps[" + aMapString + "].value:", cMaps[aMapString].value, "\n"); }     
 
-    var scaleMap = gMaps[aMapString].value.slice(0); //because i will manipulate this array
+    var scaleMap = cMaps[aMapString].value.slice(0); //because i will manipulate this array
     var distanceToSecondRoot = scaleMap.pop(); // the last note is only needed for distance calculation
     if (gDebugItem.list) { post("distanceToSecondRoot:", distanceToSecondRoot, "\n");       }
     
@@ -2491,7 +2466,7 @@ function generateFullScaleList(aMapString) {
     var scaleLength = scaleMap.length;
     if (gDebugItem.endValue) { post("scaleLength:", scaleLength, "\n"); }
     
-    var numberOfNotes = scaleLength * gParameter.cycles.value + 1; //root on top
+    var numberOfNotes = scaleLength * gParameters.cycles.value + 1; //root on top
     if(gDebugItem.startValue) { post("numberOfNotes:", numberOfNotes, "\n"); }
     //i assume the scale starts at 0.
     // the distance to the root is needed more than 0
@@ -2501,8 +2476,8 @@ function generateFullScaleList(aMapString) {
     
     var scaleNoteList = [];
     
-    scaleNoteList.push(parseInt(gParameter.rootNote.value, 10));
-    if (gDebugItem.list) { post("root", gParameter.rootNote.value, "\n"); }
+    scaleNoteList.push(parseInt(gParameters.rootNote.value, 10));
+    if (gDebugItem.list) { post("root", gParameters.rootNote.value, "\n"); }
     
     for (var n = 1; n < numberOfNotes; n++) {
         var noteNumberInQuestion = scaleNoteList[(n - 1)] + scaleMap[(n % scaleLength)];
@@ -2531,8 +2506,8 @@ function generateFullScaleList(aMapString) {
 function setCurrentScale(aScaleToUse, aScaleName) {
     if (gDebugItem.getSetName) { post("    --setCurrentScale--\n"); }
     
-    if (gParameter.currentScale.value != aScaleToUse) {
-        gParameter.currentScale.value = aScaleToUse;
+    if (gParameters.currentScale.value != aScaleToUse) {
+        gParameters.currentScale.value = aScaleToUse;
         setCurrentScaleName(aScaleName);
         updateNoteDisplay();
     }
@@ -2540,8 +2515,8 @@ function setCurrentScale(aScaleToUse, aScaleName) {
 
 function setCurrentScaleName(aNewName) {
     if (gDebugItem.getSetName) { post("    ---setCurrentScaleName-\n"); }
-    gParameter.currentScaleName.value = aNewName;
-    this.patcher.getnamed("currentScaleNameGsCssPattr").message(gParameter.currentScaleName.value);
+    gParameters.currentScaleName.value = aNewName;
+    gThisPatcher.getnamed("currentScaleNameGsCssPattr").message(gParameters.currentScaleName.value);
 }
 
 function setCurrentScaleFromMap(aMapToUse) {
@@ -2561,7 +2536,7 @@ function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
     if (!gThereIsAClipInSlot) { return; }
 
     if (aSymbolFromPatcher == "Drums") {
-        setCurrentScale(defaultDrumScale, aSymbolFromPatcher);
+        setCurrentScale(cMaps.Drums, aSymbolFromPatcher);
     }
     
     setCurrentScale(generateFullScaleList(aSymbolFromPatcher), aSymbolFromPatcher);
@@ -2570,22 +2545,37 @@ function setCurrentScaleWithSymbol(aSymbolFromPatcher) {
 }
 
 function setInSuite(aNewValue) {
-    setParameter({
-        key : gParameter.inSuite.name,
+    gParameters.set({
+        key : gParameters.inSuite.name,
         value : aNewValue
     });
 }
 
-function gParameter() {
+function store(aNumber) {
+    gThisPatcher.getnamed(mParameters.patchString + "-presetStore").message("store", aNumber);
+}
+
+function recall(aNumber) {
+    gThisPatcher.getnamed("gsClipStep-presetStore").message(aNumber);
+    gParameters.grabAll();
+    focusOnClip();
+    updateMonome();
+    updateHud();
+}
+
+function Parameters() {
+    if (gDebugItem.functionName) { post("    --Parameters--\n"); }
     
-    this.show = function(aObject) {
+    var mParameters = this;
+    
+    function sendToHud(aObject) {
 
         var lOutlet = 2,
             aKey = aObject.key,
-            aValue = aObject.value,
-            aFormat = (aObject.format == undefined) ? 0 : aObject.format;        
+            aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
+            aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format;        
 
-        if (gDebugItem.functionName) { post("    --sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
+        if (gDebugItem.functionName) { post("    --Parameter.sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
         if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
 
         switch (aFormat) {
@@ -2611,13 +2601,15 @@ function gParameter() {
                 outlet(lOutlet, aSlot, aKey, "setsymbol", aValue);
                 break;
             default: 
-                post("error in sendToHud. aFormat:", aFormat, "\n");
+                post("error in Parameter.show. aFormat:", aFormat, "\n");
                 break;
         }
     }
     
     this.set = function(aObject) {
-        var aParameter = gParameter[aObject.key],
+        if (gDebugItem.functionName) { post("    --Parameters.set--\n"); }
+        
+        var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             aSlot = (aObject.slot === undefined) ? null : aObject.slot,
             lPatcherObjectNameString,
@@ -2633,14 +2625,14 @@ function gParameter() {
             if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
             else if (aValue < lMinimum) { lValue = lMinimum; }
             else if (aValue > lMaximum) { lValue = lMaximum; }
-            else { post("something has gane awry in setParameter!\n"); }
+            else { post("something has gane awry in Parameter.set!\n"); }
         }
         else { lValue = aValue; }
 
         if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
         else { aParameter.value = lValue; }
 
-        sendParameterValueToHud(aParameter);
+        mParameters.show(aParameter.name);
 
         // call listeners
         for (iCounter = 0; iCounter < lLength; iCounter++) {
@@ -2650,56 +2642,75 @@ function gParameter() {
 
         // Save.
         if (aParameter.saveInPattr) {
-            patcherObjectNameString = aParameter.name + gParameter.patchString + "Pattr";
-            this.patcher.getnamed(patcherObjectNameString).setvalueof(aParameter.value);
+            patcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+            gThisPatcher.getnamed(patcherObjectNameString).setvalueof(aParameter.value);
         }
     }
     
-    this.refresh = function(aParameter) {
-        if (aParameter.format != null) {
-            sendToHud({
-                key: aParameter.name,
-                value: (aParameter.type == "slotArray") ? aParameter.value[aSlot] : aParameter.value,
-                format: aParameter.format,
-                slot: aSlot
-            });
+    this.show = function(aParameterName, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.show "+ aParameterName +"--\n"); }
+        
+        var iCounter,
+            lLength,
+            aParameter = mParameters[aParameterName];
+            
+        if (aParameter.format != undefined) {
+            if (aParameter.type == "slotArray") {
+                
+                if (aSlot) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: aParameter.value[aSlot],
+                        format: aParameter.format,
+                        slot: aSlot
+                    });
+                }
+                 else {
+                    for (iCounter = 0, lLength = aParameter.value.length; iCounter < lLength; iCounter++) {
+                        sendToHud({
+                            key: aParameter.name,
+                            value: aParameter.value[iCounter],
+                            format: aParameter.format,
+                            slot: iCounter
+                        });
+                    }
+                }
+            }
+            else {
+                sendToHud({
+                    key: aParameter.name,
+                    value: aParameter.value,
+                    format: aParameter.format
+                });
+            }
         }
     }
     
     this.toggle = function(aParameterName) {
-        if (gParameter[aParameterName].type == "toggle") {
-            setParameter({
+        if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
+        
+        if (mParameters[aParameterName].type == "toggle") {
+            mParameters.set({
                 key : aParameterName,
-                value : Number(!Boolean(gParameter[aParameterName].value))
+                value : Number(!Boolean(mParameters[aParameterName].value))
             });
         }
         else { post(aParameterName, "is not a toggle parameter\n");}
     }
     
     this.change = function(aParameterName, aAmount) {
+        if (gDebugItem.functionName) { post("    --Parameters.change--\n"); }
 
-        setParameter({
+        mParameters.set({
             key : aParameterName,
-            value : gParameter[aParameterName].value + aAmount
+            value : mParameters[aParameterName].value + aAmount
         });
     }
     
-    this.store = function(aNumber) {
-        this.patcher.getnamed(gParameter.patchString + "-presetStore").message("store", aNumber);
-    }
-
-    this.recall = function(aNumber) {
-        this.patcher.getnamed("gsClipStep-presetStore").message(aNumber);
-        grabAllPattrValues();
-        focusOnClip();
-        updateMonome();
-        updateHud();
-    }
-    
     this.grab = function(aParameter) {
-        if (gDebugItem.functionName) { post("    --grabPattrValue " + aParameter.name + "--\n"); }
+        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
 
-        var lPatcherObjectNameString = aParameter.name + gParameter.patchString + "Pattr",
+        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
             lValue;
 
         if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
@@ -2709,13 +2720,13 @@ function gParameter() {
             case "number" : 
                 /*jsl:fallthru*/
             case "toggle" :
-                lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "string" :
-                lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "slotArray" :
-                lValue = Array(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                lValue = Array(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             default :
                 post(aParameter.name + ".type:", aParameter.type , "\n");
@@ -2724,24 +2735,19 @@ function gParameter() {
 
         if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
-        if (aParameter.format != null) {
-            aParameter.value = lValue;
-            sendToHud({
-                key: aParameter.name,
-                value: aParameter.value,
-                format: aParameter.format
-            });
-        }
+        refresh(aParameter);
 
         if (gDebugItem.endValue) { post(aParameter.name + ".value: ", aParameter.value, "\n"); }
     }
 
-    this.grabAll = function() {    
+    this.grabAll = function() {   
+         if (gDebugItem.functionName) { post("    --Parameters.grabAll --\n"); }
+         
         var iProperty;
 
-        for (iProperty in gParameter) {
-            if (gParameter[iProperty].saveInPattr) {
-                grabPattrValue(gParameter[iProperty]);
+        for (iProperty in mParameters) {
+            if (mParameters[iProperty].saveInPattr) {
+                mParameters.grab(mParameters[iProperty]);
             }
         }
     }
