@@ -217,7 +217,7 @@ var gThis = this,
         dynamic_1: 1,
         dynamic_2: 2,
         dynamic_3: 3,
-        shift: 4,
+        shift_1: 4,
         bit0: 5,
         bit1: 6,
         fold: 7,
@@ -225,9 +225,9 @@ var gThis = this,
         store_1 : 9,
         store_2 : 10,
         store_3 : 11,
-        store_4 : 12,
-        store_5 : 13,
-        follow : 14,
+        shift_2 : 12,
+        follow : 13,
+        stop : 14,
         play : 15
     },
 
@@ -249,7 +249,7 @@ var gThis = this,
     gCheckForClip = false,
     gEditClip = false,
     gWatchTrack = false,
-    gWatchTrackForPlayingClip = false,
+    //gWatchTrackForPlayingClip = false,
     gWatchClipNotes = false,
     gWatchClipPlayingStatus = false,
     gWatchClipIsPlaying = false,
@@ -934,14 +934,14 @@ function setFolding(aValue) {
 //                                  ---===Callbacks===---
 function onNewSlotPlaying(aApiArray) {
     var lPlayingClipSlot;
-    if (gDebugItem.functionName) {
-        post("    --onNewSlotPlaying--\n");
-    }
+    if (!gDebugItem.functionName) { post("    --onNewSlotPlaying--\n"); }
 
-    if ((aApiArray[0] != "id") && (gParameters.followPlayingClip.value) && (lPlayingClipSlot >= 0)) {
+    if ((aApiArray[0] == "playing_slot_index") && (gParameters.followPlayingClip.value)) {
+
         lPlayingClipSlot = parseInt(aApiArray[1], 10);
-        setClipScene(lPlayingClipSlot);
-        post("onNewSlotPlaying", lPlayingClipSlot, "\n");
+        if (lPlayingClipSlot >= 0) {
+            //gThisPatcher.getnamed("clipSceneWorkaround").message(lPlayingClipSlot);
+        }
     }
 
 }
@@ -954,7 +954,7 @@ function setPlayheadVisible(aArgument) {
 
     gParameters.playheadVisible = ((lSetPlaying) && (lClipPlaying));
     gMonome.refresh();
-    if ((gParameters.monomeWidth.value > cFunctionButton.play) && (aArgument[0] == "is_playing")) {
+    if (gMonome.isValidColumn(cFunctionButton.play) && (aArgument[0] == "is_playing")) {
         gMonome[cFunctionButton.play][monomeLastRow()][(lSetPlaying == 1) ? "ledOn" : "ledOff"]();
     }
 
@@ -1104,10 +1104,11 @@ function focusOnClip() {
     if (gWatchTrack) { gWatchTrack.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
     else { gWatchTrack = new LiveAPI(gThisPatcher, null, "live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
 
-    if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
-    else { gWatchTrackForPlayingClip = new LiveAPI(gThisPatcher, onNewSlotPlaying, "live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
-    gWatchTrackForPlayingClip.property = "playing_slot_index";
-    gWatchTrackForPlayingClip.mode = 0; // in case the track is moved
+    //TODO figure out a way to follow playing clip
+    //if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
+    //else { gWatchTrackForPlayingClip = new LiveAPI(gThisPatcher, onNewSlotPlaying, "live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
+    //gWatchTrackForPlayingClip.property = "playing_slot_index";
+    //gWatchTrackForPlayingClip.mode = 0; // in case the track is moved
 //              gWatchTrackForPlayingClip.property = "playing_slot_index";
 
     if (gWatchClipNotes) { gWatchClipNotes.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); } 
@@ -1170,6 +1171,16 @@ function playCurrentClip() {
 function stopCurrentClip() {
     gEditClip.call("stop");
 }
+
+function playSet() {
+    gWatchSet.call("start_playing");
+}
+
+function stopSet() {
+    gWatchSet.call("stop_playing");
+}
+
+
 
 
 //                                  ---===Check Notes===---
@@ -1429,11 +1440,14 @@ function updateFunctionModeLeds() {
             break;
     }
 
-    if (shiftIsHeld()) {
-        gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
+    if (gMonome[cFunctionButton.shift_1][monomeLastRow()].isHeld() == 1) { gMonome[cFunctionButton.shift_1][monomeLastRow()].ledOn(); }
+    if (gMonome.isValidColumn(cFunctionButton.shift_2) && (gMonome[cFunctionButton.shift_2][monomeLastRow()].isHeld() == 1)) {
+        gMonome[cFunctionButton.shift_2][monomeLastRow()].ledOn();
+        post("isvalid:", 1, "\n");
     }
-    if ((gParameters.folding.value) && (gParameters.monomeWidth.value > cFunctionButton.fold)) { gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
-    if ((gParameters.followPlayingClip.value) && (gParameters.monomeWidth.value > cFunctionButton.follow)) { gMonome[cFunctionButton.follow][monomeLastRow()].ledOn(); }
+    
+    if ((gParameters.folding.value) && gMonome.isValidColumn(cFunctionButton.fold)) { gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
+    if ((gParameters.followPlayingClip.value) && gMonome.isValidColumn(cFunctionButton.follow)) { gMonome[cFunctionButton.follow][monomeLastRow()].ledOn(); }
 
     if (gParameters.followPlayingClip.value) {
         gMonome[cFunctionButton.follow][monomeLastRow()].ledOn();
@@ -1504,7 +1518,6 @@ function displayDisplayWidthLeds() {
         }
     }
     else if ((gParameters.functionMode.value == cFunctionMode.widthMode) && (gParameters.extendedWidthOptions.value)) {
-        gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameters.displayWidth.value) {
             case cDisplayWidthOption._4:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1546,7 +1559,6 @@ function displayLengthLeds() {
         }
     }
     else if ((gParameters.functionMode.value == cFunctionMode.lengthMode) && (gParameters.extendedLengthOptions.value)) {
-        gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameters.newNoteLength.value) {
             case cLengthOption._4:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1588,7 +1600,6 @@ function displayVelocityLeds() {
         }
     }
     else if ((gParameters.functionMode.value == cFunctionMode.velocityMode) && (gParameters.extendedVelocityOptions.value)) {
-        gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
         switch(gParameters.newNoteVelocity.value) {
             case cVelocityOption._4:
                 gMonome[cFunctionButton.dynamic_0][monomeLastRow()].ledOn();
@@ -1649,11 +1660,15 @@ function clearFunctionModeLeds() {
         gMonome[o][monomeLastRow()].ledOff();
     }
     
-    if (gParameters.monomeWidth.value > cFunctionButton.follow) {
+    
+    if (gMonome.isValidColumn(cFunctionButton.follow)) {
         gMonome[cFunctionButton.follow][monomeLastRow()].ledOff();
     }
-    if (gParameters.monomeWidth.value > cFunctionButton.play) {
+    if (gMonome.isValidColumn(cFunctionButton.play)) {
         gMonome[cFunctionButton.play][monomeLastRow()].ledOff();
+    }
+    if (gMonome.isValidColumn(cFunctionButton.shift_2)) {
+        gMonome[cFunctionButton.shift_2][monomeLastRow()].ledOff();
     }
 }
 
@@ -1771,25 +1786,8 @@ function press(aCol, aRow, aPress) {
     else if ((aRow == monomeLastRow()) && (aCol >= 4) && (aCol <= 7)) {
         // Change arrow mode
         switch (aCol) {
-            case cFunctionButton.shift:
-                switch(gParameters.functionMode.value) {    
-                    case cFunctionMode.moveMode:
-                        updateControlLeds();
-                        break;
-                    case cFunctionMode.lengthMode:
-                        showLengthOptions(aPress);
-                        break;
-                    case cFunctionMode.velocityMode:
-                        showVelocityOptions(aPress);
-                        break;               
-                    case cFunctionMode.widthMode:
-                        showWidthOptions(aPress);
-                        break;
-                    default:
-                        post("error in cFunctionButton.shift. functionMode:", gParameters.functionMode.value, "\n");
-                        post("aCol:", aCol, "\n");
-                        break;
-                }
+            case cFunctionButton.shift_1:
+                shiftButton(aPress);
             break;
         
             case cFunctionButton.bit0:
@@ -1811,43 +1809,72 @@ function press(aCol, aRow, aPress) {
                 break;
         }
     }
-    else if ((aRow == monomeLastRow()) && (aCol >= 8) && (aCol <= 15) && (aPress == 1)) {
+    else if ((aRow == monomeLastRow()) && (aCol >= 8) && (aCol <= 15)) {
         switch (aCol) {
             case cFunctionButton.store_0:
-                outlet(lOutlet, 1);
+                if (aPress == 1) { outlet(lOutlet, 1); }
                 break;
             case cFunctionButton.store_1:
-                outlet(lOutlet, 2);
+                if (aPress == 1) { outlet(lOutlet, 2); }
                 break;
             case cFunctionButton.store_2:
-                outlet(lOutlet, 3);
+                if (aPress == 1) { outlet(lOutlet, 3); }
                 break;
             case cFunctionButton.store_3:
-                outlet(lOutlet, 4);
+                if (aPress == 1) { outlet(lOutlet, 4); }
                 break;
-            case cFunctionButton.store_4:
-                outlet(lOutlet, 5);
-                break;
-            case cFunctionButton.store_5:
-                outlet(lOutlet, 6);
+            case cFunctionButton.shift_2:
+                post("boo:", 1, "\n");
+                shiftButton(aPress);
                 break;
             case cFunctionButton.follow:
-                shiftIsHeld() ? jumpToPlayingClip() : toggleFollowPlayingClip();
+                if (aPress == 1) {
+                    focusOnPlayingClip();
+                }
+                break;
+            case cFunctionButton.stop:
+                if (aPress == 1) {
+                    shiftIsHeld() ? stopSet() : stopCurrentClip();
+                }
                 break;
             case cFunctionButton.play:
-                shiftIsHeld() ? stopCurrentClip() : playCurrentClip();
+                if (aPress == 1) {
+                    shiftIsHeld() ? playSet() : playCurrentClip();
+                }
                 break;
             default : 
                 break;
         }
     }
-    
+}
+
+
+function shiftButton(aPress) {
+    switch (gParameters.functionMode.value) {
+    case cFunctionMode.moveMode:
+        updateControlLeds();
+        break;
+    case cFunctionMode.lengthMode:
+        showLengthOptions(aPress);
+        break;
+    case cFunctionMode.velocityMode:
+        showVelocityOptions(aPress);
+        break;
+    case cFunctionMode.widthMode:
+        showWidthOptions(aPress);
+        break;
+    default:
+        post("error in cFunctionButton.shift. functionMode:", gParameters.functionMode.value, "\n");
+        post("aCol:", aCol, "\n");
+        break;
+    }
 }
 
 function shiftIsHeld() {
     if (gDebugItem.functionName) { post("    --shiftIsHeld--\n"); }
 
-    if (gMonome[cFunctionButton.shift][monomeLastRow()].isHeld() == 1) {
+    if ((gMonome[cFunctionButton.shift_1][monomeLastRow()].isHeld() == 1) || ((gMonome.isValidColumn(cFunctionButton.shift_2)) ? 
+    (gMonome[cFunctionButton.shift_2][monomeLastRow()].isHeld() == 1) : false)) {
         return true;
     }
     else { return false; }
@@ -2520,6 +2547,12 @@ function Monome(aColumns, aRows, aThirdParameter) {
             that[iColumn][aRow][aMethodToInvoke]();
         }
     };
+    this.isValidColumn = function(aNumber) {
+        return (mColumns > aNumber) ? true : false;
+    }
+    this.isValidRow = function(aNumber) {
+        return (aRows > aNumber) ? true : false;
+    }
     
     this.rebuild = function(aColumns, aRows) {
         var iCol,
@@ -2775,13 +2808,13 @@ function Parameters() {
     }
     
     this.grab = function(aParameter) {
-        if (!gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
 
         var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
             lValue;
 
-        if (!gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
-        if (!gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
+        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
 
         switch (aParameter.type) {
             case "number" : 
@@ -2800,7 +2833,7 @@ function Parameters() {
                 break;
         }
 
-        if (!gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
         mParameters.set({
             key : aParameter.name,
@@ -2834,7 +2867,7 @@ function freebang() {
     if (gCheckForClip) { gCheckForClip = null; }
     if (gEditClip) { gEditClip = null; }
     if (gWatchTrack) { gWatchTrack = null; }
-    if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip = null; }
+//    if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip = null; }
     if (gWatchClipNotes) { gWatchClipNotes = null; }
     if (gWatchClipPlayingStatus) { gWatchClipPlayingStatus = null; }
     if (gWatchClipIsPlaying) { gWatchClipIsPlaying = null; }
