@@ -61,7 +61,7 @@ var gThis = this,
         frequentList: false,
         frequentName : false,
         functionArguments : false,
-        functionName : false,
+        functionName : true,
         list : false,
         loading : false,
         localValue : false,
@@ -227,8 +227,8 @@ var gThis = this,
         store_3 : 11,
         store_4 : 12,
         store_5 : 13,
-        store_6 : 14,
-        store_7 : 15
+        follow : 14,
+        play : 15
     },
 
     cFunctionMode = {
@@ -502,15 +502,15 @@ gParameters.rootNote = {
     saveInPattr: true,
     listeners: ["onScaleVariableChange"]
 };
-gParameters.following = {
-    name: "following",
-    type: "number",
-    format: null,
-    value: null,
-    minValue: -Infinity,
-    maxValue: Infinity,
-    saveInPattr: false,
-    listeners: []
+gParameters.followPlayingClip = {
+    name: "followPlayingClip",
+    type: "toggle",
+    format: cHudFormat.set,
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    saveInPattr: true,
+    listeners: ["updateFunctionModeLeds", "onFollowPlayingClipChange"]
 };
 gParameters.rowOffset = {
     name: "rowOffset",
@@ -539,7 +539,6 @@ gParameters.timeOffset = {
 gParameters.patchString = "GsCss";
 //                                  ---===conditions===---
 gParameters.playheadVisible = false;
-gParameters.followingPlayingClip = false;
 gParameters.extendedLengthOptions = {
     name: "extendedLengthOptions",
     type: "toggle",
@@ -570,6 +569,7 @@ gParameters.extendedVelocityOptions = {
     saveInPattr: false,
     listeners: ["updateControlLeds"]
 };
+
 
 function bang() {
     if (true) { post("    ---bang-\n"); }
@@ -919,6 +919,7 @@ function toggleFolding() {
     
     gParameters.toggle("folding");
 }
+
 function setFolding(aValue) {
     if (gDebugItem.getSetName) { post("    --setFolding--\n"); }
     
@@ -926,30 +927,33 @@ function setFolding(aValue) {
         key : "folding",
         value : aValue
     });
-
 }
                     
 //                                  ---===Callbacks===---
 function onNewSlotPlaying(aApiArray) {
-    if (gDebugItem.functionName) { post("    --onNewSlotPlaying--\n"); }
-    var playingClipSlot = parseInt(aApiArray[1], 10);
-    if ((gParameters.followingPlayingClip) && (playingClipSlot >= 0)) {
-        setClipScene(playingClipSlot);
-        post("onNewSlotPlaying", playingClipSlot, "\n");
+    var lPlayingClipSlot;
+    if (gDebugItem.functionName) {
+        post("    --onNewSlotPlaying--\n");
     }
+
+    if ((aApiArray[0] != "id") && (gParameters.followPlayingClip.value) && (lPlayingClipSlot >= 0)) {
+        lPlayingClipSlot = parseInt(aApiArray[1], 10);
+        setClipScene(lPlayingClipSlot);
+        post("onNewSlotPlaying", lPlayingClipSlot, "\n");
+    }
+
 }
 
-function setPlayheadVisible() {
+function setPlayheadVisible(aArgument) {
     if (gDebugItem.getSetName) { postst("                               --setPlayheadVisible--\n"); }
     if (!gThereIsAClipInSlot) { return; }
-    
-    clipPlaying = gWatchClipIsPlaying.get("is_playing");
-    setPlaying = gWatchSet.get("is_playing");
-   
-    if ((setPlaying == 1) && (clipPlaying == 1)) { gParameters.playheadVisible = true; }
-    else { 
-        gParameters.playheadVisible = false;
-        gMonome.refresh();
+    var lClipPlaying = gWatchClipIsPlaying.get("is_playing");
+    var lSetPlaying = gWatchSet.get("is_playing");
+
+    gParameters.playheadVisible = ((lSetPlaying) && (lClipPlaying));
+    gMonome.refresh();
+    if ((gParameters.monomeWidth.value > cFunctionButton.play) && (aArgument[0] == "is_playing")) {
+        gMonome[cFunctionButton.play][monomeLastRow()][(lSetPlaying == 1) ? "ledOn" : "ledOff"]();
     }
 
     if(gDebugItem.endValue) { 
@@ -1043,7 +1047,7 @@ function countScenesWithClip() {
             sceneCount.push(k);                      
         }
     }
-    
+
     var c = sceneArray.length;
     if (gDebugItem.startValue) {
         post("there are ", c, " scenes with clips in current track\n");
@@ -1100,6 +1104,7 @@ function focusOnClip() {
 
     if (gWatchTrackForPlayingClip) { gWatchTrackForPlayingClip.goto("live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
     else { gWatchTrackForPlayingClip = new LiveAPI(gThisPatcher, onNewSlotPlaying, "live_set tracks " + gTrackArray[gParameters.trackIndex.value]); }
+    gWatchTrackForPlayingClip.property = "playing_slot_index";
     gWatchTrackForPlayingClip.mode = 0; // in case the track is moved
 //              gWatchTrackForPlayingClip.property = "playing_slot_index";
 
@@ -1121,8 +1126,6 @@ function focusOnClip() {
     else { gWatchClipPlayhead = new LiveAPI(gThisPatcher, updatePlayhead,  "live_set tracks " + gTrackArray[gParameters.trackIndex.value] + " clip_slots " + gParameters.clipScene.value + " clip"); }
     gWatchClipPlayhead.mode = 0; // in case the track is moved
     gWatchClipPlayhead.property = "playing_position";
-
-    setPlayheadVisible();
 
     if (gDebugItem.functionEnd) { post("focused on clip:", gWatchClipNotes.path, "\n"); }
     return true;
@@ -1160,6 +1163,10 @@ function getCurrentPosition() {
 
 function playCurrentClip() {
     gEditClip.call("fire");
+}
+
+function stopCurrentClip() {
+    gEditClip.call("stop");
 }
 
 
@@ -1423,7 +1430,12 @@ function updateFunctionModeLeds() {
     if (shiftIsHeld()) {
         gMonome[cFunctionButton.shift][monomeLastRow()].ledOn();
     }
-    if (gParameters.folding.value){ gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
+    if ((gParameters.folding.value) && (gParameters.monomeWidth.value > cFunctionButton.fold)) { gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
+    if ((gParameters.followPlayingClip.value) && (gParameters.monomeWidth.value > cFunctionButton.follow)) { gMonome[cFunctionButton.follow][monomeLastRow()].ledOn(); }
+
+    if (gParameters.followPlayingClip.value) {
+        gMonome[cFunctionButton.follow][monomeLastRow()].ledOn();
+    }
 }
 
 function updateMultiPurposeLeds() {
@@ -1634,6 +1646,13 @@ function clearFunctionModeLeds() {
     for (var o = 4; o <= 7; o++) {
         gMonome[o][monomeLastRow()].ledOff();
     }
+    
+    if (gParameters.monomeWidth.value > cFunctionButton.follow) {
+        gMonome[cFunctionButton.follow][monomeLastRow()].ledOff();
+    }
+    if (gParameters.monomeWidth.value > cFunctionButton.play) {
+        gMonome[cFunctionButton.play][monomeLastRow()].ledOff();
+    }
 }
 
 function clearMultiPurposeLeds() {
@@ -1810,11 +1829,11 @@ function press(aCol, aRow, aPress) {
             case cFunctionButton.store_5:
                 outlet(lOutlet, 6);
                 break;
-            case cFunctionButton.store_6:
-                outlet(lOutlet, 7);
+            case cFunctionButton.follow:
+                shiftIsHeld() ? jumpToPlayingClip() : toggleFollowPlayingClip();
                 break;
-            case cFunctionButton.store_7:
-                outlet(lOutlet, 8);
+            case cFunctionButton.play:
+                shiftIsHeld() ? stopCurrentClip() : playCurrentClip();
                 break;
             default : 
                 break;
@@ -2018,26 +2037,34 @@ function showLengthOptions(aWhichOptions) {
     if(gDebugItem.endValue) { post("gParameters.extendedLengthOptions.value:", gParameters.extendedLengthOptions.value, "\n"); }
 }
 
-function toggleFollowingPlayingClip() {
-    if (gDebugItem.functionName) { post("    --toggleFollowingPlayingClip--\n"); }
-    gParameters.followingPlayingClip = (gParameters.followingPlayingClip) ? false : true;
-    updateFunctionModeLeds();
-    getPlayingSlotNumber();
+function toggleFollowPlayingClip() {
+    if (gDebugItem.functionName) { post("    --toggleFollowPlayingClip--\n"); }
+        
+    gParameters.toggle(gParameters.followPlayingClip.name);
+    
+}
+
+function setFollowPlayingClip(aValue) {
+    if (gDebugItem.functionName) { post("    --setFollowPlayingClip--\n"); }
+    
     gParameters.set({
-        key : "following",
-        value : gParameters.followingPlayingClip
+        key : gParameters.followPlayingClip.name,
+        value : aValue
     });
 }
-function getPlayingSlotNumber() {
+
+function onFollowPlayingClipChange() {
+    if (gDebugItem.functionName) { post("    --onFollowChange--\n"); }
+    if (gParameters.followPlayingClip.value) { focusOnPlayingClip(); }
+}
+
+function focusOnPlayingClip() {
     var lPlayingSlotIndex = parseInt(gWatchTrack.get("playing_slot_index"), 10);
 
-    if (gDebugItem.functionName) { post("--getPlayingSlotNumber--\n"); }
+    if (gDebugItem.functionName) { post("    --focusOnPlayingClip--\n"); }
+
     if (lPlayingSlotIndex >= 0) {
         setClipScene(lPlayingSlotIndex);
-    }
-    else {
-        //playCurrentClip();
-        
     }
 }
 
@@ -2622,6 +2649,7 @@ function Parameters() {
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+            aQuietly = (aObject.quietly === true),
             lPatcherObjectNameString,
             lValue,
             lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
@@ -2645,6 +2673,10 @@ function Parameters() {
         mParameters.show(aParameter.name);
 
         // call listeners
+        
+        if (aQuietly) { 
+            return;
+        }
         for (iCounter = 0; iCounter < lLength; iCounter++) {
             gThis[lListenerKeys[iCounter]]();
             if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n"); }
@@ -2745,7 +2777,11 @@ function Parameters() {
 
         if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
-        refresh(aParameter);
+        mParameters.set({
+            key : aParameter.name,
+            value : lValue,
+            quietly : true
+        });
 
         if (gDebugItem.endValue) { post(aParameter.name + ".value: ", aParameter.value, "\n"); }
     }
