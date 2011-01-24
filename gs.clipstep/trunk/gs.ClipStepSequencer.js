@@ -61,7 +61,7 @@ var gThis = this,
         frequentList: false,
         frequentName : false,
         functionArguments : false,
-        functionName : true,
+        functionName : false, // !!!!!!!!!!!!!!
         list : false,
         loading : false,
         localValue : false,
@@ -980,25 +980,25 @@ function setDisplayWidth(aWidth) {
 
 function updatePlayhead(aTimeNumber) {
     var playheadTimeInt = Math.floor((aTimeNumber[1] - gParameters.timeOffset.value) * displayRatioToMonome()),
-        mMonome = gMonome;
+        that = gMonome;
     
     if (gDebugItem.frequentName) { post("    --updatePlayhead--\n"); }
     // View
     if (gParameters.playheadVisible) {
 
         if((playheadTimeInt == -1) || (playheadTimeInt == gParameters.monomeWidth.value)) {
-            mMonome[monomeLastCol()][0].tempOff();            
+            that[monomeLastCol()][0].tempOff();            
         }
         else if(playheadTimeInt == 0) {                      
-            mMonome[playheadTimeInt][0].blink();
+            that[playheadTimeInt][0].blink();
         }
         else if((0 < playheadTimeInt) && (playheadTimeInt < gParameters.monomeWidth.value)) {
-            mMonome[playheadTimeInt][0].blink();
-            mMonome[playheadTimeInt -1][0].tempOff();
+            that[playheadTimeInt][0].blink();
+            that[playheadTimeInt -1][0].tempOff();
         }
 
         if (playheadTimeInt % 2 == 0) {
-            mMonome.row(0, "tempOff");
+            that.row(0, "tempOff");
         }
     }
 }
@@ -1071,7 +1071,7 @@ function roundDisplayOffset() {
 //                                  ---===Dynamic Time/Column Variables===---
 function displayTimeMax() { return gParameters.displayWidth.value + gParameters.timeOffset.value; }
 function colOffset() { return gParameters.timeOffset.value * displayRatioToMonome(); }
-function displayRatioFromMonome() { return gParameters.displayWidth.value / gParameters.monomeWidth.value; }
+function displayRatioFrothat() { return gParameters.displayWidth.value / gParameters.monomeWidth.value; }
 function displayRatioToMonome() { return gParameters.monomeWidth.value / gParameters.displayWidth.value; }
 function monomeLastRow() { return gParameters.monomeHeight.value - 1; }
 function monomeLastCol() { return gParameters.monomeWidth.value - 1; }
@@ -1664,6 +1664,8 @@ function clearMultiPurposeLeds() {
 
 function clearNoteDisplay() {
     if (gDebugItem.functionName) { post("    --clearNoteDisplay--\n"); }
+    post("gParameters.monomeWidth.value:", gParameters.monomeWidth.value, "\n");
+    post("monomeLastRow():", monomeLastRow(), "\n");
     for (var iCol = 0; iCol < gParameters.monomeWidth.value; iCol ++) {
         for (var iRow = 0; iRow < monomeLastRow(); iRow++) {
             gMonome[iCol][iRow].ledOff();
@@ -1718,7 +1720,7 @@ function press(aCol, aRow, aPress) {
     
     
     if ((aRow < monomeLastRow()) && gThereIsAClipInSlot) {
-        var lNewNoteTime = ( aCol + colOffset() ) * displayRatioFromMonome();
+        var lNewNoteTime = ( aCol + colOffset() ) * displayRatioFrothat();
         var lNewNotePitch = gDisplayNoteList[aRow + ((gParameters.folding.value) ? gParameters.foldingRowOffset.value :gParameters.rowOffset.value)];
 
         // Debugging is fun!
@@ -2399,12 +2401,15 @@ function setInSuite(aNewValue) {
 
 function Monome(aColumns, aRows, aThirdParameter) {
     var iCol,
-        iRow,
-        mMonome = this, 
-        mColumns = aColumns,
-        mRows = aRows,
-        mUpdating = false;
-        
+    iRow,
+    that = this,
+    mColumns = aColumns,
+    mRows = aRows,
+    mUpdating = false;
+    
+    post("mColumns", mColumns, "\n");
+    post("mRows", mRows, "\n");
+    
     if (gDebugItem.functionName) { post("    --Monome--\n"); }
     if (gDebugItem.startValue) {
         post("monomeWidth:", aColumns, "\n");
@@ -2504,7 +2509,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
             lHeight = mRows;
         
         for (iRow = 0; iRow < lHeight; iRow++) {
-            mMonome[aColumn][iRow][aMethodToInvoke]();
+            that[aColumn][iRow][aMethodToInvoke]();
         }
     };
 
@@ -2513,34 +2518,64 @@ function Monome(aColumns, aRows, aThirdParameter) {
             lWidth = mColumns;
             
         for (iColumn = 0; iColumn < lWidth; iColumn++) {
-            mMonome[iColumn][aRow][aMethodToInvoke]();
+            that[iColumn][aRow][aMethodToInvoke]();
         }
     };
     
     this.rebuild = function(aColumns, aRows) {
         var iCol,
             iRow,
-            lMax = Math.max(aColumns, mColumns);
+            lMaxColumns = Math.max(aColumns, mColumns),
+            lMaxRows = Math.max(aRows, mRows);
             
-            mColumns = aColumns;
-            mRows = aRows;
-            
-        for (iCol = 0; iCol < lMax; iCol++) {
-            
-            if((!mMonome[iCol]) && (iCol < aColumns)) { mMonome[iCol] = []; }
-            else if ((mMonome[iCol]) && (iCol >= aColumns)) { mMonome[iCol] = null; }
-            
-            for (iRow = 0; iRow < aRows; iRow++) {
-                if((!mMonome[iCol][iRow]) && (iRow < aRows)) { mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0); }
-                else if ((mMonome[iCol][iRow]) && (iRow >= aRows)) { mMonome[iCol][iRow] = null; }
+        if (gDebugItem.functionName) { post("    --rebuild--\n"); }
+        post("aColumns", aColumns, "\n");
+        post("aRows", aRows, "\n");
+        post("mColumns", mColumns, "\n");
+        post("mRows", mRows, "\n");
+        post("lMaxColumns:", lMaxColumns, "\n");
+        post("lMaxRows:", lMaxRows, "\n");
+        
+        mColumns = aColumns;
+        mRows = aRows;
+        
+        for (iCol = 0; iCol < lMaxColumns; iCol++) {
+            post("in here?:", 1, "\n");
+            if ((that[iCol] != null) && (iCol < aColumns)) {
+                post("column:", iCol, "is fine!\n");
             }
-            if (gDebugItem.endValue) {
-                post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
+            else if ((that[iCol] != null) && (iCol >= aColumns)) {
+                post("column:", iCol, "will be deleted!\n");
+                that[iCol] = null;
             }
+            
+            else if((!that[iCol]) && (iCol < aColumns)) {
+                that[iCol] = [];
+                post("column:", iCol, "added!\n");
+            }
+            
+            
+        if (that[iCol] != null) {
+            for (iRow = 0; iRow < lMaxRows; iRow++) {
+                if ((that[iCol][iRow] != null) && (iRow < aRows)) {
+                    post("column:", iCol);
+                    post("row:", iRow, "is fine!\n");
+                }
+                else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
+                    that[iCol][iRow] = null;
+                    post("column:", iCol);
+                    post("row:", iRow, "deleted!\n");
+                }
+
+                else if ((!that[iCol][iRow]) && (iRow < aRows)) {
+                    post("column:", iCol);
+                    post("row:", iRow, "added!\n");
+                    that[iCol][iRow] = new SingleCell(iCol, iRow, 0);
+                }
+            }
+            if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
         }
-        if (gDebugItem.endValue) {
-            post("Monome.length (width):", mMonome.length, "\n");
-        }
+
     };
     
     this.refresh = function() {
@@ -2553,7 +2588,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
 
         for (iCol = 0; iCol < lWidth; iCol++) {
             for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
-                mMonome[iCol][iRow].checkActual();
+                that[iCol][iRow].checkActual();
             }
         }
     };
@@ -2570,30 +2605,31 @@ function Monome(aColumns, aRows, aThirdParameter) {
         var iRow;
         
         mUpdating = false;
-        mMonome.refresh();
+        that.refresh();
     };
     
     for (iCol = 0; iCol < aColumns; iCol++) {
         
-        mMonome[iCol] = [];
+        that[iCol] = [];
         for (iRow = 0; iRow < aRows; iRow++) {
-            mMonome[iCol][iRow] = new SingleCell(iCol, iRow, 0);
+            that[iCol][iRow] = new SingleCell(iCol, iRow, 0);
         }
         if (gDebugItem.startValue) {
-            post("Monome[", iCol, "].length:", mMonome[iCol].length, "\n");
+            post("Monome[", iCol, "].length:", that[iCol].length, "\n");
         }
     }
     if (gDebugItem.startValue) {
-        post("Monome.length (width):", mMonome.length, "\n");
+        post("Monome.length (width):", that.length, "\n");
     }
 }
 
 function store(aNumber) {
-    gThisPatcher.getnamed(mParameters.patchString + "-presetStore").message("store", aNumber);
+    post(gParameters.patchString + "-presetStore\n");
+    gThisPatcher.getnamed(gParameters.patchString + "-presetStore").message("store", aNumber);
 }
 
 function recall(aNumber) {
-    gThisPatcher.getnamed("gsClipStep-presetStore").message(aNumber);
+    gThisPatcher.getnamed(gParameters.patchString + "-presetStore").message(aNumber);
     gParameters.grabAll();
     focusOnClip();
     updateMonome();
