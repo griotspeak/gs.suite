@@ -531,7 +531,10 @@ gParameters.timeOffset = {
     value: 0,
     minValue: 0,
     maxValue: function() {
-        return (gWatchersCreated) ? (gEditClip.get("length") - gParameters.displayWidth.value) : 2048;
+        if (gWatchersCreated) {
+            return (gEditClip) ? (gEditClip.get("length") - gParameters.displayWidth.value) : 0;
+        }
+        else return 0;
     },
     saveInPattr: true,
     listeners: ["updateNoteDisplay"]
@@ -1663,8 +1666,6 @@ function clearMultiPurposeLeds() {
 
 function clearNoteDisplay() {
     if (gDebugItem.functionName) { post("    --clearNoteDisplay--\n"); }
-    post("gParameters.monomeWidth.value:", gParameters.monomeWidth.value, "\n");
-    post("monomeLastRow():", monomeLastRow(), "\n");
     for (var iCol = 0; iCol < gParameters.monomeWidth.value; iCol ++) {
         for (var iRow = 0; iRow < monomeLastRow(); iRow++) {
             gMonome[iCol][iRow].ledOff();
@@ -2406,8 +2407,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
     mRows = aRows,
     mUpdating = false;
     
-    post("mColumns", mColumns, "\n");
-    post("mRows", mRows, "\n");
+    if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
     if (gDebugItem.functionName) { post("    --Monome--\n"); }
     if (gDebugItem.startValue) {
@@ -2528,29 +2528,22 @@ function Monome(aColumns, aRows, aThirdParameter) {
             lMaxRows = Math.max(aRows, mRows);
             
         if (gDebugItem.functionName) { post("    --rebuild--\n"); }
-        post("aColumns", aColumns, "\n");
-        post("aRows", aRows, "\n");
-        post("mColumns", mColumns, "\n");
-        post("mRows", mRows, "\n");
-        post("lMaxColumns:", lMaxColumns, "\n");
-        post("lMaxRows:", lMaxRows, "\n");
         
         mColumns = aColumns;
         mRows = aRows;
         
         for (iCol = 0; iCol < lMaxColumns; iCol++) {
-            post("in here?:", 1, "\n");
             if ((that[iCol] != null) && (iCol < aColumns)) {
-                post("column:", iCol, "is fine!\n");
+                if (gDebugItem.list) { post("column:", iCol, "is fine!\n"); }
             }
             else if ((that[iCol] != null) && (iCol >= aColumns)) {
-                post("column:", iCol, "will be deleted!\n");
+                if (gDebugItem.list) { post("column:", iCol, "will be deleted!\n"); }
                 that[iCol] = null;
             }
             
             else if((!that[iCol]) && (iCol < aColumns)) {
                 that[iCol] = [];
-                post("column:", iCol, "added!\n");
+                if (gDebugItem.list) { post("column:", iCol, "added!\n"); }
             }
             
             
@@ -2558,17 +2551,16 @@ function Monome(aColumns, aRows, aThirdParameter) {
             for (iRow = 0; iRow < lMaxRows; iRow++) {
                 if ((that[iCol][iRow] != null) && (iRow < aRows)) {
                     post("column:", iCol);
-                    post("row:", iRow, "is fine!\n");
+                    if (gDebugItem.list) { post("row:", iRow, "is fine!\n"); }
                 }
                 else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
                     that[iCol][iRow] = null;
                     post("column:", iCol);
-                    post("row:", iRow, "deleted!\n");
+                    if (gDebugItem.list) { post("row:", iRow, "deleted!\n"); }
                 }
 
                 else if ((!that[iCol][iRow]) && (iRow < aRows)) {
-                    post("column:", iCol);
-                    post("row:", iRow, "added!\n");
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
                     that[iCol][iRow] = new SingleCell(iCol, iRow, 0);
                 }
             }
@@ -2785,7 +2777,7 @@ function Parameters() {
     }
     
     this.grab = function(aParameter) {
-        if (!gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
 
         var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
             lValue;
@@ -2810,7 +2802,7 @@ function Parameters() {
                 break;
         }
 
-        if (!gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
         mParameters.set({
             key : aParameter.name,
