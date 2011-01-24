@@ -584,7 +584,6 @@ function bang() {
 //      Should not be called directly.
 
 function initialize() {
-    
     if (gDebugItem.functionName) { post("    ---initialize-\n"); }
     if (gDebugItem.list) { postPattrs("start"); }
     gParameters.grabAll();
@@ -2721,7 +2720,7 @@ function Parameters() {
         // Save.
         if (aParameter.saveInPattr) {
             patcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            gThisPatcher.getnamed(patcherObjectNameString).setvalueof(aParameter.value);
+            gThisPatcher.getnamed(patcherObjectNameString).message(aParameter.value);
         }
     }
     
@@ -2786,7 +2785,7 @@ function Parameters() {
     }
     
     this.grab = function(aParameter) {
-        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+        if (!gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
 
         var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
             lValue;
@@ -2811,7 +2810,7 @@ function Parameters() {
                 break;
         }
 
-        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+        if (!gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
         mParameters.set({
             key : aParameter.name,
