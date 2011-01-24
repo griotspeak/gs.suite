@@ -2550,13 +2550,11 @@ function Monome(aColumns, aRows, aThirdParameter) {
         if (that[iCol] != null) {
             for (iRow = 0; iRow < lMaxRows; iRow++) {
                 if ((that[iCol][iRow] != null) && (iRow < aRows)) {
-                    post("column:", iCol);
-                    if (gDebugItem.list) { post("row:", iRow, "is fine!\n"); }
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
                 }
                 else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
                     that[iCol][iRow] = null;
-                    post("column:", iCol);
-                    if (gDebugItem.list) { post("row:", iRow, "deleted!\n"); }
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
                 }
 
                 else if ((!that[iCol][iRow]) && (iRow < aRows)) {
@@ -2676,7 +2674,7 @@ function Parameters() {
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             aSlot = (aObject.slot === undefined) ? null : aObject.slot,
-            aQuietly = (aObject.quietly === true),
+            aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
             lValue,
             lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
@@ -2777,13 +2775,13 @@ function Parameters() {
     }
     
     this.grab = function(aParameter) {
-        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+        if (!gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
 
         var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
             lValue;
 
-        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
-        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+        if (!gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
+        if (!gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
 
         switch (aParameter.type) {
             case "number" : 
@@ -2802,12 +2800,12 @@ function Parameters() {
                 break;
         }
 
-        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+        if (!gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
         mParameters.set({
             key : aParameter.name,
             value : lValue,
-            quietly : true
+            silent : true
         });
 
         if (gDebugItem.endValue) { post(aParameter.name + ".value: ", aParameter.value, "\n"); }
