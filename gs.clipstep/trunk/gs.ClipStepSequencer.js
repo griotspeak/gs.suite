@@ -48,7 +48,7 @@ var gThis = this,
     gCountAllTracks,
     gTrackArray,
     gWatchSetPlaying,
-    glob,
+    gGlobal,
     gIndexTrack,
     gWatchersCreated = false,
 
@@ -164,16 +164,6 @@ var gThis = this,
             name: "_"
         }
     },
-
-    cHudFormat = {
-        set : 0,
-        trigger : 1,
-        symbol : 2,
-        measures : 3,
-        slotSet : 4,
-        slotTrigger : 5,
-        slotSymbol : 6
-    },
     
     cVelocityOption = {
         _0 : 0,
@@ -283,7 +273,7 @@ gParameters.currentScale = {
 gParameters.currentScaleName = {
     name: "currentScaleName",
     type: "string",
-    format: cHudFormat.symbol,
+    format: "symbol",
     value: "Drums",
     minValue: null,
     maxValue: null,
@@ -293,7 +283,7 @@ gParameters.currentScaleName = {
 gParameters.cycles = {
     name: "cycles",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: 3,
     minValue: 1,
     maxValue: 127,
@@ -313,7 +303,7 @@ gParameters.displayWidth = {
 gParameters.width = {
     name: "width",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: function() {
         return (gParameters.displayWidth.value / 4);
     },
@@ -325,7 +315,7 @@ gParameters.width = {
 gParameters.latest = {
     name: "latest",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: null,
     minValue: -Infinity,
     maxValue: Infinity,
@@ -335,7 +325,7 @@ gParameters.latest = {
 gParameters.clipLength = {
     name: "clipLength",
     type: "string",
-    format: cHudFormat.measures,
+    format: "measures",
     value: function() {
         if (gThereIsAClipInSlot) {
             return (gEditClip.get("length") /4);
@@ -352,7 +342,7 @@ gParameters.clipLength = {
 gParameters.top = {
     name: "top",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: function() {
         return (gDisplayNoteList[gParameters.rowOffset.value]) ? gDisplayNoteList[gParameters.rowOffset.value] : 0;
     },
@@ -364,7 +354,7 @@ gParameters.top = {
 gParameters.folding = {
     name: "folding",
     type: "toggle",
-    format: cHudFormat.set,
+    format: "set",
     value: 0,
     minValue: 0,
     maxValue: 1,
@@ -407,7 +397,7 @@ gParameters.inSuite = {
 gParameters.monomeHeight = {
     name: "monomeHeight",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: 8,
     minValue: 2,
     maxValue: 2048,
@@ -417,7 +407,7 @@ gParameters.monomeHeight = {
 gParameters.monomeWidth = {
     name: "monomeWidth",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: 8,
     minValue: 2,
     maxValue: 2048,
@@ -427,7 +417,7 @@ gParameters.monomeWidth = {
 gParameters.newNoteLength = {
     name: "newNoteLength",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: 0.125,
     minValue: 0.000390625,
     maxValue: 127,
@@ -437,7 +427,7 @@ gParameters.newNoteLength = {
 gParameters.newNoteVelocity = {
     name: "newNoteVelocity",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: 96,
     minValue: 0,
     maxValue: 127,
@@ -447,7 +437,7 @@ gParameters.newNoteVelocity = {
 gParameters.scene = {
     name: "scene",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: function() {
         return (Number(gParameters.clipScene.value) + 1);
     },
@@ -459,7 +449,7 @@ gParameters.scene = {
 gParameters.time = {
     name: "time",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: function() {
         return (gParameters.timeOffset.value / 4);
     },
@@ -471,7 +461,7 @@ gParameters.time = {
 gParameters.track = {
     name: "track",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: function() {
         return (gTrackArray[gParameters.trackIndex.value] + 1);
     },
@@ -495,7 +485,7 @@ gParameters.trackIndex = {
 gParameters.rootNote = {
     name: "rootNote",
     type: "number",
-    format: cHudFormat.set,
+    format: "set",
     value: 60,
     minValue: 0,
     maxValue: 127,
@@ -505,7 +495,7 @@ gParameters.rootNote = {
 gParameters.followPlayingClip = {
     name: "followPlayingClip",
     type: "toggle",
-    format: cHudFormat.set,
+    format: "set",
     value: 0,
     minValue: 0,
     maxValue: 1,
@@ -573,7 +563,6 @@ gParameters.extendedVelocityOptions = {
     listeners: ["updateControlLeds"]
 };
 
-
 function bang() {
     if (true) { post("    ---bang-\n"); }
     
@@ -590,7 +579,7 @@ function initialize() {
     if (gDebugItem.functionName) { post("    ---initialize-\n"); }
     if (gDebugItem.list) { postPattrs("start"); }
     gParameters.grabAll();
-    gMonome = new Monome(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
+    gMonome = new Monome(gParameters.monomeWidth.value, gParameters.monomeHeight.value, 0);
     
     gWatchSet = new LiveAPI(gThisPatcher, null, "live_set");
     gCountAllTracks = new LiveAPI(gThisPatcher, null, "live_set");
@@ -611,8 +600,8 @@ function initialize() {
     gWatchSetPlaying = new LiveAPI(gThisPatcher, setPlayheadVisible, "live_set");
     gWatchSetPlaying.property = "is_playing";
     
-    glob = new Global("clipStepGlobalController");
-    glob.setClip = setClipFromGlobal;
+    gGlobal = new Global("clipStepGlobalController");
+    gGlobal.setClip = setClipFromGlobal;
     
     setTrackIndexAndScene(gParameters.trackIndex.value, gParameters.clipScene.value);
     
@@ -1380,7 +1369,8 @@ function updateNoteDisplay() {
         getClipNotes();
         gNoteArray.forEach(displayNote);
         gMonome.endUpdates();
-        updateHud();
+        // TODO maybe not call displayAll every time i update the note display
+        gParameters.displayAll();
     }
 }
 
@@ -1390,26 +1380,6 @@ Array.prototype.diff = function(a) {
 };
 
 */
-
-function updateHud() {
-    if (gDebugItem.functionName) { post("    --updateHud--\n"); }
-
-    gParameters.show("track");
-    gParameters.show("scene");
-    gParameters.show("time");
-    gParameters.show("width");
-    gParameters.show("top");
-    gParameters.show("clipLength");
-    gParameters.show("currentScaleName");
-    gParameters.show("newNoteLength");
-    gParameters.show("monomeHeight");
-    gParameters.show("monomeWidth");
-    gParameters.show("cycles");
-    gParameters.show("rootNote");
-    gParameters.show("folding");
-    gParameters.show("newNoteVelocity");
-}
-
 
 function updateFunctionModeLeds() {
     if (gDebugItem.functionName) { post("    --updateFunctionModeLeds--\n"); }
@@ -2549,10 +2519,11 @@ function Monome(aColumns, aRows, aThirdParameter) {
     };
     this.isValidColumn = function(aNumber) {
         return (mColumns > aNumber) ? true : false;
-    }
+    };
+    
     this.isValidRow = function(aNumber) {
         return (aRows > aNumber) ? true : false;
-    }
+    };
     
     this.rebuild = function(aColumns, aRows) {
         var iCol,
@@ -2655,7 +2626,7 @@ function recall(aNumber) {
     gParameters.grabAll();
     focusOnClip();
     updateMonome();
-    updateHud();
+    gParameters.displayAll();
 }
 
 function Parameters() {
@@ -2674,29 +2645,29 @@ function Parameters() {
         if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
 
         switch (aFormat) {
-            case cHudFormat.set:
+            case "set":
                 outlet(lOutlet, aKey, "set", aValue);
                 break;
-            case cHudFormat.trigger:
+            case "trigger":
                 outlet(lOutlet, aKey, aValue);
                 break;
-            case cHudFormat.symbol:
+            case "symbol":
                 outlet(lOutlet, aKey, "setsymbol", aValue);
                 break;
-            case cHudFormat.measures:
+            case "measures":
                 outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
                 break;
-            case HudFormat.slotSet:
+            case "slotSet":
                 outlet(lOutlet, aSlot, aKey, "set", aValue);
                 break;
-            case HudFormat.slotTrigger:
+            case "slotTrigger":
                 outlet(lOutlet, aSlot, "setsymbol", aValue);
                 break;
-            case HudFormat.slotSymbol:
+            case "slotSymbol":
                 outlet(lOutlet, aSlot, aKey, "setsymbol", aValue);
                 break;
             default: 
-                post("error in Parameter.show. aFormat:", aFormat, "\n");
+                post("error in Parameter.sendToHud. aFormat:", aFormat, "\n");
                 break;
         }
     }
@@ -2728,7 +2699,7 @@ function Parameters() {
         if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
         else { aParameter.value = lValue; }
 
-        mParameters.show(aParameter.name);
+        mParameters.display(aParameter.name);
 
         // call listeners
         
@@ -2747,8 +2718,8 @@ function Parameters() {
         }
     }
     
-    this.show = function(aParameterName, aSlot) {
-        if (gDebugItem.functionName) { post("    --Parameters.show "+ aParameterName +"--\n"); }
+    this.display = function(aParameterName, aSlot) {
+        if (!gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
         
         var iCounter,
             lLength,
@@ -2782,6 +2753,17 @@ function Parameters() {
                     value: aParameter.value,
                     format: aParameter.format
                 });
+            }
+        }
+    }
+    this.displayAll = function() {   
+         if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
+         
+        var iProperty;
+
+        for (iProperty in mParameters) {
+            if (mParameters[iProperty].format) {
+                mParameters.display(iProperty);
             }
         }
     }
