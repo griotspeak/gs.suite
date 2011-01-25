@@ -32,6 +32,9 @@ var inlets = 1;
 var outlets = 4;
 
 var mDebugLevel;
+var gThis = this;
+var gThisPatcher = this.patcher;
+
 
 //mDebugLevel[1] = true;
 //mDebugLevel[2] = true;
@@ -80,83 +83,83 @@ var gDebugItem = {
 
 var post;
 var outlet;
-var watchSetPlaying;
+var gWatchSetPlaying;
 var mMonomeWidth = 8;
 var mMonomeHeight = 8;
 var gMonome = new Monome(mMonomeWidth, mMonomeHeight, 2);
 
-var gUnison                 =   {   passive: { scale: "uni-\nson",      tension: "P\n8"         },  opinionated: { scale: null,             tension: null           }   };
-var gAugmentedUnison        =   {   passive: { scale: "aug\nuni",       tension: null           },  opinionated: { scale: "min\n2",         tension: "flat\n9"      }   };
+var cUnison                 =   {   passive: { scale: "uni-\nson",      tension: "P\n8"         },  opinionated: { scale: null,             tension: null           }   };
+var cAugmentedUnison        =   {   passive: { scale: "aug\nuni",       tension: null           },  opinionated: { scale: "min\n2",         tension: "flat\n9"      }   };
 
-var gDiminishedSecond       =   {   passive: { scale: "dim\n2",         tension: null           },  opinionated: { scale: "uni-\nson",      tension: null           }   };
-var gMinorSecond            =   {   passive: { scale: "min\n2",         tension: "flat\n9"      },  opinionated: { scale: null,             tension: null           }   };
-var gMajorSecond            =   {   passive: { scale: "maj\n2",         tension: "\n9"          },  opinionated: { scale: null,             tension: null           }   };
-var gAugmentedSecond        =   {   passive: { scale: "aug\n2",         tension: "sharp\n9"     },  opinionated: { scale: "min\n3",         tension: null           }   };
+var cDiminishedSecond       =   {   passive: { scale: "dim\n2",         tension: null           },  opinionated: { scale: "uni-\nson",      tension: null           }   };
+var cMinorSecond            =   {   passive: { scale: "min\n2",         tension: "flat\n9"      },  opinionated: { scale: null,             tension: null           }   };
+var cMajorSecond            =   {   passive: { scale: "maj\n2",         tension: "\n9"          },  opinionated: { scale: null,             tension: null           }   };
+var cAugmentedSecond        =   {   passive: { scale: "aug\n2",         tension: "sharp\n9"     },  opinionated: { scale: "min\n3",         tension: null           }   };
 
-var gDiminishedThird        =   {   passive: { scale: "dim\n3",         tension: null           },  opinionated: { scale: "maj\n2",         tension: null           }   };
-var gMinorThird             =   {   passive: { scale: "min\n3",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gMajorThird             =   {   passive: { scale: "maj\n3",         tension: "maj\n10"      },  opinionated: { scale: "maj\n3",         tension: null           }   };
-var gAugmentedThird         =   {   passive: { scale: "aug\n3",         tension: null           },  opinionated: { scale: "P\n4",           tension: null           }   };
+var cDiminishedThird        =   {   passive: { scale: "dim\n3",         tension: null           },  opinionated: { scale: "maj\n2",         tension: null           }   };
+var cMinorThird             =   {   passive: { scale: "min\n3",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cMajorThird             =   {   passive: { scale: "maj\n3",         tension: "maj\n10"      },  opinionated: { scale: "maj\n3",         tension: null           }   };
+var cAugmentedThird         =   {   passive: { scale: "aug\n3",         tension: null           },  opinionated: { scale: "P\n4",           tension: null           }   };
 
-var gDiminishedFourth       =   {   passive: { scale: "dim\n4",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gPerfectFourth          =   {   passive: { scale: "P\n4",           tension: "\n11"         },  opinionated: { scale: null,             tension: null           }   };
-var gAugmentedFourth        =   {   passive: { scale: "aug\n4",         tension: "sharp\n11"    },  opinionated: { scale: null,             tension: null           }   };
+var cDiminishedFourth       =   {   passive: { scale: "dim\n4",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cPerfectFourth          =   {   passive: { scale: "P\n4",           tension: "\n11"         },  opinionated: { scale: null,             tension: null           }   };
+var cAugmentedFourth        =   {   passive: { scale: "aug\n4",         tension: "sharp\n11"    },  opinionated: { scale: null,             tension: null           }   };
 
-var gDiminishedFifth        =   {   passive: { scale: "dim\n5",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gPerfectFifth           =   {   passive: { scale: "P\n5",           tension: "\n12th"       },  opinionated: { scale: null,             tension: null           }   };
-var gAugmentedFifth         =   {   passive: { scale: "aug\n5",         tension: null           },  opinionated: { scale: null,             tension: "flat\n13"     }   };
+var cDiminishedFifth        =   {   passive: { scale: "dim\n5",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cPerfectFifth           =   {   passive: { scale: "P\n5",           tension: "\n12th"       },  opinionated: { scale: null,             tension: null           }   };
+var cAugmentedFifth         =   {   passive: { scale: "aug\n5",         tension: null           },  opinionated: { scale: null,             tension: "flat\n13"     }   };
 
-var gDiminishedSixth        =   {   passive: { scale: "dim\n6",         tension: null           },  opinionated: { scale: "P\n5",           tension: null           }   };
-var gMinorSixth             =   {   passive: { scale: "min\n6",         tension: "flat\n13"     },  opinionated: { scale: null,             tension: null           }   };
-var gMajorSixth             =   {   passive: { scale: "maj\n6",         tension: "\n13"         },  opinionated: { scale: null,             tension: null           }   };
-var gAugmentedSixth         =   {   passive: { scale: "aug\n6",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cDiminishedSixth        =   {   passive: { scale: "dim\n6",         tension: null           },  opinionated: { scale: "P\n5",           tension: null           }   };
+var cMinorSixth             =   {   passive: { scale: "min\n6",         tension: "flat\n13"     },  opinionated: { scale: null,             tension: null           }   };
+var cMajorSixth             =   {   passive: { scale: "maj\n6",         tension: "\n13"         },  opinionated: { scale: null,             tension: null           }   };
+var cAugmentedSixth         =   {   passive: { scale: "aug\n6",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
 
-var gDiminishedSeventh      =   {   passive: { scale: "dim\n7",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gMinorSeventh           =   {   passive: { scale: "min\n7",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gMajorSeventh           =   {   passive: { scale: "maj\n7",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gAugmentedSeventh       =   {   passive: { scale: "aug\n7",         tension: null           },  opinionated: { scale: "P\n8",           tension: null           }   };
+var cDiminishedSeventh      =   {   passive: { scale: "dim\n7",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cMinorSeventh           =   {   passive: { scale: "min\n7",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cMajorSeventh           =   {   passive: { scale: "maj\n7",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cAugmentedSeventh       =   {   passive: { scale: "aug\n7",         tension: null           },  opinionated: { scale: "P\n8",           tension: null           }   };
 
-var gOctave                 =   {   passive: { scale: "P-\n8",          tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cOctave                 =   {   passive: { scale: "P-\n8",          tension: null           },  opinionated: { scale: null,             tension: null           }   };
 
-var gFlatNinth              =   {   passive: { scale: "min\n9",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
-var gNinth                  =   {   passive: { scale: "\n9",            tension: null           },  opinionated: { scale: null,             tenstion: null          }   };
+var cFlatNinth              =   {   passive: { scale: "min\n9",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
+var cNinth                  =   {   passive: { scale: "\n9",            tension: null           },  opinionated: { scale: null,             tenstion: null          }   };
 
-var ScaleObject = {
+var cScaleObject = {
     first: {
         degree: 1,
-        value: [gMinorSeventh, gMajorSeventh, gUnison, gAugmentedUnison, gMajorSecond]
+        value: [cMinorSeventh, cMajorSeventh, cUnison, cAugmentedUnison, cMajorSecond]
     },
     second: {
         degree: 2,
-        value: [gDiminishedSecond, gMinorSecond, gMajorSecond, gAugmentedSecond, gMajorThird]
+        value: [cDiminishedSecond, cMinorSecond, cMajorSecond, cAugmentedSecond, cMajorThird]
     },
     third: {
         degree: 3,
-        value: [gDiminishedThird, gMinorThird, gMajorThird, gAugmentedThird, gAugmentedFourth]
+        value: [cDiminishedThird, cMinorThird, cMajorThird, cAugmentedThird, cAugmentedFourth]
     },
     fourth: {
         degree: 4,
-        value: [gMinorThird, gDiminishedFourth, gPerfectFourth, gAugmentedFourth, gPerfectFifth]
+        value: [cMinorThird, cDiminishedFourth, cPerfectFourth, cAugmentedFourth, cPerfectFifth]
     },
     fifth: {
         degree: 5,
-        value: [gPerfectFourth, gDiminishedFifth, gPerfectFifth, gAugmentedFifth, gMajorSixth]
+        value: [cPerfectFourth, cDiminishedFifth, cPerfectFifth, cAugmentedFifth, cMajorSixth]
     },
     sixth: {
         degree: 6,
-        value: [gDiminishedSixth, gMinorSixth, gMajorSixth, gAugmentedSixth, gMajorSeventh]
+        value: [cDiminishedSixth, cMinorSixth, cMajorSixth, cAugmentedSixth, cMajorSeventh]
     },
     seventh: {
         degree: 7,
-        value: [gDiminishedSeventh, gMinorSeventh, gMajorSeventh, gAugmentedSeventh, gFlatNinth]
+        value: [cDiminishedSeventh, cMinorSeventh, cMajorSeventh, cAugmentedSeventh, cFlatNinth]
     },
     octave: {
         degree: 8,
-        value: [gMinorSeventh, gMajorSeventh, gOctave, gFlatNinth, gNinth]
+        value: [cMinorSeventh, cMajorSeventh, cOctave, cFlatNinth, cNinth]
     }
 };
         
-VoiceButton = {
+cVoiceButton = {
     accidental_0 : 0,
     accidental_1 : 1,
     accidental_2 : 2,
@@ -167,7 +170,7 @@ VoiceButton = {
     onOff : 7
 };
 
-AccidentalType = {
+cAccidentalType = {
   doubleFlat : -2,
   flat : -1,
   natural : 0,
@@ -175,114 +178,171 @@ AccidentalType = {
   doubleSharp : 2  
 };
 
-var HudFormat = {
-    set : 0,
-    trigger : 1,
-    symbol : 2,
-    measures : 3,
-    slotSet : 4,
-    slotTrigger : 5,
-    slotSymbol : 6
-};
-
 function initialize() {
-    grabAllPattrValues();
-    updateHud();
+    gParameters.grabAll();
+    gParameters.displayAll();
 }
 
-var mSemitoneValue = [0, 2, 4, 5, 7, 9, 11, 12];
+var cSemitoneValue = [0, 2, 4, 5, 7, 9, 11, 12];
 
 function getSemitoneValue(aScaleDegree) {
-    return mSemitoneValue[aScaleDegree - 1];
+    return cSemitoneValue[aScaleDegree - 1];
 }
 
-var parameter = {
-    degree : {
-        name : "degree",
-        type : "slotArray",
-        value : [],
-        minValue : 1,
-        maxValue : 8,
-        saveInPattr : true
-    },
-    accidental : {
-        name : "accidental",
-        type : "slotArray",
-        value : [],
-        minValue : -2,
-        maxValue : 2,
-        saveInPattr : true
-    },
-    octave : {
-        name : "octave",
-        type : "slotArray",
-        value : [],
-        minValue : 0,
-        maxValue : 5,
-        saveInPattr : true
-    },
-    split : {
-        name : "split",
-        type : "slotArray",
-        value : [],
-        minValue : 0,
-        maxValue : 127,
-        saveInPattr : true
-    },
-    voiceOn : {
-        name : "voiceOn",
-        type : "slotArray",
-        value : [],
-        minValue : 0,
-        maxValue : 1,
-        saveInPattr : true
-    },
-    opinion : {
-        name : "opinion",
-        type : "slotArray",
-        value : [],
-        minValue : 0,
-        maxValue : 1,
-        saveInPattr : true
-    },
-    notePlaying : {
-        name : "notePlaying",
-        type : "slotArray",
-        value : [],
-        minValue : 0,
-        maxValue : 1,
-        saveInPattr : true
-    },
-    lastPitchPlayed : {
-        name : "lastPitchPlayed",
-        type : "slotArray",
-        value : [],
-        minValue : 0,
-        maxValue : 127,
-        saveInPattr : true
-    },
-    channel :  {
-        name : "channel",
-        type : "number",
-        value : [],
-        minValue : 0,
-        maxValue : 127,
-        saveInPattr : true
-    },
-    onChange : {
-        name : "onChange",
-        type : "number",
-        value : [],
-        minValue : 0,
-        maxValue : 2,
-        saveInPattr : true
-    },
-    lastRoot : 0,
-    lastVelocity : 0,
-    patchString : "GsChord"
+var gParameters = new Parameters({outlet: 1});
+   gParameters.degree = {
+    name : "degree",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 1,
+    maxValue : 8,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.accidental = {
+    name : "accidental",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : -2,
+    maxValue : 2,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.octave = {
+    name : "octave",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 5,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.split = {
+    name : "split",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 127,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.voiceOn = {
+    name : "voiceOn",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 1,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.opinion = {
+    name : "opinion",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 1,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.notePlaying = {
+    name : "notePlaying",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 1,
+    saveInPattr : false,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.lastPitchPlayed = {
+    name : "lastPitchPlayed",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 127,
+    saveInPattr : false,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.channel = {
+    name : "channel",
+    type : "number",
+    format: "set",
+    value : [],
+    minValue : 0,
+    maxValue : 127,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+gParameters.onChange = {
+    name : "onChange",
+    type : "number",
+    format: "set",
+    value : [],
+    minValue : 0,
+    maxValue : 2,
+    saveInPattr : true,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
 };
 
-var onChangeValue = {
+gParameters.comment = {
+    name : "comment",
+    type : "slotArray",
+    format: "slotSet",
+    value : function(aVoice) {
+        post("comment!\n");
+        for (var iIntervalName in cScaleObject) {
+            if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
+
+                var lScaleDegreeObject = cScaleObject[iIntervalName].value[gParameters.accidental.value[aVoice] + 2];
+
+                if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
+                    return lScaleDegreeObject.opinionated.tension;
+                }
+                else if ((gParameters.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
+                    return lScaleDegreeObject.passive.tension;
+                }
+                else if ((gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
+                    return lScaleDegreeObject.opinionated.scale;
+                }
+                else {              
+                    return lScaleDegreeObject.passive.scale;
+                }
+            }
+            else {
+                return "-";
+            }
+        }
+        return "!";
+    },
+    minValue : -Infinity,
+    maxValue : Infinity,
+    saveInPattr : false,
+    listeners: [],
+    slotListenters: ["updateVoiceDisplay"]
+};
+
+gParameters.lastRoot = 0;
+gParameters.lastVelocity = 0;
+gParameters.patchString = "GsChord";
+
+var cOnChangeValue = {
     hold : 0,
     clip : 1,
     retrigger : 2
@@ -290,7 +350,7 @@ var onChangeValue = {
 
 function setDegree(aVoice, aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key : "degree",
         slot : aVoice,
         value : aValue
@@ -300,7 +360,7 @@ function setDegree(aVoice, aValue) {
 
 function setChannel(aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key : "channel",
         value : aValue
     });
@@ -308,7 +368,7 @@ function setChannel(aValue) {
 
 function setAccidental(aVoice, aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key : "accidental",
         slot : aVoice,
         value : aValue
@@ -317,7 +377,7 @@ function setAccidental(aVoice, aValue) {
 
 function setSplit(aVoice, aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key :"split",
         slot :aVoice,
         value :aValue
@@ -326,7 +386,7 @@ function setSplit(aVoice, aValue) {
 
 function setOctave(aVoice, aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key :"octave",
         slot :aVoice,
         value :aValue
@@ -335,7 +395,7 @@ function setOctave(aVoice, aValue) {
 
 function setVoiceOn(aVoice, aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key :"voiceOn",
         slot :aVoice,
         value :aValue
@@ -344,7 +404,7 @@ function setVoiceOn(aVoice, aValue) {
 
 function setOpinion(aVoice, aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key :"opinion",
         slot :aVoice,
         value :aValue
@@ -353,7 +413,7 @@ function setOpinion(aVoice, aValue) {
 
 function setOnChange(aValue) {
     if (aValue == undefined) { return; }
-    setParameterProperty({
+    gParameters.set({
         key : "onChange",
         value : aValue
     });
@@ -367,13 +427,13 @@ function note(aPitch, aVelocity) {
     
     for (var iVoice = 0; iVoice < 8; iVoice++) {
         
-        if (parameter.onChange.value == onChangeValue.hold) { flushNote(iVoice, 0); }
+        if (gParameters.onChange.value == cOnChangeValue.hold) { flushNote(iVoice, 0); }
         
-        if(parameter.voiceOn.value[iVoice]) {
+        if(gParameters.voiceOn.value[iVoice]) {
             lSemitones = aPitch;
-            lSemitones += getSemitoneValue(parameter.degree.value[iVoice]);
-            lSemitones += parameter.octave.value[iVoice] * 12;
-            lSemitones += parameter.accidental.value[iVoice];
+            lSemitones += getSemitoneValue(gParameters.degree.value[iVoice]);
+            lSemitones += gParameters.octave.value[iVoice] * 12;
+            lSemitones += gParameters.accidental.value[iVoice];
 
             sendNoteMessage(iVoice, lSemitones, aVelocity);
         }
@@ -381,23 +441,23 @@ function note(aPitch, aVelocity) {
 }
 
 function replaceNote(aVoice) {
-    if(parameter.voiceOn.value[aVoice]) {
-        var lSemitones = parameter.lastRoot;
-        lSemitones += getSemitoneValue(parameter.degree.value[aVoice]);
-        lSemitones += parameter.octave.value[aVoice] * 12;
-        lSemitones += parameter.accidental.value[aVoice];
+    if(gParameters.voiceOn.value[aVoice]) {
+        var lSemitones = gParameters.lastRoot;
+        lSemitones += getSemitoneValue(gParameters.degree.value[aVoice]);
+        lSemitones += gParameters.octave.value[aVoice] * 12;
+        lSemitones += gParameters.accidental.value[aVoice];
 
-        sendNoteMessage(aVoice, lSemitones, parameter.lastVelocity);
+        sendNoteMessage(aVoice, lSemitones, gParameters.lastVelocity);
     }
 }
 
 function updateVoiceOnMonome(aVoice) {
     gMonome.column(aVoice, "ledOff");
 
-    if (gMonome[aVoice][VoiceButton.accidental_1].isHeld()) {
-        gMonome[aVoice][VoiceButton.accidental_1].ledOn();
+    if (gMonome[aVoice][cVoiceButton.accidental_1].isHeld()) {
+        gMonome[aVoice][cVoiceButton.accidental_1].ledOn();
         
-        var lBinaryString = padNumber(parameter.degree.value[aVoice].toString(2), 4);
+        var lBinaryString = padNumber(gParameters.degree.value[aVoice].toString(2), 4);
         for (var iCounter = 0; iCounter < 4; iCounter++) {
             if ((lBinaryString.charAt(iCounter) != 0) && (lBinaryString.charAt(iCounter))) {
                     gMonome[aVoice][4 + iCounter].ledOn();
@@ -406,26 +466,26 @@ function updateVoiceOnMonome(aVoice) {
     }
     else {
         //accidentals
-        switch (parameter.accidental.value[aVoice]) {
-            case (AccidentalType.doubleFlat) : {
-                gMonome[aVoice][VoiceButton.accidental_1].ledOn();
-                gMonome[aVoice][VoiceButton.accidental_2].ledOn();
+        switch (gParameters.accidental.value[aVoice]) {
+            case (cAccidentalType.doubleFlat) : {
+                gMonome[aVoice][cVoiceButton.accidental_1].ledOn();
+                gMonome[aVoice][cVoiceButton.accidental_2].ledOn();
                 break;
             }
-            case (AccidentalType.flat) : {
-                gMonome[aVoice][VoiceButton.accidental_2].ledOn();
+            case (cAccidentalType.flat) : {
+                gMonome[aVoice][cVoiceButton.accidental_2].ledOn();
                 break;
             }
-            case (AccidentalType.natural) : {
+            case (cAccidentalType.natural) : {
                 break;
             }
-            case (AccidentalType.sharp) : {
-                gMonome[aVoice][VoiceButton.accidental_0].ledOn();
+            case (cAccidentalType.sharp) : {
+                gMonome[aVoice][cVoiceButton.accidental_0].ledOn();
                 break;
             }
-            case (AccidentalType.doubleSharp) : {
-                gMonome[aVoice][VoiceButton.accidental_0].ledOn();
-                gMonome[aVoice][VoiceButton.accidental_1].ledOn();
+            case (cAccidentalType.doubleSharp) : {
+                gMonome[aVoice][cVoiceButton.accidental_0].ledOn();
+                gMonome[aVoice][cVoiceButton.accidental_1].ledOn();
                 break;
             }
             default : {
@@ -435,20 +495,20 @@ function updateVoiceOnMonome(aVoice) {
 
 
         // On or off
-        if (parameter.voiceOn.value[aVoice]) { 
-            gMonome[aVoice][VoiceButton.onOff].ledOn();
+        if (gParameters.voiceOn.value[aVoice]) { 
+            gMonome[aVoice][cVoiceButton.onOff].ledOn();
         }
 
         //Channel Buttons
-        if (parameter.split.value[aVoice] < parameter.channel.value) {
-            gMonome[aVoice][VoiceButton.channelDown].ledOn();
+        if (gParameters.split.value[aVoice] < gParameters.channel.value) {
+            gMonome[aVoice][cVoiceButton.channelDown].ledOn();
         }
-        else if (parameter.split.value[aVoice] == parameter.channel.value) { 
-            gMonome[aVoice][VoiceButton.channelUp].ledOn();
-            gMonome[aVoice][VoiceButton.channelDown].ledOn();
+        else if (gParameters.split.value[aVoice] == gParameters.channel.value) { 
+            gMonome[aVoice][cVoiceButton.channelUp].ledOn();
+            gMonome[aVoice][cVoiceButton.channelDown].ledOn();
         }
-        else if (parameter.split.value[aVoice] > parameter.channel.value) {
-            gMonome[aVoice][VoiceButton.channelUp].ledOn();
+        else if (gParameters.split.value[aVoice] > gParameters.channel.value) {
+            gMonome[aVoice][cVoiceButton.channelUp].ledOn();
         }
     }
 }
@@ -456,12 +516,12 @@ function updateVoiceOnMonome(aVoice) {
 
 function updateCommentDisplay(aVoice) {
     
-    for (var iIntervalName in ScaleObject) {
-        if (parameter.degree.value[aVoice] == ScaleObject[iIntervalName].degree) {
+    for (var iIntervalName in cScaleObject) {
+        if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
             
-            var lScaleDegreeObject = ScaleObject[iIntervalName].value[parameter.accidental.value[aVoice] + 2];
+            var lScaleDegreeObject = cScaleObject[iIntervalName].value[gParameters.accidental.value[aVoice] + 2];
     
-            if ((parameter.octave.value[aVoice] > 1) && (parameter.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
+            if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
                     sendToHud({
                         slot : aVoice,
                         key : "comment",
@@ -469,7 +529,7 @@ function updateCommentDisplay(aVoice) {
                         format : HudFormat.slotSet
                     });
             }
-            else if ((parameter.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
+            else if ((gParameters.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
                 sendToHud({
                     slot : aVoice,
                     key : "comment",
@@ -477,7 +537,7 @@ function updateCommentDisplay(aVoice) {
                     format : HudFormat.slotSet
                 });
             }
-            else if ((parameter.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
+            else if ((gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
                 sendToHud({
                     slot : aVoice,
                     key : "comment",
@@ -498,241 +558,47 @@ function updateCommentDisplay(aVoice) {
 }
 
 function updateVoiceDisplay(aVoice) {
-    updateCommentDisplay(aVoice);
+    post("update voice display\n");
+    gParameters.display("comment", aVoice);
     updateVoiceOnMonome(aVoice);
-    sendToHud({
-        slot : aVoice,
-        key : parameter.voiceOn.name,
-        value : parameter.voiceOn.value[aVoice],
-        format : HudFormat.slotSet
-    });
-    sendToHud({
-        slot : aVoice,
-        key : parameter.split.name,
-        value : parameter.split.value[aVoice],
-        format : HudFormat.slotSet
-    });
-    sendToHud({
-        slot : aVoice,
-        key : parameter.octave.name,
-        value : parameter.octave.value[aVoice],
-        format : HudFormat.slotSet
-    });
-    sendToHud({
-        slot : aVoice,
-        key : parameter.degree.name,
-        value : parameter.degree.value[aVoice],
-        format : HudFormat.slotSet
-    });
-    sendToHud({
-        slot : aVoice,
-        key : parameter.accidental.name,
-        value : parameter.accidental.value[aVoice],
-        format : HudFormat.slotSet
-    });
-}
-
-function updateHud() {
-    for (var iVoice = 0; iVoice < 8; iVoice++) {
-        updateVoiceDisplay(iVoice);
-    }
-}
-
-
-function setParameterProperty(aObject) {
-
-    var aProperty = parameter[aObject.key],
-        aValue = aObject.value,
-        aSlot = (aObject.slot === undefined) ? null : aObject.slot,
-        lPatcherObjectNameString,
-        lValue;
     
-    //check validity of aValue
-    if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
-        if ((aValue >= aProperty.minValue) && (aValue <= aProperty.maxValue)) { lValue = aValue; }
-        else if (aValue < aProperty.minValue) { lValue = aProperty.minValue; }
-        else if (aValue > aProperty.maxValue) { lValue = aProperty.maxValue; }
-        else { post("something has gane awry in setParameterProperty!\n"); }
-    }
-    else { lValue = aValue; }
-
-    //update HUD
-    if (aProperty.type == "slotArray") {
-        aProperty.value[aSlot] = lValue;
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value[aSlot],
-            format : HudFormat.slotSet,
-            slot : aSlot
-        });
-        updateVoiceDisplay(aSlot);
-    }
-     else {
-        aProperty.value = lValue;
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value,
-            format : HudFormat.set
-        });
-    }
-    
-    // Save it.
-    if (aProperty.saveInPattr) {
-        patcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
-        this.patcher.getnamed(patcherObjectNameString).setvalueof(aProperty.value);
-    }
-}
-
-function changeParameterProperty(aPropertyString, aVoice, aAmount) {
-    var lValue = parameter[aPropertyString].value[aVoice] + aAmount;
-    setParameterProperty({
-        key : aPropertyString,
-        slot : aVoice,
-        value : lValue
-    });    
-}
-
-function toggleParameterProperty(aPropertyString, aVoice) {
-    var lValue = Number(!Boolean(parameter[aPropertyString].value[aVoice]));
-    setParameterProperty({
-        key : aPropertyString,
-        slot : aVoice,
-        value : lValue
-    });
-}
-
-
-function grabAllPattrValues() {
-    grabPattrValue(parameter.voiceOn);
-    grabPattrValue(parameter.split);
-    grabPattrValue(parameter.octave);
-    grabPattrValue(parameter.degree);
-    grabPattrValue(parameter.accidental);
-    grabPattrValue(parameter.onChange);
-    grabPattrValue(parameter.channel);
-}
-
-function grabPattrValue(aProperty) {
-    if (gDebugItem.functionName) { post("    --grabPattrValue--\n"); }
-    
-    var lPatcherObjectNameString = aProperty.name + parameter.patchString + "Pattr",
-        iCounter,
-        lLength;
-        
-    if (gDebugItem.startValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
-    if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
-    
-    switch (aProperty.type) {
-        case "number" : 
-            /*jsl:fallthru*/
-        case "toggle" :
-            aProperty.value = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        case "string" :
-            aProperty.value = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
-            break;
-        case "slotArray" :
-            aProperty.value = this.patcher.getnamed(lPatcherObjectNameString).getvalueof();
-            break;
-        default :
-            post(aProperty.name + ".type:", aProperty.type , "\n");
-            break;
-    }
-    
-    if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue.toString(), "\n"); }
-    
-    if (aProperty.type == "slotArray") {
-        lLength = aProperty.value.length;
-        for (iCounter = 0; iCounter < lLength; iCounter++) {
-            sendToHud({
-                key : aProperty.name,
-                value : aProperty.value[iCounter],
-                format : HudFormat.slotSet,
-                slot : iCounter
-            });
-        }
-    }
-    else {
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value,
-            format : HudFormat.set
-        });
-    }
-   
-    if (gDebugItem.endValue) { post(aProperty.name + ".value:", aProperty.value, "\n"); }
+    gParameters.display("voiceOn", aVoice);
+    gParameters.display("split", aVoice);
+    gParameters.display("octave", aVoice);
+    gParameters.display("degree", aVoice);
+    gParameters.display("accidental", aVoice);
+                    
 }
 
 function sendNoteMessage(aVoice, aPitch, aVelocity) {
         
     if (aVoice != "root") {
-        if (parameter.split.value[aVoice] == parameter.channel.value) {
+        if (gParameters.split.value[aVoice] == gParameters.channel.value) {
             outlet(0, aPitch, aVelocity);
         }
         
-        messnamed("gs.channel", "channelNote", parameter.split.value[aVoice], aPitch, aVelocity);
+        messnamed("gs.channel", "channelNote", gParameters.split.value[aVoice], aPitch, aVelocity);
         
 
         if (aVelocity) {
-            parameter.notePlaying.value[aVoice] = true;
-            parameter.lastPitchPlayed.value[aVoice] = aPitch;
+            gParameters.notePlaying.value[aVoice] = true;
+            gParameters.lastPitchPlayed.value[aVoice] = aPitch;
         }
         else {
-            parameter.notePlaying.value[aVoice] = false;
+            gParameters.notePlaying.value[aVoice] = false;
         }
     }
     else {
         outlet(0, aPitch, aVelocity);
-        parameter.lastRoot = aPitch;
-        parameter.lastVelocity = aVelocity;
+        gParameters.lastRoot = aPitch;
+        gParameters.lastVelocity = aVelocity;
     }
 }
 
 function flushNote(aVoice, _makeNew) {
-    if (parameter.notePlaying.value[aVoice]) {
-        sendNoteMessage(aVoice, parameter.lastPitchPlayed.value[aVoice], 0);
+    if (gParameters.notePlaying.value[aVoice]) {
+        sendNoteMessage(aVoice, gParameters.lastPitchPlayed.value[aVoice], 0);
         if (_makeNew) { replaceNote(aVoice); }
-    }
-}
-
-
-function sendToHud(aObject) {
-    
-    var lOutlet = 1,
-        aKey = aObject.key,
-        aValue = aObject.value,
-        aFormat = (aObject.format === undefined) ? 0 : aObject.format,
-        aSlot = (aObject.slot === undefined) ? null : aObject.slot;
-        
-    
-    if (gDebugItem.functionName) { post("    --sendToHud - " + aKey + " --\n"); }
-    if (gDebugItem.arguments) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
-    
-    switch (aFormat) {
-        case HudFormat.set:
-            outlet(lOutlet, aKey, "set", aValue);
-            break;
-        case HudFormat.trigger:
-            outlet(lOutlet, aKey, aValue);
-            break;
-        case HudFormat.symbol:
-            outlet(lOutlet, aKey, "setsymbol", aValue);
-            break;
-        case HudFormat.measures:
-            outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
-            break;
-        case HudFormat.slotSet:
-            outlet(lOutlet, aSlot, aKey, "set", aValue);
-            break;
-        case HudFormat.slotTrigger:
-            outlet(lOutlet, aSlot, "setsymbol", aValue);
-            break;
-        case HudFormat.slotSymbol:
-            outlet(lOutlet, aSlot, aKey, "setsymbol", aValue);
-            break;
-        default: 
-            post("error in sendToHud. aFormat:", aFormat, "\n");
-            break;
     }
 }
 
@@ -817,42 +683,42 @@ function press(aCol, aRow, aPress) {
     else if (aPress == 0) { gMonome[aCol][aRow].release(); }
 
     switch (aRow) {
-        case (VoiceButton.accidental_0) : {
+        case (cVoiceButton.accidental_0) : {
             if (aPress == 1) { 
-                (gMonome[aCol][VoiceButton.accidental_1].isHeld()) ?
-                changeParameterProperty("degree", aCol, 1) : changeParameterProperty("accidental", aCol, 1);
+                (gMonome[aCol][cVoiceButton.accidental_1].isHeld()) ?
+                gParameters.change("degree", aCol, 1) : gParameters.change("accidental", aCol, 1);
             }
             break;
         }
-        case (VoiceButton.accidental_1) : {
+        case (cVoiceButton.accidental_1) : {
             updateVoiceDisplay(aCol);
             break;
         }
-        case (VoiceButton.accidental_2) : {
+        case (cVoiceButton.accidental_2) : {
             if (aPress == 1) { 
-                (gMonome[aCol][VoiceButton.accidental_1].isHeld()) ?
-                changeParameterProperty("degree", aCol, -1) : changeParameterProperty("accidental", aCol, -1);
+                (gMonome[aCol][cVoiceButton.accidental_1].isHeld()) ?
+                gParameters.change("degree", aCol, -1) : gParameters.change("accidental", aCol, -1);
             }
             break;
         }
-        case (VoiceButton.octaveUp) : {
-            if (aPress == 1) { changeParameterProperty("octave", aCol, 1); }
+        case (cVoiceButton.octaveUp) : {
+            if (aPress == 1) { gParameters.change("octave", aCol, 1); }
             break;
         }
-        case (VoiceButton.octaveDown) : {
-            if (aPress == 1) { changeParameterProperty("octave", aCol, -1); }
+        case (cVoiceButton.octaveDown) : {
+            if (aPress == 1) { gParameters.change("octave", aCol, -1); }
             break;
         }
-        case (VoiceButton.channelUp) : {
-            if (aPress == 1) { changeParameterProperty("split", aCol, 1); }
+        case (cVoiceButton.channelUp) : {
+            if (aPress == 1) { gParameters.change("split", aCol, 1); }
             break;
         }
-        case (VoiceButton.channelDown) : {
-            if (aPress == 1) { changeParameterProperty("split", aCol, -1); }
+        case (cVoiceButton.channelDown) : {
+            if (aPress == 1) { gParameters.change("split", aCol, -1); }
             break;
         }
-        case (VoiceButton.onOff) : {
-            if (aPress == 1) { toggleParameterProperty("voiceOn", aCol); }
+        case (cVoiceButton.onOff) : {
+            if (aPress == 1) { gParameters.toggle("voiceOn", aCol); }
             break;
         }
         default : {
@@ -865,14 +731,253 @@ function press(aCol, aRow, aPress) {
 function store(aNumber) {
     if (mDebugLevel[1]) { post("    --store--\n"); }
     
-    this.patcher.getnamed("gsChordScale-presetStore").message("store", aNumber);
+    gThisPatcher.getnamed("gsChordScale-presetStore").message("store", aNumber);
 }
 
 function recall(aNumber) {
     if (mDebugLevel[1]) { post("    --recall--\n"); }
-    this.patcher.getnamed("gsChordScale-presetStore").message(aNumber);
-    grabAllPattrValues();
-    updateHud;
+    gThisPatcher.getnamed("gsChordScale-presetStore").message(aNumber);
+    gParameters.grabAll();
+    gParameters.displayAll;
+}
+
+function Parameters(aObject) {
+    if (gDebugItem.functionName) { post("    --Parameters--\n"); }
+    
+    var mParameters = this,
+        mOutlet = aObject.outlet;
+    
+    function sendToHud(aObject) {
+
+        var aKey = aObject.key,
+            aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
+            aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot;
+
+        if (gDebugItem.functionName) { post("    --Parameter.sendToHud --\n"); }
+        if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "aSlot", aSlot, "\n"); }
+
+        switch (aFormat) {
+            case "set":
+                outlet(mOutlet, aKey, "set", aValue);
+                break;
+            case "trigger":
+                outlet(mOutlet, aKey, aValue);
+                break;
+            case "symbol":
+                outlet(mOutlet, aKey, "setsymbol", aValue);
+                break;
+            case "measures":
+                outlet(mOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
+                break;
+            case "slotSet":
+                outlet(mOutlet, aSlot, aKey, "set", aValue);
+                break;
+            case "slotTrigger":
+                outlet(mOutlet, aSlot, "setsymbol", aValue);
+                break;
+            case "slotSymbol":
+                outlet(mOutlet, aSlot, aKey, "setsymbol", aValue);
+                break;
+            default: 
+                post("error in Parameter.sendToHud. aFormat:", aFormat, "\n");
+                break;
+        }
+    }
+    
+    this.set = function(aObject) {
+        if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
+        if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
+        var aParameter = mParameters[aObject.key],
+            aValue = aObject.value,
+            aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+            aQuietly = (aObject.silent === true),
+            lPatcherObjectNameString,
+            lValue,
+            lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
+            lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
+            lListenerKeys = aParameter.listeners,
+            lListenerLength = lListenerKeys.length,
+            lSlotListenerKeys = aParameter.slotListenters,
+            lSlotListenerLength = lSlotListenerKeys.length,
+            iCounter;
+
+        //check validity of aValue
+        if ((aParameter.type == "number") || (aParameter.type == "toggle") || (aParameter.type == "slotArray")) {
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
+            else if (aValue < lMinimum) { lValue = lMinimum; }
+            else if (aValue > lMaximum) { lValue = lMaximum; }
+            else { post("something has gane awry in Parameters.set!\n"); }
+        }
+        else { lValue = aValue; }
+        
+        if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
+        else { aParameter.value = lValue; }
+        
+        mParameters.display(aParameter.name);
+
+        // call listeners
+        
+        if (aQuietly) { 
+            return;
+        }
+        for (iCounter = 0; iCounter < lListenerLength; iCounter++) {
+            gThis[lListenerKeys[iCounter]]();
+            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n"); }
+        }
+        for (iCounter = 0; iCounter < lSlotListenerLength; iCounter++) {
+            gThis[lSlotListenerKeys[iCounter]](aSlot);
+            if (gDebugItem.localValue) { post("lSlotListenerKeys[" +iCounter + "]:", lSlotListenerKeys[iCounter], "\n"); }
+        }
+        
+        // Save.
+        if (aParameter.saveInPattr) {
+            lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+            gThisPatcher.getnamed(lPatcherObjectNameString).message((aParameter.type == "slotArray") ? aParameter.value[aSlot] : aParameter.value);
+        }
+    };
+    
+    this.display = function(aParameterName, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
+        
+        var iCounter,
+            lLength,
+            aParameter = mParameters[aParameterName];
+            
+        if (aParameter.format != undefined) {
+            if (aParameter.type == "slotArray") {
+                if (aSlot != undefined) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: aParameter.value[aSlot],
+                        format: aParameter.format,
+                        slot: aSlot
+                    });
+                }
+
+                 else {
+                    for (iCounter = 0, lLength = aParameter.value.length; iCounter < lLength; iCounter++) {
+                        sendToHud({
+                            key: aParameter.name,
+                            value: aParameter.value[iCounter],
+                            format: aParameter.format,
+                            slot: iCounter
+                        });
+                    }
+                } 
+            }
+            else {
+                sendToHud({
+                    key: aParameter.name,
+                    value: aParameter.value,
+                    format: aParameter.format
+                });
+            }
+        }
+    };
+    
+    this.displayAll = function() {   
+         if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
+         
+        var iProperty;
+
+        for (iProperty in mParameters) {
+            if (mParameters[iProperty].format) {
+                mParameters.display(iProperty);
+            }
+        }
+    };
+    
+    this.toggle = function(aParameterName) {
+        if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
+        
+        if ((mParameters[aParameterName].type == "toggle") || (mParameters[aParameterName].type == "slotArray")) {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value))
+            });
+        }
+        else { post(aParameterName, "is not a toggle parameter\n");}
+    };
+    
+    this.change = function(aParameterName, aAmount, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.change--\n"); }
+
+        if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value[aSlot] + aAmount,
+                slot: aSlot
+            });
+            post("mParameters[aParameterName].value", mParameters[aParameterName].value, "\n");
+        }
+         else {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value + aAmount
+            });
+        }
+        };
+
+    this.grab = function(aParameter) {
+        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+
+        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
+            lValue;
+
+        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
+        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+
+        switch (aParameter.type) {
+            case "number" : 
+                /*jsl:fallthru*/
+            case "toggle" :
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                break;
+            case "string" :
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                break;
+            case "slotArray" :
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                break;
+            default :
+                post(aParameter.name + ".type:", aParameter.type , "\n");
+                break;
+        }
+
+        if (!gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+
+        if (aParameter.type == "slotArray") {
+            aParameter.value = lValue;
+            mParameters.display(aParameter.name);
+        }
+         else {
+            mParameters.set({
+                key: aParameter.name,
+                value: lValue,
+                silent: true
+            });
+        }
+
+        if (gDebugItem.endValue) {
+            post(aParameter.name + ".value: ", aParameter.value, "\n");
+        }
+    };
+
+    this.grabAll = function() {   
+         if (gDebugItem.functionName) { post("    --Parameters.grabAll --\n"); }
+         
+        var iProperty,
+            iCounter,
+            lLength;
+
+        for (iProperty in mParameters) {
+            if (mParameters[iProperty].saveInPattr) {
+                mParameters.grab(mParameters[iProperty]);
+            }
+        }
+    };
 }
 
    // Method: Monome
@@ -1105,216 +1210,6 @@ function Monome(aColumns, aRows, aOutlet) {
     }
 }
 
-function Parameters() {
-    if (gDebugItem.functionName) { post("    --Parameters--\n"); }
-    
-    var mParameters = this;
-    
-    function sendToHud(aObject) {
-
-        var lOutlet = 2,
-            aKey = aObject.key,
-            aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
-            aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format;        
-
-        if (gDebugItem.functionName) { post("    --Parameter.sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
-        if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
-
-        switch (aFormat) {
-            case "set":
-                outlet(lOutlet, aKey, "set", aValue);
-                break;
-            case "trigger":
-                outlet(lOutlet, aKey, aValue);
-                break;
-            case "symbol":
-                outlet(lOutlet, aKey, "setsymbol", aValue);
-                break;
-            case "measures":
-                outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
-                break;
-            case "slotSet":
-                outlet(lOutlet, aSlot, aKey, "set", aValue);
-                break;
-            case "slotTrigger":
-                outlet(lOutlet, aSlot, "setsymbol", aValue);
-                break;
-            case "slotSymbol":
-                outlet(lOutlet, aSlot, aKey, "setsymbol", aValue);
-                break;
-            default: 
-                post("error in Parameter.sendToHud. aFormat:", aFormat, "\n");
-                break;
-        }
-    }
-    
-    this.set = function(aObject) {
-        if (gDebugItem.functionName) { post("    --Parameters.set--\n"); }
-        if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
-        var aParameter = mParameters[aObject.key],
-            aValue = aObject.value,
-            aSlot = (aObject.slot === undefined) ? null : aObject.slot,
-            aQuietly = (aObject.silent === true),
-            lPatcherObjectNameString,
-            lValue,
-            lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
-            lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
-            lListenerKeys = aParameter.listeners,
-            lLength = lListenerKeys.length,
-            iCounter;
-
-        //check validity of aValue
-        if ((aParameter.type == "number") || (aParameter.type == "toggle") || (aParameter.type == "slotArray")) {
-            if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
-            else if (aValue < lMinimum) { lValue = lMinimum; }
-            else if (aValue > lMaximum) { lValue = lMaximum; }
-            else { post("something has gane awry in Parameter.set!\n"); }
-        }
-        else { lValue = aValue; }
-
-        if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
-        else { aParameter.value = lValue; }
-
-        mParameters.display(aParameter.name);
-
-        // call listeners
-        
-        if (aQuietly) { 
-            return;
-        }
-        for (iCounter = 0; iCounter < lLength; iCounter++) {
-            gThis[lListenerKeys[iCounter]]();
-            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n"); }
-        }
-
-        // Save.
-        if (aParameter.saveInPattr) {
-            patcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            gThisPatcher.getnamed(patcherObjectNameString).message(aParameter.value);
-        }
-    };
-    
-    this.display = function(aParameterName, aSlot) {
-        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
-        
-        var iCounter,
-            lLength,
-            aParameter = mParameters[aParameterName];
-            
-        if (aParameter.format != undefined) {
-            if (aParameter.type == "slotArray") {
-                
-                if (aSlot) {
-                    sendToHud({
-                        key: aParameter.name,
-                        value: aParameter.value[aSlot],
-                        format: aParameter.format,
-                        slot: aSlot
-                    });
-                }
-                 else {
-                    for (iCounter = 0, lLength = aParameter.value.length; iCounter < lLength; iCounter++) {
-                        sendToHud({
-                            key: aParameter.name,
-                            value: aParameter.value[iCounter],
-                            format: aParameter.format,
-                            slot: iCounter
-                        });
-                    }
-                }
-            }
-            else {
-                sendToHud({
-                    key: aParameter.name,
-                    value: aParameter.value,
-                    format: aParameter.format
-                });
-            }
-        }
-    };
-    
-    this.displayAll = function() {   
-         if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
-         
-        var iProperty;
-
-        for (iProperty in mParameters) {
-            if (mParameters[iProperty].format) {
-                mParameters.display(iProperty);
-            }
-        }
-    };
-    
-    this.toggle = function(aParameterName) {
-        if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
-        
-        if (mParameters[aParameterName].type == "toggle") {
-            mParameters.set({
-                key : aParameterName,
-                value : Number(!Boolean(mParameters[aParameterName].value))
-            });
-        }
-        else { post(aParameterName, "is not a toggle parameter\n");}
-    };
-    
-    this.change = function(aParameterName, aAmount) {
-        if (gDebugItem.functionName) { post("    --Parameters.change--\n"); }
-
-        mParameters.set({
-            key : aParameterName,
-            value : mParameters[aParameterName].value + aAmount
-        });
-    };
-    
-    this.grab = function(aParameter) {
-        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
-
-        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
-            lValue;
-
-        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
-        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
-
-        switch (aParameter.type) {
-            case "number" : 
-                /*jsl:fallthru*/
-            case "toggle" :
-                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
-                break;
-            case "string" :
-                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
-                break;
-            case "slotArray" :
-                lValue = Array(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
-                break;
-            default :
-                post(aParameter.name + ".type:", aParameter.type , "\n");
-                break;
-        }
-
-        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
-
-        mParameters.set({
-            key : aParameter.name,
-            value : lValue,
-            silent : true
-        });
-
-        if (gDebugItem.endValue) { post(aParameter.name + ".value: ", aParameter.value, "\n"); }
-    };
-
-    this.grabAll = function() {   
-         if (gDebugItem.functionName) { post("    --Parameters.grabAll --\n"); }
-         
-        var iProperty;
-
-        for (iProperty in mParameters) {
-            if (mParameters[iProperty].saveInPattr) {
-                mParameters.grab(mParameters[iProperty]);
-            }
-        }
-    };
-}
 
 function padNumber(number, length) {
    
