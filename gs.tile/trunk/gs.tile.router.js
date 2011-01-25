@@ -120,8 +120,8 @@ function makeMonomeChannels(aHowManyChannels) {
     for (iChannel = 0; iChannel < aHowManyChannels; iChannel++) {
         // make the receives, sends, routes, and prepends
         
-        lRouteMessage = "/mMC" + iChannel + "/press";
-        lLedPrependMessage = "/mMC" + iChannel + "/led";
+        lRouteMessage = "/gs.tile-" + iChannel + "/press";
+        lLedPrependMessage = "/gs.tile-" + iChannel + "/led";
                 
         mRouteObject[iChannel] = this.patcher.newdefault(15 + (iChannel * 180), 60, "route", lRouteMessage);
         mPrependPressObject[iChannel] = this.patcher.newdefault(15 + (iChannel * 180), 105, "prepend", "press");
