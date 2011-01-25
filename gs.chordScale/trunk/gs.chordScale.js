@@ -125,40 +125,17 @@ var cOctave                 =   {   passive: { scale: "P-\n8",          tension:
 var cFlatNinth              =   {   passive: { scale: "min\n9",         tension: null           },  opinionated: { scale: null,             tension: null           }   };
 var cNinth                  =   {   passive: { scale: "\n9",            tension: null           },  opinionated: { scale: null,             tenstion: null          }   };
 
-var cScaleObject = {
-    first: {
-        degree: 1,
-        value: [cMinorSeventh, cMajorSeventh, cUnison, cAugmentedUnison, cMajorSecond]
-    },
-    second: {
-        degree: 2,
-        value: [cDiminishedSecond, cMinorSecond, cMajorSecond, cAugmentedSecond, cMajorThird]
-    },
-    third: {
-        degree: 3,
-        value: [cDiminishedThird, cMinorThird, cMajorThird, cAugmentedThird, cAugmentedFourth]
-    },
-    fourth: {
-        degree: 4,
-        value: [cMinorThird, cDiminishedFourth, cPerfectFourth, cAugmentedFourth, cPerfectFifth]
-    },
-    fifth: {
-        degree: 5,
-        value: [cPerfectFourth, cDiminishedFifth, cPerfectFifth, cAugmentedFifth, cMajorSixth]
-    },
-    sixth: {
-        degree: 6,
-        value: [cDiminishedSixth, cMinorSixth, cMajorSixth, cAugmentedSixth, cMajorSeventh]
-    },
-    seventh: {
-        degree: 7,
-        value: [cDiminishedSeventh, cMinorSeventh, cMajorSeventh, cAugmentedSeventh, cFlatNinth]
-    },
-    octave: {
-        degree: 8,
-        value: [cMinorSeventh, cMajorSeventh, cOctave, cFlatNinth, cNinth]
-    }
-};
+var cScaleDegreeArray = [
+    [],
+    [cMinorSeventh, cMajorSeventh, cUnison, cAugmentedUnison, cMajorSecond],
+    [cDiminishedSecond, cMinorSecond, cMajorSecond, cAugmentedSecond, cMajorThird],
+    [cDiminishedThird, cMinorThird, cMajorThird, cAugmentedThird, cAugmentedFourth],
+    [cMinorThird, cDiminishedFourth, cPerfectFourth, cAugmentedFourth, cPerfectFifth],
+    [cPerfectFourth, cDiminishedFifth, cPerfectFifth, cAugmentedFifth, cMajorSixth],
+    [cDiminishedSixth, cMinorSixth, cMajorSixth, cAugmentedSixth, cMajorSeventh],
+    [cDiminishedSeventh, cMinorSeventh, cMajorSeventh, cAugmentedSeventh, cFlatNinth],
+    [cMinorSeventh, cMajorSeventh, cOctave, cFlatNinth, cNinth]
+];
         
 cVoiceButton = {
     accidental_0 : 0,
@@ -220,7 +197,7 @@ gParameters.octave = {
     minValue : 0,
     maxValue : 5,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.split = {
     name : "split",
@@ -250,7 +227,7 @@ gParameters.opinion = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.notePlaying = {
     name : "notePlaying",
@@ -298,32 +275,29 @@ gParameters.comment = {
     type : "slotArray",
     format: "slotSet",
     value : function(aVoice) {
-        for (var iIntervalName in cScaleObject) {
-            if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
+        post("gParameters.degree.value[aVoice]", gParameters.degree.value[aVoice], "\n");
+        var lScaleDegreeObject = cScaleDegreeArray[gParameters.degree.value[aVoice]];
+        var lSpecificFunctionObject = lScaleDegreeObject[gParameters.accidental.value[aVoice] + 2];
 
-                var lScaleDegreeObject = cScaleObject[iIntervalName].value[gParameters.accidental.value[aVoice] + 2];
-
-                if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
-                    return lScaleDegreeObject.opinionated.tension;
-                }
-                else if ((gParameters.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
-                    return lScaleDegreeObject.passive.tension;
-                }
-                else if ((gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
-                    return lScaleDegreeObject.opinionated.scale;
-                }
-                else {              
-                    return lScaleDegreeObject.passive.scale;
-                }
-            }
+        if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.tension != null)) {
+            return lSpecificFunctionObject.opinionated.tension;
         }
-        return "!";
+        else if ((gParameters.octave.value[aVoice] > 1) && (lSpecificFunctionObject.passive.tension != null)) {                
+            return lSpecificFunctionObject.passive.tension;
+        }
+        else if ((gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.scale != null)) {             
+            return lSpecificFunctionObject.opinionated.scale;
+        }
+        else {              
+            return lSpecificFunctionObject.passive.scale;
+        }
     },
     minValue : -Infinity,
     maxValue : Infinity,
     saveInPattr : false,
-    listeners: ["updateVoiceDisplay"]
+    listeners: []
 };
+gParameters.comment.value.arrayLength = cNumberOfVoices;
 
 gParameters.lastRoot = 0;
 gParameters.lastVelocity = 0;
@@ -502,47 +476,8 @@ function updateVoiceOnMonome(aVoice) {
 
 
 function updateCommentDisplay(aVoice) {
-    post("updateCommentDisplay\n");
+    post("updateCommentDisplay - aVoice", aVoice, "\n");
     gParameters.display("comment", aVoice);
-    // for (var iIntervalName in cScaleObject) {
-    //     if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
-    //         
-    //         var lScaleDegreeObject = cScaleObject[iIntervalName].value[gParameters.accidental.value[aVoice] + 2];
-    // 
-    //         if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
-    //                 sendToHud({
-    //                     slot : aVoice,
-    //                     key : "comment",
-    //                     value : lScaleDegreeObject.opinionated.tension,
-    //                     format : HudFormat.slotSet
-    //                 });
-    //         }
-    //         else if ((gParameters.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
-    //             sendToHud({
-    //                 slot : aVoice,
-    //                 key : "comment",
-    //                 value : lScaleDegreeObject.passive.tension,
-    //                 format : HudFormat.slotSet
-    //             });
-    //         }
-    //         else if ((gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
-    //             sendToHud({
-    //                 slot : aVoice,
-    //                 key : "comment",
-    //                 value : lScaleDegreeObject.opinionated.scale,
-    //                 format : HudFormat.slotSet
-    //             });
-    //         }
-    //         else {              
-    //             sendToHud({
-    //                 slot : aVoice,
-    //                 key : "comment",
-    //                 value : lScaleDegreeObject.passive.scale,
-    //                 format : HudFormat.slotSet
-    //             });
-    //         }
-    //     }
-    // }
 }
 
 function updateVoiceDisplay(aVoice) {
@@ -819,17 +754,18 @@ function Parameters(aObject) {
         // Save.
         if (aParameter.saveInPattr) {
             lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            if (!gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
             gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
         }
     };
     
     this.display = function(aParameterName, aSlot) {
-        if (!gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
+        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
         
         var iCounter,
-            lLength,
-            aParameter = mParameters[aParameterName];
+            aParameter = mParameters[aParameterName],
+            lValueIsFunction = (typeof aParameter.value == "function"),
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength : aParameter.value.length;
             
         if (aParameter.format != undefined) {
             if (aParameter.type == "slotArray") {
@@ -837,20 +773,20 @@ function Parameters(aObject) {
                                         
                     sendToHud({
                         key: aParameter.name,
-                        value: (typeof aParameter.value == "function") ? aParameter.value(aSlot) : aParameter.value[aSlot],
+                        value: (lValueIsFunction) ? aParameter.value(aSlot) : aParameter.value[aSlot],
                         format: aParameter.format,
                         slot: aSlot
                     });
                 }
 
                  else {
-                    for (iCounter = 0, lLength = aParameter.value.length; iCounter < lLength; iCounter++) {
-                        
+                    post(aParameter.name, "lLength", lLength, "\n");
+                    for (iCounter = 0; iCounter < lLength; iCounter++) {
                         sendToHud({
                             key: aParameter.name,
-                            value: (typeof aParameter.value == "function") ? aParameter.value(aSlot) : aParameter.value[aSlot],
+                            value: (lValueIsFunction) ? aParameter.value(iCounter) : aParameter.value[iCounter],
                             format: aParameter.format,
-                            slot: aSlot
+                            slot: iCounter
                         });
                     }
                 } 
@@ -950,7 +886,7 @@ function Parameters(aObject) {
                 break;
         }
 
-        if (!gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
         if (aParameter.type == "slotArray") {
             aParameter.value = lValue;
