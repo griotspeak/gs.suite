@@ -275,7 +275,6 @@ gParameters.comment = {
     type : "slotArray",
     format: "slotSet",
     value : function(aVoice) {
-        post("gParameters.degree.value[aVoice]", gParameters.degree.value[aVoice], "\n");
         var lScaleDegreeObject = cScaleDegreeArray[gParameters.degree.value[aVoice]];
         var lSpecificFunctionObject = lScaleDegreeObject[gParameters.accidental.value[aVoice] + 2];
 
@@ -476,7 +475,6 @@ function updateVoiceOnMonome(aVoice) {
 
 
 function updateCommentDisplay(aVoice) {
-    post("updateCommentDisplay - aVoice", aVoice, "\n");
     gParameters.display("comment", aVoice);
 }
 
@@ -780,7 +778,6 @@ function Parameters(aObject) {
                 }
 
                  else {
-                    post(aParameter.name, "lLength", lLength, "\n");
                     for (iCounter = 0; iCounter < lLength; iCounter++) {
                         sendToHud({
                             key: aParameter.name,
@@ -850,7 +847,6 @@ function Parameters(aObject) {
                 value: mParameters[aParameterName].value[aSlot] + aAmount,
                 slot: aSlot
             });
-            post("mParameters[aParameterName].value", mParameters[aParameterName].value, "\n");
         }
          else {
             mParameters.set({
