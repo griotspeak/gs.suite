@@ -34,6 +34,7 @@ var outlets = 4;
 var mDebugLevel;
 var gThis = this;
 var gThisPatcher = this.patcher;
+var cNumberOfVoices = 8;
 
 
 //mDebugLevel[1] = true;
@@ -181,6 +182,7 @@ cAccidentalType = {
 function initialize() {
     gParameters.grabAll();
     gParameters.displayAll();
+    updateMonome();
 }
 
 var cSemitoneValue = [0, 2, 4, 5, 7, 9, 11, 12];
@@ -425,7 +427,7 @@ function note(aPitch, aVelocity) {
 
     sendNoteMessage("root", aPitch, aVelocity);
     
-    for (var iVoice = 0; iVoice < 8; iVoice++) {
+    for (var iVoice = 0; iVoice < cNumberOfVoices; iVoice++) {
         
         if (gParameters.onChange.value == cOnChangeValue.hold) { flushNote(iVoice, 0); }
         
@@ -558,17 +560,20 @@ function updateCommentDisplay(aVoice) {
 }
 
 function updateVoiceDisplay(aVoice) {
-    post("update voice display\n");
-    gParameters.display("comment", aVoice);
+    
+    gParameters.displayAll(aVoice);
     updateVoiceOnMonome(aVoice);
     
-    gParameters.display("voiceOn", aVoice);
-    gParameters.display("split", aVoice);
-    gParameters.display("octave", aVoice);
-    gParameters.display("degree", aVoice);
-    gParameters.display("accidental", aVoice);
-                    
 }
+
+function updateMonome() {
+    var iCounter;
+    
+    for (iCounter = 0; iCounter < cNumberOfVoices; iCounter++) {
+        updateVoiceOnMonome(iCounter);
+    }
+}
+
 
 function sendNoteMessage(aVoice, aPitch, aVelocity) {
         
@@ -686,7 +691,7 @@ function press(aCol, aRow, aPress) {
         case (cVoiceButton.accidental_0) : {
             if (aPress == 1) { 
                 (gMonome[aCol][cVoiceButton.accidental_1].isHeld()) ?
-                gParameters.change("degree", aCol, 1) : gParameters.change("accidental", aCol, 1);
+                gParameters.change("degree", 1, aCol) : gParameters.change("accidental", 1, aCol);
             }
             break;
         }
@@ -697,24 +702,24 @@ function press(aCol, aRow, aPress) {
         case (cVoiceButton.accidental_2) : {
             if (aPress == 1) { 
                 (gMonome[aCol][cVoiceButton.accidental_1].isHeld()) ?
-                gParameters.change("degree", aCol, -1) : gParameters.change("accidental", aCol, -1);
+                gParameters.change("degree", -1, aCol) : gParameters.change("accidental", -1, aCol);
             }
             break;
         }
         case (cVoiceButton.octaveUp) : {
-            if (aPress == 1) { gParameters.change("octave", aCol, 1); }
+            if (aPress == 1) { gParameters.change("octave", 1, aCol); }
             break;
         }
         case (cVoiceButton.octaveDown) : {
-            if (aPress == 1) { gParameters.change("octave", aCol, -1); }
+            if (aPress == 1) { gParameters.change("octave", -1, aCol); }
             break;
         }
         case (cVoiceButton.channelUp) : {
-            if (aPress == 1) { gParameters.change("split", aCol, 1); }
+            if (aPress == 1) { gParameters.change("split", 1, aCol); }
             break;
         }
         case (cVoiceButton.channelDown) : {
-            if (aPress == 1) { gParameters.change("split", aCol, -1); }
+            if (aPress == 1) { gParameters.change("split", -1, aCol); }
             break;
         }
         case (cVoiceButton.onOff) : {
@@ -834,7 +839,7 @@ function Parameters(aObject) {
         if (aParameter.saveInPattr) {
             lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
             if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
-            gThisPatcher.getnamed(lPatcherObjectNameString).message((aParameter.type == "slotArray") ? aParameter.value[aSlot] : aParameter.value);
+            gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
         }
     };
     
@@ -877,25 +882,41 @@ function Parameters(aObject) {
         }
     };
     
-    this.displayAll = function() {   
-         if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
-         
+    this.displayAll = function(aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
+
         var iProperty;
 
-        for (iProperty in mParameters) {
-            if (mParameters[iProperty].format) {
-                mParameters.display(iProperty);
+        if (!aSlot) {
+            for (iProperty in mParameters) {
+                if (mParameters[iProperty].format) {
+                    mParameters.display(iProperty);
+                }
+            }
+        }
+        else {
+            for (iProperty in mParameters) {
+                if ((mParameters[iProperty].format) || (mParameters[iProperty].type == "slotArray")) {
+                    mParameters.display(iProperty, aSlot);
+                }
             }
         }
     };
-    
-    this.toggle = function(aParameterName) {
+
+    this.toggle = function(aParameterName, aSlot) {
         if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
         
-        if ((mParameters[aParameterName].type == "toggle") || (mParameters[aParameterName].type == "slotArray")) {
+        if (mParameters[aParameterName].type == "toggle") {
             mParameters.set({
                 key : aParameterName,
                 value : Number(!Boolean(mParameters[aParameterName].value))
+            });
+        }
+        else if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value[aSlot])),
+                slot : aSlot
             });
         }
         else { post(aParameterName, "is not a toggle parameter\n");}
