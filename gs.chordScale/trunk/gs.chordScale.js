@@ -200,8 +200,7 @@ var gParameters = new Parameters({outlet: 1});
     minValue : 1,
     maxValue : 8,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.accidental = {
     name : "accidental",
@@ -211,8 +210,7 @@ gParameters.accidental = {
     minValue : -2,
     maxValue : 2,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.octave = {
     name : "octave",
@@ -222,8 +220,7 @@ gParameters.octave = {
     minValue : 0,
     maxValue : 5,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.split = {
     name : "split",
@@ -233,8 +230,7 @@ gParameters.split = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.voiceOn = {
     name : "voiceOn",
@@ -244,8 +240,7 @@ gParameters.voiceOn = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.opinion = {
     name : "opinion",
@@ -255,8 +250,7 @@ gParameters.opinion = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.notePlaying = {
     name : "notePlaying",
@@ -266,8 +260,7 @@ gParameters.notePlaying = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : false,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.lastPitchPlayed = {
     name : "lastPitchPlayed",
@@ -277,8 +270,7 @@ gParameters.lastPitchPlayed = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : false,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.channel = {
     name : "channel",
@@ -288,8 +280,7 @@ gParameters.channel = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 gParameters.onChange = {
     name : "onChange",
@@ -299,8 +290,7 @@ gParameters.onChange = {
     minValue : 0,
     maxValue : 2,
     saveInPattr : true,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 
 gParameters.comment = {
@@ -308,7 +298,6 @@ gParameters.comment = {
     type : "slotArray",
     format: "slotSet",
     value : function(aVoice) {
-        post("comment!\n");
         for (var iIntervalName in cScaleObject) {
             if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
 
@@ -327,17 +316,13 @@ gParameters.comment = {
                     return lScaleDegreeObject.passive.scale;
                 }
             }
-            else {
-                return "-";
-            }
         }
         return "!";
     },
     minValue : -Infinity,
     maxValue : Infinity,
     saveInPattr : false,
-    listeners: [],
-    slotListenters: ["updateVoiceDisplay"]
+    listeners: ["updateVoiceDisplay"]
 };
 
 gParameters.lastRoot = 0;
@@ -517,46 +502,47 @@ function updateVoiceOnMonome(aVoice) {
 
 
 function updateCommentDisplay(aVoice) {
-    
-    for (var iIntervalName in cScaleObject) {
-        if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
-            
-            var lScaleDegreeObject = cScaleObject[iIntervalName].value[gParameters.accidental.value[aVoice] + 2];
-    
-            if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
-                    sendToHud({
-                        slot : aVoice,
-                        key : "comment",
-                        value : lScaleDegreeObject.opinionated.tension,
-                        format : HudFormat.slotSet
-                    });
-            }
-            else if ((gParameters.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
-                sendToHud({
-                    slot : aVoice,
-                    key : "comment",
-                    value : lScaleDegreeObject.passive.tension,
-                    format : HudFormat.slotSet
-                });
-            }
-            else if ((gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
-                sendToHud({
-                    slot : aVoice,
-                    key : "comment",
-                    value : lScaleDegreeObject.opinionated.scale,
-                    format : HudFormat.slotSet
-                });
-            }
-            else {              
-                sendToHud({
-                    slot : aVoice,
-                    key : "comment",
-                    value : lScaleDegreeObject.passive.scale,
-                    format : HudFormat.slotSet
-                });
-            }
-        }
-    }
+    post("updateCommentDisplay\n");
+    gParameters.display("comment", aVoice);
+    // for (var iIntervalName in cScaleObject) {
+    //     if (gParameters.degree.value[aVoice] == cScaleObject[iIntervalName].degree) {
+    //         
+    //         var lScaleDegreeObject = cScaleObject[iIntervalName].value[gParameters.accidental.value[aVoice] + 2];
+    // 
+    //         if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.tension != null)) {
+    //                 sendToHud({
+    //                     slot : aVoice,
+    //                     key : "comment",
+    //                     value : lScaleDegreeObject.opinionated.tension,
+    //                     format : HudFormat.slotSet
+    //                 });
+    //         }
+    //         else if ((gParameters.octave.value[aVoice] > 1) && (lScaleDegreeObject.passive.tension != null)) {                
+    //             sendToHud({
+    //                 slot : aVoice,
+    //                 key : "comment",
+    //                 value : lScaleDegreeObject.passive.tension,
+    //                 format : HudFormat.slotSet
+    //             });
+    //         }
+    //         else if ((gParameters.opinion.value[aVoice]) && (lScaleDegreeObject.opinionated.scale != null)) {             
+    //             sendToHud({
+    //                 slot : aVoice,
+    //                 key : "comment",
+    //                 value : lScaleDegreeObject.opinionated.scale,
+    //                 format : HudFormat.slotSet
+    //             });
+    //         }
+    //         else {              
+    //             sendToHud({
+    //                 slot : aVoice,
+    //                 key : "comment",
+    //                 value : lScaleDegreeObject.passive.scale,
+    //                 format : HudFormat.slotSet
+    //             });
+    //         }
+    //     }
+    // }
 }
 
 function updateVoiceDisplay(aVoice) {
@@ -795,6 +781,7 @@ function Parameters(aObject) {
         if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
+            lIsSlotArray = (aParameter.type == "slotArray"),
             aSlot = (aObject.slot === undefined) ? null : aObject.slot,
             aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
@@ -803,12 +790,10 @@ function Parameters(aObject) {
             lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
             lListenerKeys = aParameter.listeners,
             lListenerLength = lListenerKeys.length,
-            lSlotListenerKeys = aParameter.slotListenters,
-            lSlotListenerLength = lSlotListenerKeys.length,
             iCounter;
 
         //check validity of aValue
-        if ((aParameter.type == "number") || (aParameter.type == "toggle") || (aParameter.type == "slotArray")) {
+        if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
             if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
             else if (aValue < lMinimum) { lValue = lMinimum; }
             else if (aValue > lMaximum) { lValue = lMaximum; }
@@ -816,7 +801,7 @@ function Parameters(aObject) {
         }
         else { lValue = aValue; }
         
-        if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
+        if (lIsSlotArray) { aParameter.value[aSlot] = lValue; }
         else { aParameter.value = lValue; }
         
         mParameters.display(aParameter.name);
@@ -827,24 +812,20 @@ function Parameters(aObject) {
             return;
         }
         for (iCounter = 0; iCounter < lListenerLength; iCounter++) {
-            gThis[lListenerKeys[iCounter]]();
-            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n"); }
-        }
-        for (iCounter = 0; iCounter < lSlotListenerLength; iCounter++) {
-            gThis[lSlotListenerKeys[iCounter]](aSlot);
-            if (gDebugItem.localValue) { post("lSlotListenerKeys[" +iCounter + "]:", lSlotListenerKeys[iCounter], "\n"); }
+            gThis[lListenerKeys[iCounter]]((lIsSlotArray) ? aSlot : undefined);
+            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + ".name]:", iFunctionName, "\n"); }
         }
         
         // Save.
         if (aParameter.saveInPattr) {
             lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+            if (!gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
             gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
         }
     };
     
     this.display = function(aParameterName, aSlot) {
-        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
+        if (!gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
         
         var iCounter,
             lLength,
@@ -853,9 +834,10 @@ function Parameters(aObject) {
         if (aParameter.format != undefined) {
             if (aParameter.type == "slotArray") {
                 if (aSlot != undefined) {
+                                        
                     sendToHud({
                         key: aParameter.name,
-                        value: aParameter.value[aSlot],
+                        value: (typeof aParameter.value == "function") ? aParameter.value(aSlot) : aParameter.value[aSlot],
                         format: aParameter.format,
                         slot: aSlot
                     });
@@ -863,11 +845,12 @@ function Parameters(aObject) {
 
                  else {
                     for (iCounter = 0, lLength = aParameter.value.length; iCounter < lLength; iCounter++) {
+                        
                         sendToHud({
                             key: aParameter.name,
-                            value: aParameter.value[iCounter],
+                            value: (typeof aParameter.value == "function") ? aParameter.value(aSlot) : aParameter.value[aSlot],
                             format: aParameter.format,
-                            slot: iCounter
+                            slot: aSlot
                         });
                     }
                 } 
