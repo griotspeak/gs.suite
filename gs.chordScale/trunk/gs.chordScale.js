@@ -177,7 +177,7 @@ var gParameters = new Parameters({outlet: 1});
     minValue : 1,
     maxValue : 8,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
+    listeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.accidental = {
     name : "accidental",
@@ -187,7 +187,7 @@ gParameters.accidental = {
     minValue : -2,
     maxValue : 2,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
+    listeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.octave = {
     name : "octave",
@@ -197,7 +197,7 @@ gParameters.octave = {
     minValue : 0,
     maxValue : 5,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
+    listeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.split = {
     name : "split",
@@ -217,7 +217,7 @@ gParameters.voiceOn = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay"]
+    listeners: ["onVoiceParameterChange", "updateVoiceDisplay"]
 };
 gParameters.opinion = {
     name : "opinion",
@@ -247,7 +247,17 @@ gParameters.lastPitchPlayed = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : false,
-    listeners: ["updateVoiceDisplay"]
+    listeners: []
+};
+gParameters.lastChannelUsed = {
+    name : "lastChannelUsed",
+    type : "slotArray",
+    format: "slotSet",
+    value : [],
+    minValue : 0,
+    maxValue : 127,
+    saveInPattr : false,
+    listeners: []
 };
 gParameters.channel = {
     name : "channel",
@@ -257,7 +267,7 @@ gParameters.channel = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay"]
+    listeners: []
 };
 gParameters.onChange = {
     name : "onChange",
@@ -267,7 +277,7 @@ gParameters.onChange = {
     minValue : 0,
     maxValue : 2,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay"]
+    listeners: []
 };
 
 gParameters.comment = {
@@ -299,7 +309,7 @@ gParameters.comment = {
 gParameters.comment.value.arrayLength = cNumberOfVoices;
 
 gParameters.lastRoot = 0;
-gParameters.lastVelocity = 0;
+gParameters.lastRootVelocity = 0;
 gParameters.patchString = "GsChord";
 
 var cOnChangeValue = {
@@ -308,6 +318,13 @@ var cOnChangeValue = {
     retrigger : 2
 };
 
+function onVoiceParameterChange(aVoice) {
+    if (gParameters.onChange.value != cOnChangeValue.hold) {
+        flushNote(aVoice, (gParameters.onChange.value == cOnChangeValue.retrigger) ? 1 : 0);
+    }
+}
+
+
 function setDegree(aVoice, aValue) {
     if (aValue == undefined) { return; }
     gParameters.set({
@@ -315,6 +332,7 @@ function setDegree(aVoice, aValue) {
         slot : aVoice,
         value : aValue
     });
+
     updateVoiceOnMonome(aVoice);
 }
 
@@ -337,11 +355,20 @@ function setAccidental(aVoice, aValue) {
 
 function setSplit(aVoice, aValue) {
     if (aValue == undefined) { return; }
+    
+    if (gParameters.onChange.value != cOnChangeValue.hold) {
+        flushNote(iVoice, 0);
+    }
+    
     gParameters.set({
         key :"split",
         slot :aVoice,
         value :aValue
     });
+    
+    if (gParameters.onChange.value == cOnChangeValue.retrigger) {
+        replaceNote(aVoice);
+    }
 }
 
 function setOctave(aVoice, aValue) {
@@ -407,7 +434,7 @@ function replaceNote(aVoice) {
         lSemitones += gParameters.octave.value[aVoice] * 12;
         lSemitones += gParameters.accidental.value[aVoice];
 
-        sendNoteMessage(aVoice, lSemitones, gParameters.lastVelocity);
+        sendNoteMessage(aVoice, lSemitones, gParameters.lastRootVelocity);
     }
 }
 
@@ -494,19 +521,21 @@ function updateMonome() {
 }
 
 
-function sendNoteMessage(aVoice, aPitch, aVelocity) {
-        
+function sendNoteMessage(aVoice, aPitch, aVelocity, aChannel) {
+    var lChannel = (aChannel !== undefined) ? aChannel : gParameters.split.value[aVoice];
+    
     if (aVoice != "root") {
-        if (gParameters.split.value[aVoice] == gParameters.channel.value) {
+        if (lChannel == gParameters.channel.value) {
             outlet(0, aPitch, aVelocity);
         }
         
-        messnamed("gs.channel", "channelNote", gParameters.split.value[aVoice], aPitch, aVelocity);
+        messnamed("gs.channel", "channelNote", lChannel, aPitch, aVelocity);
         
 
         if (aVelocity) {
             gParameters.notePlaying.value[aVoice] = true;
             gParameters.lastPitchPlayed.value[aVoice] = aPitch;
+            gParameters.lastChannelUsed.value[aVoice] = lChannel;
         }
         else {
             gParameters.notePlaying.value[aVoice] = false;
@@ -515,14 +544,14 @@ function sendNoteMessage(aVoice, aPitch, aVelocity) {
     else {
         outlet(0, aPitch, aVelocity);
         gParameters.lastRoot = aPitch;
-        gParameters.lastVelocity = aVelocity;
+        gParameters.lastRootVelocity = aVelocity;
     }
 }
 
-function flushNote(aVoice, _makeNew) {
+function flushNote(aVoice, aMakeNew) {
     if (gParameters.notePlaying.value[aVoice]) {
         sendNoteMessage(aVoice, gParameters.lastPitchPlayed.value[aVoice], 0);
-        if (_makeNew) { replaceNote(aVoice); }
+        if (aMakeNew) { replaceNote(aVoice); }
     }
 }
 
