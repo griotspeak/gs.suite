@@ -246,7 +246,7 @@ var gThis = this,
     gWatchClipPlayhead = false,
     gIndexSet = false,
     gFunctionToggle = [ false, false],
-    gParameters = new Parameters();
+    gParameters = new Parameters({outlet : 2});
     
 gParameters.clipScene = {
     name: "clipScene",
@@ -600,7 +600,7 @@ function initialize() {
     gWatchSetPlaying = new LiveAPI(gThisPatcher, setPlayheadVisible, "live_set");
     gWatchSetPlaying.property = "is_playing";
     
-    gGlobal = new Global("clipStepGlobalController");
+    gGlobal = new Global("GsCssGlobalControl");
     gGlobal.setClip = setClipFromGlobal;
     
     setTrackIndexAndScene(gParameters.trackIndex.value, gParameters.clipScene.value);
@@ -923,7 +923,7 @@ function setFolding(aValue) {
 //                                  ---===Callbacks===---
 function onNewSlotPlaying(aApiArray) {
     var lPlayingClipSlot;
-    if (!gDebugItem.functionName) { post("    --onNewSlotPlaying--\n"); }
+    if (gDebugItem.functionName) { post("    --onNewSlotPlaying--\n"); }
 
     if ((aApiArray[0] == "playing_slot_index") && (gParameters.followPlayingClip.value)) {
 
@@ -1385,7 +1385,7 @@ function updateFunctionModeLeds() {
     if (gDebugItem.functionName) { post("    --updateFunctionModeLeds--\n"); }
     clearFunctionModeLeds();
     
-    switch(gParameters.functionMode.value) {
+    switch(parseInt(gParameters.functionMode.value, 10)) {
         case cFunctionMode.moveMode:
             //      00
             break;
@@ -1418,10 +1418,7 @@ function updateFunctionModeLeds() {
     
     if ((gParameters.folding.value) && gMonome.isValidColumn(cFunctionButton.fold)) { gMonome[cFunctionButton.fold][monomeLastRow()].ledOn(); }
     if ((gParameters.followPlayingClip.value) && gMonome.isValidColumn(cFunctionButton.follow)) { gMonome[cFunctionButton.follow][monomeLastRow()].ledOn(); }
-
-    if (gParameters.followPlayingClip.value) {
-        gMonome[cFunctionButton.follow][monomeLastRow()].ledOn();
-    }
+    
 }
 
 function updateMultiPurposeLeds() {
@@ -2386,6 +2383,9 @@ function setInSuite(aNewValue) {
     });
 }
 
+//<Monome
+//      \/\/\<Monome(?m).+\/\/Monome\>
+
    // Method: Monome
    // 
    // Monome abstraction
@@ -2396,13 +2396,13 @@ function setInSuite(aNewValue) {
    //    aRows - The number of rows to initialize with.
 
 
-function Monome(aColumns, aRows, aThirdParameter) {
+function Monome(aColumns, aRows, aOutlet) {
     var iCol,
-    iRow,
-    that = this,
-    mColumns = aColumns,
-    mRows = aRows,
-    mUpdating = false;
+        iRow,
+        that = this,
+        mColumns = aColumns,
+        mRows = aRows,
+        mUpdating = false;
     
     if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
@@ -2415,8 +2415,8 @@ function Monome(aColumns, aRows, aThirdParameter) {
     function SingleCell(aCol, aRow, aOutlet) {
         var outletNumber = aOutlet;
 
-        var col = aCol;
-        var row = aRow;
+        var mCol = aCol;
+        var mRow = aRow;
 
         // local variables
         var actualState = 0;
@@ -2460,43 +2460,43 @@ function Monome(aColumns, aRows, aThirdParameter) {
         this.ledOn = function() {
             actualState = 1;
             if(!mUpdating) {
-                outlet(outletNumber, col, row, actualState);
+                outlet(outletNumber, mCol, mRow, actualState);
             }
         };
 
         this.ledOff = function() {
             actualState = 0;
             if (!mUpdating) {
-                outlet(outletNumber, col, row, actualState);
+                outlet(outletNumber, mCol, mRow, actualState);
             }
         };
 
         this.checkActual = function() {
             //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
-            outlet(outletNumber, col, row, actualState);
+            outlet(outletNumber, mCol, mRow, actualState);
             tempState = 0;
         };
 
         this.blink = function() {
             tempState = (tempState == 1) ? 0: 1;
-            outlet(outletNumber, col, row, tempState);
+            outlet(outletNumber, mCol, mRow, tempState);
         };
 
         this.blinkIfOff = function() {
             if (actualState == 0) {
                 tempState = (tempState == 1) ? 0: 1;
-                outlet(outletNumber, col, row, tempState);
+                outlet(outletNumber, mCol, mRow, tempState);
             }
         };
 
         this.tempOn = function() {
             tempState = 1;
-            outlet(outletNumber, col, row, tempState);
+            outlet(outletNumber, mCol, mRow, tempState);
         };
 
         this.tempOff = function() {
             tempState = 0;
-            outlet(outletNumber, col, row, actualState);
+            outlet(outletNumber, mCol, mRow, actualState);
         };
     }
 
@@ -2563,7 +2563,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
 
                 else if ((!that[iCol][iRow]) && (iRow < aRows)) {
                     if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
-                    that[iCol][iRow] = new SingleCell(iCol, iRow, 0);
+                    that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
                 }
             }
             if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
@@ -2576,8 +2576,8 @@ function Monome(aColumns, aRows, aThirdParameter) {
         
         var iCol,
             iRow,
-            lHeight = gParameters.monomeHeight.value,
-            lWidth = gParameters.monomeWidth.value;
+            lHeight = mRows,
+            lWidth = mColumns;
 
         for (iCol = 0; iCol < lWidth; iCol++) {
             for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
@@ -2605,7 +2605,7 @@ function Monome(aColumns, aRows, aThirdParameter) {
         
         that[iCol] = [];
         for (iRow = 0; iRow < aRows; iRow++) {
-            that[iCol][iRow] = new SingleCell(iCol, iRow, 0);
+            that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
         }
         if (gDebugItem.startValue) {
             post("Monome[", iCol, "].length:", that[iCol].length, "\n");
@@ -2615,6 +2615,8 @@ function Monome(aColumns, aRows, aThirdParameter) {
         post("Monome.length (width):", that.length, "\n");
     }
 }
+
+//Monome>
 
 function store(aNumber) {
     post(gParameters.patchString + "-presetStore\n");
@@ -2629,42 +2631,47 @@ function recall(aNumber) {
     gParameters.displayAll();
 }
 
-function Parameters() {
+function Parameters(aObject) {
     if (gDebugItem.functionName) { post("    --Parameters--\n"); }
     
-    var mParameters = this;
+    var mParameters = this,
+        mOutlet = aObject.outlet;
     
     function sendToHud(aObject) {
 
-        var lOutlet = 2,
-            aKey = aObject.key,
+        var aKey = aObject.key,
             aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
-            aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format;        
+            aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot;
 
-        if (gDebugItem.functionName) { post("    --Parameter.sendToHud - key: " + aKey + " value: " + aValue  + " format: " + aFormat + " --\n"); }
-        if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "\n"); }
+        if (gDebugItem.functionName) { post("    --Parameter.sendToHud --\n"); }
+        if (!gDebugItem.functionArguments) {
+            post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
+            (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+        
 
         switch (aFormat) {
             case "set":
-                outlet(lOutlet, aKey, "set", aValue);
+                outlet(mOutlet, aKey, "set", aValue);
                 break;
             case "trigger":
-                outlet(lOutlet, aKey, aValue);
+                outlet(mOutlet, aKey, aValue);
                 break;
             case "symbol":
-                outlet(lOutlet, aKey, "setsymbol", aValue);
+                outlet(mOutlet, aKey, "setsymbol", aValue);
                 break;
             case "measures":
-                outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
+                outlet(mOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
                 break;
             case "slotSet":
-                outlet(lOutlet, aSlot, aKey, "set", aValue);
+                outlet(mOutlet, aSlot, aKey, "set", aValue);
                 break;
             case "slotTrigger":
-                outlet(lOutlet, aSlot, "setsymbol", aValue);
+                outlet(mOutlet, aSlot, "setsymbol", aValue);
                 break;
             case "slotSymbol":
-                outlet(lOutlet, aSlot, aKey, "setsymbol", aValue);
+                outlet(mOutlet, aSlot, aKey, "setsymbol", aValue);
                 break;
             default: 
                 post("error in Parameter.sendToHud. aFormat:", aFormat, "\n");
@@ -2673,10 +2680,11 @@ function Parameters() {
     }
     
     this.set = function(aObject) {
-        if (gDebugItem.functionName) { post("    --Parameters.set--\n"); }
+        if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
         if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
+            lIsSlotArray = (aParameter.type == "slotArray"),
             aSlot = (aObject.slot === undefined) ? null : aObject.slot,
             aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
@@ -2684,21 +2692,21 @@ function Parameters() {
             lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
             lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
             lListenerKeys = aParameter.listeners,
-            lLength = lListenerKeys.length,
+            lListenerLength = lListenerKeys.length,
             iCounter;
 
         //check validity of aValue
-        if ((aParameter.type == "number") || (aParameter.type == "toggle") || (aParameter.type == "slotArray")) {
+        if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
             if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
             else if (aValue < lMinimum) { lValue = lMinimum; }
             else if (aValue > lMaximum) { lValue = lMaximum; }
-            else { post("something has gane awry in Parameter.set!\n"); }
+            else { post("something has gane awry in Parameters.set!\n"); }
         }
         else { lValue = aValue; }
-
-        if (aParameter.type == "slotArray") { aParameter.value[aSlot] = lValue; }
+        
+        if (lIsSlotArray) { aParameter.value[aSlot] = lValue; }
         else { aParameter.value = lValue; }
-
+        
         mParameters.display(aParameter.name);
 
         // call listeners
@@ -2706,46 +2714,53 @@ function Parameters() {
         if (aQuietly) { 
             return;
         }
-        for (iCounter = 0; iCounter < lLength; iCounter++) {
-            gThis[lListenerKeys[iCounter]]();
-            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + "]:", lListenerKeys[iCounter], "\n"); }
+        for (iCounter = 0; iCounter < lListenerLength; iCounter++) {
+            gThis[lListenerKeys[iCounter]]((lIsSlotArray) ? aSlot : undefined);
+            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + ".name]:", iFunctionName, "\n"); }
         }
-
+        
         // Save.
         if (aParameter.saveInPattr) {
-            patcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            gThisPatcher.getnamed(patcherObjectNameString).message(aParameter.value);
+            lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+            gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
         }
-    }
+    };
     
     this.display = function(aParameterName, aSlot) {
-        if (!gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
+        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
         
         var iCounter,
-            lLength,
-            aParameter = mParameters[aParameterName];
+            aParameter = mParameters[aParameterName],
+            lValueIsFunction = typeof aParameter.value == "function",
+            lLength;
+            
+        if (aParameter.type == "slotArray") {
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength : aParameter.value.length
+        }
             
         if (aParameter.format != undefined) {
             if (aParameter.type == "slotArray") {
-                
-                if (aSlot) {
+                if (aSlot != undefined) {
+                                        
                     sendToHud({
                         key: aParameter.name,
-                        value: aParameter.value[aSlot],
+                        value: (lValueIsFunction) ? aParameter.value(aSlot) : aParameter.value[aSlot],
                         format: aParameter.format,
                         slot: aSlot
                     });
                 }
+
                  else {
-                    for (iCounter = 0, lLength = aParameter.value.length; iCounter < lLength; iCounter++) {
+                    for (iCounter = 0; iCounter < lLength; iCounter++) {
                         sendToHud({
                             key: aParameter.name,
-                            value: aParameter.value[iCounter],
+                            value: (lValueIsFunction) ? aParameter.value(iCounter) : aParameter.value[iCounter],
                             format: aParameter.format,
                             slot: iCounter
                         });
                     }
-                }
+                } 
             }
             else {
                 sendToHud({
@@ -2755,20 +2770,35 @@ function Parameters() {
                 });
             }
         }
-    }
-    this.displayAll = function() {   
-         if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
-         
+    };
+    
+    this.displayAll = function(aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
+
         var iProperty;
 
-        for (iProperty in mParameters) {
-            if (mParameters[iProperty].format) {
-                mParameters.display(iProperty);
+        if (!aSlot) {
+            for (iProperty in mParameters) {
+                if (mParameters[iProperty].format) {
+                    if (mParameters[iProperty].value != null) {
+                        mParameters.display(iProperty);
+                    }
+                    else {
+                        if (!gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
+                    }
+                }
             }
         }
-    }
-    
-    this.toggle = function(aParameterName) {
+        else {
+            for (iProperty in mParameters) {
+                if ((mParameters[iProperty].format) || (mParameters[iProperty].type == "slotArray")) {
+                    mParameters.display(iProperty, aSlot);
+                }
+            }
+        }
+    };
+
+    this.toggle = function(aParameterName, aSlot) {
         if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
         
         if (mParameters[aParameterName].type == "toggle") {
@@ -2777,18 +2807,34 @@ function Parameters() {
                 value : Number(!Boolean(mParameters[aParameterName].value))
             });
         }
+        else if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value[aSlot])),
+                slot : aSlot
+            });
+        }
         else { post(aParameterName, "is not a toggle parameter\n");}
-    }
+    };
     
-    this.change = function(aParameterName, aAmount) {
+    this.change = function(aParameterName, aAmount, aSlot) {
         if (gDebugItem.functionName) { post("    --Parameters.change--\n"); }
 
-        mParameters.set({
-            key : aParameterName,
-            value : mParameters[aParameterName].value + aAmount
-        });
-    }
-    
+        if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value[aSlot] + aAmount,
+                slot: aSlot
+            });
+        }
+         else {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value + aAmount
+            });
+        }
+        };
+
     this.grab = function(aParameter) {
         if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
 
@@ -2805,10 +2851,12 @@ function Parameters() {
                 lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "string" :
-                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
                 break;
             case "slotArray" :
-                lValue = Array(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
+                /*jsl:fallthru*/
+            case "array" :
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
                 break;
             default :
                 post(aParameter.name + ".type:", aParameter.type , "\n");
@@ -2817,26 +2865,36 @@ function Parameters() {
 
         if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
 
-        mParameters.set({
-            key : aParameter.name,
-            value : lValue,
-            silent : true
-        });
+        if (aParameter.type == "slotArray") {
+            aParameter.value = lValue;
+            mParameters.display(aParameter.name);
+        }
+         else {
+            mParameters.set({
+                key: aParameter.name,
+                value: lValue,
+                silent: true
+            });
+        }
 
-        if (gDebugItem.endValue) { post(aParameter.name + ".value: ", aParameter.value, "\n"); }
-    }
+        if (gDebugItem.endValue) {
+            post(aParameter.name + ".value: ", aParameter.value, "\n");
+        }
+    };
 
     this.grabAll = function() {   
          if (gDebugItem.functionName) { post("    --Parameters.grabAll --\n"); }
          
-        var iProperty;
+        var iProperty,
+            iCounter,
+            lLength;
 
         for (iProperty in mParameters) {
             if (mParameters[iProperty].saveInPattr) {
                 mParameters.grab(mParameters[iProperty]);
             }
         }
-    }
+    };
 }
 
 function freebang() {
