@@ -78,7 +78,7 @@ var gDebugItem = {
     list : false,
     localValue : false,
     startValue : false,
-    frequentName : false,
+    frequentFunctionName : false,
     loading : false
 };
 
@@ -169,7 +169,8 @@ function getSemitoneValue(aScaleDegree) {
 }
 
 var gParameters = new Parameters({outlet: 1});
-   gParameters.degree = {
+
+gParameters.degree = {
     name : "degree",
     type : "slotArray",
     format: "slotSet",
@@ -177,7 +178,8 @@ var gParameters = new Parameters({outlet: 1});
     minValue : 1,
     maxValue : 8,
     saveInPattr : true,
-    listeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
+    preListeners : [],
+    postListeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.accidental = {
     name : "accidental",
@@ -187,7 +189,8 @@ gParameters.accidental = {
     minValue : -2,
     maxValue : 2,
     saveInPattr : true,
-    listeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
+    preListeners : [],
+    postListeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.octave = {
     name : "octave",
@@ -197,7 +200,8 @@ gParameters.octave = {
     minValue : 0,
     maxValue : 5,
     saveInPattr : true,
-    listeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
+    preListeners : [],
+    postListeners: ["onVoiceParameterChange", "updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.split = {
     name : "split",
@@ -207,7 +211,8 @@ gParameters.split = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay"]
+    preListeners : [],
+    postListeners: ["updateVoiceDisplay"]
 };
 gParameters.voiceOn = {
     name : "voiceOn",
@@ -217,7 +222,8 @@ gParameters.voiceOn = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : true,
-    listeners: ["onVoiceParameterChange", "updateVoiceDisplay"]
+    preListeners : [],
+    postListeners: ["onVoiceParameterChange", "updateVoiceDisplay"]
 };
 gParameters.opinion = {
     name : "opinion",
@@ -227,7 +233,8 @@ gParameters.opinion = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : true,
-    listeners: ["updateVoiceDisplay", "updateCommentDisplay"]
+    preListeners : [],
+    postListeners: ["updateVoiceDisplay", "updateCommentDisplay"]
 };
 gParameters.notePlaying = {
     name : "notePlaying",
@@ -237,7 +244,8 @@ gParameters.notePlaying = {
     minValue : 0,
     maxValue : 1,
     saveInPattr : false,
-    listeners: ["updateVoiceDisplay"]
+    preListeners : [],
+    postListeners: ["updateVoiceDisplay"]
 };
 gParameters.lastPitchPlayed = {
     name : "lastPitchPlayed",
@@ -247,7 +255,8 @@ gParameters.lastPitchPlayed = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.lastChannelUsed = {
     name : "lastChannelUsed",
@@ -257,7 +266,8 @@ gParameters.lastChannelUsed = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.channel = {
     name : "channel",
@@ -267,7 +277,8 @@ gParameters.channel = {
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.onChange = {
     name : "onChange",
@@ -277,7 +288,8 @@ gParameters.onChange = {
     minValue : 0,
     maxValue : 2,
     saveInPattr : true,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 
 gParameters.comment = {
@@ -285,6 +297,8 @@ gParameters.comment = {
     type : "slotArray",
     format: "slotSet",
     value : function(aVoice) {
+        if (gDebugItem.functionName) { post("    --comment--\n"); }
+                
         var lScaleDegreeObject = cScaleDegreeArray[gParameters.degree.value[aVoice]];
         var lSpecificFunctionObject = lScaleDegreeObject[gParameters.accidental.value[aVoice] + 2];
 
@@ -304,8 +318,11 @@ gParameters.comment = {
     minValue : -Infinity,
     maxValue : Infinity,
     saveInPattr : false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
+
+//TODO get this inside function expression
 gParameters.comment.value.arrayLength = cNumberOfVoices;
 
 gParameters.lastRoot = 0;
@@ -319,14 +336,20 @@ var cOnChangeValue = {
 };
 
 function onVoiceParameterChange(aVoice) {
+    if (gDebugItem.functionName) { post("    --onVoiceParameterChange--\n"); }
+    
     if (gParameters.onChange.value != cOnChangeValue.hold) {
         flushNote(aVoice, (gParameters.onChange.value == cOnChangeValue.retrigger) ? 1 : 0);
     }
 }
 
 
-function setDegree(aVoice, aValue) {
+function setDegree(aVoice, aValue) { 
+    // TODO move check into Parameters.set   
     if (aValue == undefined) { return; }
+
+    if (gDebugItem.functionName) { post("    --setDegree--\n"); }
+
     gParameters.set({
         key : "degree",
         slot : aVoice,
@@ -338,6 +361,9 @@ function setDegree(aVoice, aValue) {
 
 function setChannel(aValue) {
     if (aValue == undefined) { return; }
+
+    if (gDebugItem.functionName) { post("    --setChannel--\n"); }
+
     gParameters.set({
         key : "channel",
         value : aValue
@@ -346,6 +372,9 @@ function setChannel(aValue) {
 
 function setAccidental(aVoice, aValue) {
     if (aValue == undefined) { return; }
+
+    if (gDebugItem.functionName) { post("    --setAccidental--\n"); }
+
     gParameters.set({
         key : "accidental",
         slot : aVoice,
@@ -356,6 +385,9 @@ function setAccidental(aVoice, aValue) {
 function setSplit(aVoice, aValue) {
     if (aValue == undefined) { return; }
     
+    if (gDebugItem.functionName) { post("    --setSplit--\n"); }
+    
+    //TODO get fancy !!
     if (gParameters.onChange.value != cOnChangeValue.hold) {
         flushNote(iVoice, 0);
     }
@@ -373,6 +405,9 @@ function setSplit(aVoice, aValue) {
 
 function setOctave(aVoice, aValue) {
     if (aValue == undefined) { return; }
+    
+    if (gDebugItem.functionName) { post("    --setOctave--\n"); }
+    
     gParameters.set({
         key :"octave",
         slot :aVoice,
@@ -382,6 +417,9 @@ function setOctave(aVoice, aValue) {
 
 function setVoiceOn(aVoice, aValue) {
     if (aValue == undefined) { return; }
+    
+    if (gDebugItem.functionName) { post("    --setVoiceOn--\n"); }
+    
     gParameters.set({
         key :"voiceOn",
         slot :aVoice,
@@ -391,6 +429,9 @@ function setVoiceOn(aVoice, aValue) {
 
 function setOpinion(aVoice, aValue) {
     if (aValue == undefined) { return; }
+    
+    if (gDebugItem.functionName) { post("    --setOpinion--\n"); }
+    
     gParameters.set({
         key :"opinion",
         slot :aVoice,
@@ -400,6 +441,9 @@ function setOpinion(aVoice, aValue) {
 
 function setOnChange(aValue) {
     if (aValue == undefined) { return; }
+    
+    if (gDebugItem.functionName) { post("    --setOnChange--\n"); }
+    
     gParameters.set({
         key : "onChange",
         value : aValue
@@ -409,7 +453,9 @@ function setOnChange(aValue) {
 function note(aPitch, aVelocity) {
     var lSemitones;
     var listArray = new Array();
-
+    
+    if (gDebugItem.functionName) { post("    --note--\n"); }
+    
     sendNoteMessage("root", aPitch, aVelocity);
     
     for (var iVoice = 0; iVoice < cNumberOfVoices; iVoice++) {
@@ -428,6 +474,9 @@ function note(aPitch, aVelocity) {
 }
 
 function replaceNote(aVoice) {
+
+    if (gDebugItem.functionName) { post("    --replaceNote--\n"); }
+
     if(gParameters.voiceOn.value[aVoice]) {
         var lSemitones = gParameters.lastRoot;
         lSemitones += getSemitoneValue(gParameters.degree.value[aVoice]);
@@ -439,6 +488,9 @@ function replaceNote(aVoice) {
 }
 
 function updateVoiceOnMonome(aVoice) {
+    
+    if (gDebugItem.functionName) { post("    --updateVoiceOnMonome--\n"); }
+    
     gMonome.column(aVoice, "ledOff");
 
     if (gMonome[aVoice][cVoiceButton.accidental_1].isHeld()) {
@@ -502,10 +554,13 @@ function updateVoiceOnMonome(aVoice) {
 
 
 function updateCommentDisplay(aVoice) {
+    if (gDebugItem.functionName) { post("    --updateCommentDisplay--\n"); }
+    
     gParameters.display("comment", aVoice);
 }
 
 function updateVoiceDisplay(aVoice) {
+    if (gDebugItem.functionName) { post("    --updateVoiceDisplay--\n"); }
     
     gParameters.displayAll(aVoice);
     updateVoiceOnMonome(aVoice);
@@ -514,6 +569,7 @@ function updateVoiceDisplay(aVoice) {
 
 function updateMonome() {
     var iCounter;
+    if (gDebugItem.functionName) { post("    --updateMonome--\n"); }
     
     for (iCounter = 0; iCounter < cNumberOfVoices; iCounter++) {
         updateVoiceOnMonome(iCounter);
@@ -524,6 +580,8 @@ function updateMonome() {
 function sendNoteMessage(aVoice, aPitch, aVelocity, aChannel) {
     var lChannel = (aChannel !== undefined) ? aChannel : gParameters.split.value[aVoice];
     
+    if (gDebugItem.functionName) { post("    --sendNoteMessage--\n"); }
+
     if (aVoice != "root") {
         if (lChannel == gParameters.channel.value) {
             outlet(0, aPitch, aVelocity);
@@ -549,6 +607,9 @@ function sendNoteMessage(aVoice, aPitch, aVelocity, aChannel) {
 }
 
 function flushNote(aVoice, aMakeNew) {
+    if (gDebugItem.functionName) { post("    --flushNote--\n"); }
+    
+    
     if (gParameters.notePlaying.value[aVoice]) {
         sendNoteMessage(aVoice, gParameters.lastPitchPlayed.value[aVoice], 0);
         if (aMakeNew) { replaceNote(aVoice); }
@@ -628,7 +689,7 @@ var gTemplateChord = {
 
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
-    if (mDebugLevel[1]) { post("    --press--\n"); }
+    if (gDebugItem.functionName) { post("    --press--\n"); }
     
     if (mDebugLevel[2]) { post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n"); }
     
@@ -682,33 +743,69 @@ function press(aCol, aRow, aPress) {
 }
 
 function store(aNumber) {
-    if (mDebugLevel[1]) { post("    --store--\n"); }
+    if (gDebugItem.functionName) { post("    --store--\n"); }
+    
     
     gThisPatcher.getnamed("gsChordScale-presetStore").message("store", aNumber);
 }
 
 function recall(aNumber) {
-    if (mDebugLevel[1]) { post("    --recall--\n"); }
+    if (gDebugItem.functionName) { post("    --recall--\n"); }
+    
     gThisPatcher.getnamed("gsChordScale-presetStore").message(aNumber);
     gParameters.grabAll();
     gParameters.displayAll;
 }
 
+//<Parameters
+//      \/\/\<Parameters(?m).+\/\/Parameters\>
+
+
 function Parameters(aObject) {
     if (gDebugItem.functionName) { post("    --Parameters--\n"); }
+    
+    if (! (this instanceof arguments.callee)) {
+        return new Parameters(aObject);
+    }    
     
     var mParameters = this,
         mOutlet = aObject.outlet;
     
+    function resolveValue(aObject, aType, aSlot) {
+        var lValue;
+        if (gDebugItem.frequentFunctionName) { post("    --Parameters.resolveValue--\n"); }
+        
+        if (aType == "slotArray") {            
+            if (aObject instanceof Function) {
+                lValue = aObject(aSlot);
+            }
+            else if (aObject instanceof Array) {
+                lValue = aObject[aSlot];
+            }
+            else {
+                lValue = aObject;
+            }
+
+        }
+        else {
+            lValue = (aObject instanceof Function) ? aObject() : aObject;
+        }
+        return lValue;
+    }
+       
     function sendToHud(aObject) {
 
         var aKey = aObject.key,
-            aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
             aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
-            aSlot = (aObject.slot == undefined) ? null : aObject.slot;
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot,
+            aValue = aObject.value;
 
-        if (gDebugItem.functionName) { post("    --Parameter.sendToHud --\n"); }
-        if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "aSlot", aSlot, "\n"); }
+        if (gDebugItem.frequentFunctionName) { post("    --Parameter.sendToHud --\n"); }
+        if (gDebugItem.functionArguments) {
+            post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
+            (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+        
 
         switch (aFormat) {
             case "set":
@@ -738,92 +835,122 @@ function Parameters(aObject) {
         }
     }
     
+    function callListenersForParameter(aArrayOfListeners, aParameter, aSlot) {
+        var lListenerArrayLength = aArrayOfListeners.length,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            iCounter;
+        
+        if (gDebugItem.functionName) { post("    --callListenersForParameter--\n"); }
+        
+        for (iCounter = 0; iCounter < lListenerArrayLength; iCounter++) {
+            gThis[aArrayOfListeners[iCounter]]((lIsSlotArray) ? aSlot: undefined);
+            if (gDebugItem.localValue) { post("lPostListenerKeys[" + iCounter + ".name]:", iFunctionName, "\n"); }
+        }
+    }
+    
     this.set = function(aObject) {
         if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
         if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
+
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             lIsSlotArray = (aParameter.type == "slotArray"),
-            aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+            aSlot = (aObject.slot === undefined) ? null: aObject.slot,
             aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
             lValue,
-            lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
-            lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
-            lListenerKeys = aParameter.listeners,
-            lListenerLength = lListenerKeys.length,
+            lMinimum = resolveValue(aParameter.minValue, aParameter.type, aSlot),
+            lMaximum = resolveValue(aParameter.maxValue, aParameter.type, aSlot),
             iCounter;
-
+            
         //check validity of aValue
         if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
-            if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
-            else if (aValue < lMinimum) { lValue = lMinimum; }
-            else if (aValue > lMaximum) { lValue = lMaximum; }
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) {
+                lValue = aValue;
+            }
+            else if (aValue < lMinimum) {
+                lValue = lMinimum;
+            }
+            else if (aValue > lMaximum) {
+                lValue = lMaximum;
+            }
             else { post("something has gane awry in Parameters.set!\n"); }
         }
-        else { lValue = aValue; }
-        
-        if (lIsSlotArray) { aParameter.value[aSlot] = lValue; }
-        else { aParameter.value = lValue; }
-        
-        mParameters.display(aParameter.name);
+        else {
+            lValue = aValue;
+        }
+
 
         // call listeners
-        
-        if (aQuietly) { 
-            return;
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
         }
-        for (iCounter = 0; iCounter < lListenerLength; iCounter++) {
-            gThis[lListenerKeys[iCounter]]((lIsSlotArray) ? aSlot : undefined);
-            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + ".name]:", iFunctionName, "\n"); }
+
+        // either assign to slot or not.
+        if (lIsSlotArray) {
+            aParameter.value[aSlot] = lValue;
         }
-        
-        // Save.
-        if (aParameter.saveInPattr) {
-            lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
-            gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+        else {
+            aParameter.value = lValue;
+        }   
+
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.postListeners, aParameter, aSlot);
+            
+            // Save.
+            if (aParameter.saveInPattr) {
+                lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+                if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+            }
+            mParameters.display(aParameter.name);
+
         }
+
     };
     
     this.display = function(aParameterName, aSlot) {
-        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
-        
-        var iCounter,
-            aParameter = mParameters[aParameterName],
-            lValueIsFunction = (typeof aParameter.value == "function"),
-            lLength = (lValueIsFunction) ? aParameter.value.arrayLength : aParameter.value.length;
-            
-        if (aParameter.format != undefined) {
-            if (aParameter.type == "slotArray") {
-                if (aSlot != undefined) {
-                                        
-                    sendToHud({
-                        key: aParameter.name,
-                        value: (lValueIsFunction) ? aParameter.value(aSlot) : aParameter.value[aSlot],
-                        format: aParameter.format,
-                        slot: aSlot
-                    });
-                }
+        if (gDebugItem.functionName) {
+            post("    --Parameters.display " + aParameterName + "--");
+            (mParameters[aParameterName].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
 
-                 else {
-                    for (iCounter = 0; iCounter < lLength; iCounter++) {
-                        sendToHud({
-                            key: aParameter.name,
-                            value: (lValueIsFunction) ? aParameter.value(iCounter) : aParameter.value[iCounter],
-                            format: aParameter.format,
-                            slot: iCounter
-                        });
-                    }
-                } 
-            }
-            else {
+        var iCounter,
+        aParameter = mParameters[aParameterName],
+        lValueIsFunction = aParameter.value instanceof Function,
+        lLength;
+
+        if (aParameter.type == "slotArray") {
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
+        }
+
+        if (aParameter.type == "slotArray") {
+            if (aSlot != undefined) {
                 sendToHud({
                     key: aParameter.name,
-                    value: aParameter.value,
-                    format: aParameter.format
+                    value: resolveValue(aParameter.value, aParameter.type, aSlot),
+                    format: aParameter.format,
+                    slot: aSlot
                 });
             }
+
+            else {
+                for (iCounter = 0; iCounter < lLength; iCounter++) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: resolveValue(aParameter.value, aParameter.type, iCounter),
+                        format: aParameter.format,
+                        slot: iCounter
+                    });
+                }
+            }
+        }
+        else {
+            sendToHud({
+                key: aParameter.name,
+                value: aParameter.value,
+                format: aParameter.format
+            });
         }
     };
     
@@ -835,7 +962,12 @@ function Parameters(aObject) {
         if (!aSlot) {
             for (iProperty in mParameters) {
                 if (mParameters[iProperty].format) {
-                    mParameters.display(iProperty);
+                    if (mParameters[iProperty].value != null) {
+                        mParameters.display(iProperty);
+                    }
+                    else {
+                        if (gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
+                    }
                 }
             }
         }
@@ -898,12 +1030,14 @@ function Parameters(aObject) {
             case "number" : 
                 /*jsl:fallthru*/
             case "toggle" :
-                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "string" :
-                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
                 break;
             case "slotArray" :
+                /*jsl:fallthru*/
+            case "array" :
                 lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
                 break;
             default :
@@ -943,238 +1077,251 @@ function Parameters(aObject) {
             }
         }
     };
+    return this;
 }
 
-   // Method: Monome
-   // 
-   // Monome abstraction
-   // 
-   // Parameters:
-   // 
-   //    aColumns - The number of columns to initialize with.
-   //    aRows - The number of rows to initialize with.
+//Parameters>
+
+   //<Monome
+   //      \/\/\<Monome(?m).+\/\/Monome\>
+
+  // Method: Monome
+  // 
+  // Monome abstraction
+  // 
+  // Parameters:
+  // 
+  //    aColumns - The number of columns to initialize with.
+  //    aRows - The number of rows to initialize with.
 
 
 function Monome(aColumns, aRows, aOutlet) {
-    var iCol,
-        iRow,
-        that = this,
-        mColumns = aColumns,
-        mRows = aRows,
-        mUpdating = false;
-    
-    if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
-    
-    if (gDebugItem.functionName) { post("    --Monome--\n"); }
-    if (gDebugItem.startValue) {
-        post("monomeWidth:", aColumns, "\n");
-        post("monomeHeight:", aRows, "\n");
-    }
+   var iCol,
+       iRow,
+       that = this,
+       mColumns = aColumns,
+       mRows = aRows,
+       mUpdating = false;
 
-    function SingleCell(aCol, aRow, aOutlet) {
-        var outletNumber = aOutlet;
+       if (! (this instanceof arguments.callee)) {
+           post("use new! - Monome\n");
+           return new Monome(aColumns, aRows, aOutlet);
+       }
 
-        var mCol = aCol;
-        var mRow = aRow;
+   if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
 
-        // local variables
-        var actualState = 0;
-        var tempState = 0;
-        var held = 0;
+   if (gDebugItem.functionName) { post("    --Monome--\n"); }
+   if (gDebugItem.startValue) {
+       post("monomeWidth:", aColumns, "\n");
+       post("monomeHeight:", aRows, "\n");
+   }
 
-        // Method: Monome[column][row].isHeld
-        // 
-        // Returns wether or not a button is currently held (1) or not (0)
-        
-        this.isHeld = function() {
-            return held;
-        };
-        
-        // Method: Monome[column][row].push
-        //
-        // (This Method should not be called directly except by <press>)
-        //
-        // Change the state of the button to held 
+   function SingleCell(aCol, aRow, aOutlet) {
+       var outletNumber = aOutlet;
 
-        this.push = function() {
-            held = 1;
-            return held;
-        };
+       var mCol = aCol;
+       var mRow = aRow;
 
-        // Method: Monome[column][row].release
-        //
-        // (This Method should not be called directly except by <press>)
-        //
-        // Change the state of the button to NOT held    
-        
-        this.release = function() {
-            held = 0;
-            return held;
-        };
-        
-        // Method: Monome[column][row].ledOn
-        //
-        // Change the state of the button to lit (sends message out of designated outlet)
+       // local variables
+       var actualState = 0;
+       var tempState = 0;
+       var held = 0;
 
-        this.ledOn = function() {
-            actualState = 1;
-            if(!mUpdating) {
-                outlet(outletNumber, mCol, mRow, actualState);
-            }
-        };
+       // Method: Monome[column][row].isHeld
+       // 
+       // Returns wether or not a button is currently held (1) or not (0)
 
-        this.ledOff = function() {
-            actualState = 0;
-            if (!mUpdating) {
-                outlet(outletNumber, mCol, mRow, actualState);
-            }
-        };
+       this.isHeld = function() {
+           return held;
+       };
 
-        this.checkActual = function() {
-            //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
-            outlet(outletNumber, mCol, mRow, actualState);
-            tempState = 0;
-        };
+       // Method: Monome[column][row].push
+       //
+       // (This Method should not be called directly except by <press>)
+       //
+       // Change the state of the button to held 
 
-        this.blink = function() {
-            tempState = (tempState == 1) ? 0: 1;
-            outlet(outletNumber, mCol, mRow, tempState);
-        };
+       this.push = function() {
+           held = 1;
+           return held;
+       };
 
-        this.blinkIfOff = function() {
-            if (actualState == 0) {
-                tempState = (tempState == 1) ? 0: 1;
-                outlet(outletNumber, mCol, mRow, tempState);
-            }
-        };
+       // Method: Monome[column][row].release
+       //
+       // (This Method should not be called directly except by <press>)
+       //
+       // Change the state of the button to NOT held    
 
-        this.tempOn = function() {
-            tempState = 1;
-            outlet(outletNumber, mCol, mRow, tempState);
-        };
+       this.release = function() {
+           held = 0;
+           return held;
+       };
 
-        this.tempOff = function() {
-            tempState = 0;
-            outlet(outletNumber, mCol, mRow, actualState);
-        };
-    }
+       // Method: Monome[column][row].ledOn
+       //
+       // Change the state of the button to lit (sends message out of designated outlet)
 
-    this.column = function(aColumn, aMethodToInvoke) {
-        var iRow, 
-            lHeight = mRows;
-        
-        for (iRow = 0; iRow < lHeight; iRow++) {
-            that[aColumn][iRow][aMethodToInvoke]();
-        }
-    };
+       this.ledOn = function() {
+           actualState = 1;
+           if(!mUpdating) {
+               outlet(outletNumber, mCol, mRow, actualState);
+           }
+       };
 
-    this.row = function(aRow, aMethodToInvoke) {
-        var iColumn,
-            lWidth = mColumns;
-            
-        for (iColumn = 0; iColumn < lWidth; iColumn++) {
-            that[iColumn][aRow][aMethodToInvoke]();
-        }
-    };
-    this.isValidColumn = function(aNumber) {
-        return (mColumns > aNumber) ? true : false;
-    };
-    
-    this.isValidRow = function(aNumber) {
-        return (aRows > aNumber) ? true : false;
-    };
-    
-    this.rebuild = function(aColumns, aRows) {
-        var iCol,
-            iRow,
-            lMaxColumns = Math.max(aColumns, mColumns),
-            lMaxRows = Math.max(aRows, mRows);
-            
-        if (gDebugItem.functionName) { post("    --rebuild--\n"); }
-        
-        mColumns = aColumns;
-        mRows = aRows;
-        
-        for (iCol = 0; iCol < lMaxColumns; iCol++) {
-            if ((that[iCol] != null) && (iCol < aColumns)) {
-                if (gDebugItem.list) { post("column:", iCol, "is fine!\n"); }
-            }
-            else if ((that[iCol] != null) && (iCol >= aColumns)) {
-                if (gDebugItem.list) { post("column:", iCol, "will be deleted!\n"); }
-                that[iCol] = null;
-            }
-            
-            else if((!that[iCol]) && (iCol < aColumns)) {
-                that[iCol] = [];
-                if (gDebugItem.list) { post("column:", iCol, "added!\n"); }
-            }
-            
-            
-        if (that[iCol] != null) {
-            for (iRow = 0; iRow < lMaxRows; iRow++) {
-                if ((that[iCol][iRow] != null) && (iRow < aRows)) {
-                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
-                }
-                else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
-                    that[iCol][iRow] = null;
-                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
-                }
+       this.ledOff = function() {
+           actualState = 0;
+           if (!mUpdating) {
+               outlet(outletNumber, mCol, mRow, actualState);
+           }
+       };
 
-                else if ((!that[iCol][iRow]) && (iRow < aRows)) {
-                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
-                    that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
-                }
-            }
-            if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
-        }
+       this.checkActual = function() {
+           //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
+           outlet(outletNumber, mCol, mRow, actualState);
+           tempState = 0;
+       };
 
-    };
-    
-    this.refresh = function() {
-        if (gDebugItem.functionName) { post("    --refresh--\n"); }
-        
-        var iCol,
-            iRow,
-            lHeight = gParameters.monomeHeight.value,
-            lWidth = gParameters.monomeWidth.value;
+       this.blink = function() {
+           tempState = (tempState == 1) ? 0: 1;
+           outlet(outletNumber, mCol, mRow, tempState);
+       };
 
-        for (iCol = 0; iCol < lWidth; iCol++) {
-            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
-                that[iCol][iRow].checkActual();
-            }
-        }
-    };
+       this.blinkIfOff = function() {
+           if (actualState == 0) {
+               tempState = (tempState == 1) ? 0: 1;
+               outlet(outletNumber, mCol, mRow, tempState);
+           }
+       };
 
-    this.beginUpdates = function() {
-        if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
-        
-        mUpdating = true;
-    };
-    this.endUpdates = function() {
-        if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
-        
-        var iCol;
-        var iRow;
-        
-        mUpdating = false;
-        that.refresh();
-    };
-    
-    for (iCol = 0; iCol < aColumns; iCol++) {
-        
-        that[iCol] = [];
-        for (iRow = 0; iRow < aRows; iRow++) {
-            that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
-        }
-        if (gDebugItem.startValue) {
-            post("Monome[", iCol, "].length:", that[iCol].length, "\n");
-        }
-    }
-    if (gDebugItem.startValue) {
-        post("Monome.length (width):", that.length, "\n");
-    }
+       this.tempOn = function() {
+           tempState = 1;
+           outlet(outletNumber, mCol, mRow, tempState);
+       };
+
+       this.tempOff = function() {
+           tempState = 0;
+           outlet(outletNumber, mCol, mRow, actualState);
+       };
+   }
+
+   this.column = function(aColumn, aMethodToInvoke) {
+       var iRow, 
+           lHeight = mRows;
+
+       for (iRow = 0; iRow < lHeight; iRow++) {
+           that[aColumn][iRow][aMethodToInvoke]();
+       }
+   };
+
+   this.row = function(aRow, aMethodToInvoke) {
+       var iColumn,
+           lWidth = mColumns;
+
+       for (iColumn = 0; iColumn < lWidth; iColumn++) {
+           that[iColumn][aRow][aMethodToInvoke]();
+       }
+   };
+   this.isValidColumn = function(aNumber) {
+       return (mColumns > aNumber) ? true : false;
+   };
+
+   this.isValidRow = function(aNumber) {
+       return (aRows > aNumber) ? true : false;
+   };
+
+   this.rebuild = function(aColumns, aRows) {
+       var iCol,
+           iRow,
+           lMaxColumns = Math.max(aColumns, mColumns),
+           lMaxRows = Math.max(aRows, mRows);
+
+       if (gDebugItem.functionName) { post("    --rebuild--\n"); }
+
+       mColumns = aColumns;
+       mRows = aRows;
+
+       for (iCol = 0; iCol < lMaxColumns; iCol++) {
+           if ((that[iCol] != null) && (iCol < aColumns)) {
+               if (gDebugItem.list) { post("column:", iCol, "is fine!\n"); }
+           }
+           else if ((that[iCol] != null) && (iCol >= aColumns)) {
+               if (gDebugItem.list) { post("column:", iCol, "will be deleted!\n"); }
+               that[iCol] = null;
+           }
+
+           else if((!that[iCol]) && (iCol < aColumns)) {
+               that[iCol] = [];
+               if (gDebugItem.list) { post("column:", iCol, "added!\n"); }
+           }
+
+
+       if (that[iCol] != null) {
+           for (iRow = 0; iRow < lMaxRows; iRow++) {
+               if ((that[iCol][iRow] != null) && (iRow < aRows)) {
+                   if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
+               }
+               else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
+                   that[iCol][iRow] = null;
+                   if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
+               }
+
+               else if ((!that[iCol][iRow]) && (iRow < aRows)) {
+                   if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
+                   that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
+               }
+           }
+           if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
+       }
+
+   };
+
+   this.refresh = function() {
+       if (gDebugItem.functionName) { post("    --refresh--\n"); }
+
+       var iCol,
+           iRow,
+           lHeight = mRows,
+           lWidth = mColumns;
+
+       for (iCol = 0; iCol < lWidth; iCol++) {
+           for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
+               that[iCol][iRow].checkActual();
+           }
+       }
+   };
+
+   this.beginUpdates = function() {
+       if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
+
+       mUpdating = true;
+   };
+   this.endUpdates = function() {
+       if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
+
+       var iCol;
+       var iRow;
+
+       mUpdating = false;
+       that.refresh();
+   };
+
+   for (iCol = 0; iCol < aColumns; iCol++) {
+
+       that[iCol] = [];
+       for (iRow = 0; iRow < aRows; iRow++) {
+           that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
+       }
+       if (gDebugItem.startValue) {
+           post("Monome[", iCol, "].length:", that[iCol].length, "\n");
+       }
+   }
+   if (gDebugItem.startValue) {
+       post("Monome.length (width):", that.length, "\n");
+   }
+   return this;
 }
 
+//Monome>
 
 function padNumber(number, length) {
    
