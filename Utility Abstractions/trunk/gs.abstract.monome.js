@@ -1,3 +1,8 @@
+
+
+//<Monome
+//      \/\/\<Monome(?m).+\/\/Monome\>
+
    // Method: Monome
    // 
    // Monome abstraction
@@ -15,6 +20,11 @@ function Monome(aColumns, aRows, aOutlet) {
         mColumns = aColumns,
         mRows = aRows,
         mUpdating = false;
+        
+        if (! (this instanceof arguments.callee)) {
+            post("use new! - Monome\n");
+            return new Monome(aColumns, aRows, aOutlet);
+        }
     
     if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
@@ -188,8 +198,8 @@ function Monome(aColumns, aRows, aOutlet) {
         
         var iCol,
             iRow,
-            lHeight = gParameters.monomeHeight.value,
-            lWidth = gParameters.monomeWidth.value;
+            lHeight = mRows,
+            lWidth = mColumns;
 
         for (iCol = 0; iCol < lWidth; iCol++) {
             for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
@@ -226,4 +236,7 @@ function Monome(aColumns, aRows, aOutlet) {
     if (gDebugItem.startValue) {
         post("Monome.length (width):", that.length, "\n");
     }
+    return this;
 }
+
+//Monome>

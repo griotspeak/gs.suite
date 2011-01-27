@@ -1,18 +1,37 @@
+
+
+
+//<Parameters
+//      \/\/\<Parameters(?m).+\/\/Parameters\>
+
+
 function Parameters(aObject) {
     if (gDebugItem.functionName) { post("    --Parameters--\n"); }
+    
+    if (! (this instanceof arguments.callee)) {
+        return new Parameters(aObject);
+    }    
     
     var mParameters = this,
         mOutlet = aObject.outlet;
     
+    function resolveValue(aProperty) {
+        return (aProperty instanceof Function) ? aProperty() : aProperty;
+    }
+       
     function sendToHud(aObject) {
 
         var aKey = aObject.key,
-            aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
+            aValue = resolveValue(aObject.value),
             aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
             aSlot = (aObject.slot == undefined) ? null : aObject.slot;
 
         if (gDebugItem.functionName) { post("    --Parameter.sendToHud --\n"); }
-        if (gDebugItem.functionArguments) { post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat, "aSlot", aSlot, "\n"); }
+        if (gDebugItem.functionArguments) {
+            post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
+            (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+        
 
         switch (aFormat) {
             case "set":
@@ -42,52 +61,78 @@ function Parameters(aObject) {
         }
     }
     
+    function callListenersForParameter(aArrayOfListeners, aParameter, aSlot) {
+        var lListenerArrayLength = aArrayOfListeners.length,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            iCounter;
+        
+        for (iCounter = 0; iCounter < lListenerArrayLength; iCounter++) {
+            gThis[aArrayOfListeners[iCounter]]((lIsSlotArray) ? aSlot: undefined);
+            if (gDebugItem.localValue) { post("lPostListenerKeys[" + iCounter + ".name]:", iFunctionName, "\n"); }
+        }
+    }
+    
     this.set = function(aObject) {
         if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
         if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
+
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             lIsSlotArray = (aParameter.type == "slotArray"),
-            aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+            aSlot = (aObject.slot === undefined) ? null: aObject.slot,
             aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
             lValue,
-            lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
-            lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
-            lListenerKeys = aParameter.listeners,
-            lListenerLength = lListenerKeys.length,
+            lMinimum = resolveValue(aParameter.minValue),
+            lMaximum = resolveValue(aParameter.maxValue),
             iCounter;
 
         //check validity of aValue
         if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
-            if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
-            else if (aValue < lMinimum) { lValue = lMinimum; }
-            else if (aValue > lMaximum) { lValue = lMaximum; }
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) {
+                lValue = aValue;
+            }
+            else if (aValue < lMinimum) {
+                lValue = lMinimum;
+            }
+            else if (aValue > lMaximum) {
+                lValue = lMaximum;
+            }
             else { post("something has gane awry in Parameters.set!\n"); }
         }
-        else { lValue = aValue; }
-        
-        if (lIsSlotArray) { aParameter.value[aSlot] = lValue; }
-        else { aParameter.value = lValue; }
-        
-        mParameters.display(aParameter.name);
+        else {
+            lValue = aValue;
+        }
+
 
         // call listeners
-        
-        if (aQuietly) { 
-            return;
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
         }
-        for (iCounter = 0; iCounter < lListenerLength; iCounter++) {
-            gThis[lListenerKeys[iCounter]]((lIsSlotArray) ? aSlot : undefined);
-            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + ".name]:", iFunctionName, "\n"); }
+
+        // either assign to slot or not.
+        if (lIsSlotArray) {
+            aParameter.value[aSlot] = lValue;
         }
-        
-        // Save.
-        if (aParameter.saveInPattr) {
-            lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
-            gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+        else {
+            aParameter.value = lValue;
         }
+
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.postListeners, aParameter, aSlot);
+            
+            // Save.
+            if (aParameter.saveInPattr) {
+                lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+                if (gDebugItem.localValue) {
+                    post("lPatcherObjectNameString", lPatcherObjectNameString, "\n");
+                }
+                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+            }
+            mParameters.display(aParameter.name);
+
+        }
+
     };
     
     this.display = function(aParameterName, aSlot) {
@@ -95,8 +140,12 @@ function Parameters(aObject) {
         
         var iCounter,
             aParameter = mParameters[aParameterName],
-            lValueIsFunction = (typeof aParameter.value == "function"),
+            lValueIsFunction = typeof aParameter.value == "function",
+            lLength;
+            
+        if (aParameter.type == "slotArray") {
             lLength = (lValueIsFunction) ? aParameter.value.arrayLength : aParameter.value.length;
+        }
             
         if (aParameter.format != undefined) {
             if (aParameter.type == "slotArray") {
@@ -139,7 +188,12 @@ function Parameters(aObject) {
         if (!aSlot) {
             for (iProperty in mParameters) {
                 if (mParameters[iProperty].format) {
-                    mParameters.display(iProperty);
+                    if (mParameters[iProperty].value != null) {
+                        mParameters.display(iProperty);
+                    }
+                    else {
+                        if (gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
+                    }
                 }
             }
         }
@@ -202,12 +256,14 @@ function Parameters(aObject) {
             case "number" : 
                 /*jsl:fallthru*/
             case "toggle" :
-                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "string" :
-                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
                 break;
             case "slotArray" :
+                /*jsl:fallthru*/
+            case "array" :
                 lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
                 break;
             default :
@@ -247,17 +303,7 @@ function Parameters(aObject) {
             }
         }
     };
+    return this;
 }
 
-gParameters.scene = {
-    name: "scene",
-    type: "number",
-    format: "set",
-    value: function() {
-        return (Number(gParameters.clipScene.value) + 1);
-    },
-    minValue: -Infinity,
-    maxValue: Infinity,
-    saveInPattr: false,
-    listeners: []
-};
+//Parameters>
