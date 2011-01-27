@@ -32,12 +32,13 @@ var inlets = 1;
 var outlets = 2;
 
 var mDebugLevel;
+var gThisPatcher = this.patcher;
 
 var post;
 var outlet;
 var Monome = [];
 
-var debugItem = {
+var gDebugItem = {
     arguments : false,
     endValue : false,
     frequentItem : false,
@@ -50,59 +51,53 @@ var debugItem = {
     loading : false
 };
 
-var parameter = {
-    monomeWidth : {
-        name : "monomeWidth",
-        type : "number",
-        value : 0,
-        minValue : 2,
-        maxValue : 2048,
-        saveInPattr : true
-    },
-    monomeHeight : {
-        name : "monomeHeight",
-        type : "number",
-        value : 0,
-        minValue : 2,
-        maxValue : 2048,
-        saveInPattr : true
-    },
-    channel : {
-        name : "channel",
-        type : "number",
-        value : 0,
-        minValue : 0,
-        maxValue : 127,
-        saveInPattr : true
-    },
-    patchString : "GsProgramChange"
+
+var gParameters = new Parameters({outlet : 1});
+
+gParameters.monomeWidth = {
+    name : "monomeWidth",
+    type : "number",
+    format: "set",
+    value : 0,
+    minValue : 2,
+    maxValue : 2048,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: []
 };
+
+gParameters.monomeHeight = {
+    name : "monomeHeight",
+    type : "number",
+    format: "set",
+    value : 0,
+    minValue : 2,
+    maxValue : 2048,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: []
+};
+
+gParameters.channel = {
+    name : "channel",
+    type : "number",
+    format: "set",
+    value : 0,
+    minValue : 0,
+    maxValue : 127,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: []
+};
+
+gParameters.patchString = "GsProgramChange";
 
 function initialize() {
     setDebugLevel(0);
-    grabAllPattrValues();
-    sendToHud({
-        key : "monomeWidth",
-        value : parameter.monomeWidth.value,
-        format : HudFormat.set
-    });
-    sendToHud({
-        key : "monomeHeight",
-        value : parameter.monomeHeight.value,
-        format : HudFormat.set
-    });
-    sendToHud({
-        key : "channel",
-        value : parameter.channel.value,
-        format : HudFormat.set
-    });
+    gParameters.grabAll();
     
     buildMonome();
 }
-
-var HudFormat = {
-    set : 0
-};
 
 function setDebugLevel(level) {
     if (level > 0) { post("    --setDebugLevel = ", level, "--\n"); }
@@ -137,30 +132,6 @@ function setDebugLevel(level) {
 // 7 - setters and getters - value at end
 // 8 - setters and getters - value at beginning
 
-
-//                                  ---===Communicate with Patcher===---
-function sendToHud(aObject) {
-    
-    var lOutlet = 1,
-        aKey = aObject.key,
-        aValue = aObject.value,
-        aFormat = (aObject.format === undefined) ? 0 : aObject.format,
-        aSlot = (aObject.slot === undefined) ? null : aObject.slot;
-        
-    
-    if (debugItem.functionName) { post("    --sendToHud - " + aKey + " --\n"); }
-    if (debugItem.list) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
-    
-    switch (aFormat) {
-        case HudFormat.set:
-            outlet(lOutlet, aKey, "set", aValue);
-            break;
-        default: 
-            post("error in sendToHud. aFormat:", aFormat, "\n");
-            break;
-    }
-}
-
 //                                  ---===Controller Methods===---
 function press(aCol, aRow, aPress) {
     var lNumber;
@@ -171,7 +142,7 @@ function press(aCol, aRow, aPress) {
     }
     
     if (aPress == 1) {
-        lNumber = aRow * parameter.monomeWidth.value + aCol;
+        lNumber = aRow * gParameters.monomeWidth.value + aCol;
         sendMessageNumber(lNumber);
         Monome[aCol][aRow].push();
         Monome[aCol][aRow].ledOn();
@@ -184,12 +155,12 @@ function press(aCol, aRow, aPress) {
 
 function sendMessageNumber(aNumber) {
     
-    messnamed("gs.channel", "channelProgramChange", parameter.channel.value, aNumber);
+    messnamed("gs.channel", "channelProgramChange", gParameters.channel.value, aNumber);
 
 }
 
 function setChannel(aChannel) {
-    setParameterProperty({
+    gParameters.set({
         key : "channel",
         value : aChannel
     });
@@ -198,14 +169,14 @@ function setChannel(aChannel) {
 
 //                                  ---===Monome Device Methods===---
 function setMonomeWidth( aWidth) {
-    setParameterProperty({
+    gParameters.set({
         key : "monomeWidth",
         value : aWidth
     });
     buildMonome();
 }
 function setMonomeHeight( aHeight) {
-    setParameterProperty({
+    gParameters.set({
         key : "monomeHeight",
         value : aHeight
     });
@@ -277,13 +248,13 @@ function buildMonome() {
     if (mDebugLevel[1]) { post("    --buildMonome--\n"); }
     if (mDebugLevel[2]) { post("buildMonome called\n"); }
     if (mDebugLevel[4]) {
-        post("parameter.monomeWidth.value:", parameter.monomeWidth.value, "\n");
-        post("parameter.monomeHeight.value:", parameter.monomeHeight.value, "\n");
+        post("gParameters.monomeWidth.value:", gParameters.monomeWidth.value, "\n");
+        post("gParameters.monomeHeight.value:", gParameters.monomeHeight.value, "\n");
     }
     
-    for (var iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
+    for (var iCol = 0; iCol < gParameters.monomeWidth.value; iCol++) {
         Monome[iCol] = new Array();
-        for (var iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+        for (var iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
             Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
         }
         if (mDebugLevel[4]) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
@@ -295,32 +266,32 @@ Monome.row = function(aRow, aMethodToInvoke) {
     switch (aMethodToInvoke) {
         case "ledOn":
             var iColumn;
-            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
                 Monome[iColumn][aRow].ledOn();
             }
             break;
         case "ledOff":
-            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
                 Monome[iColumn][aRow].ledOff();
             }
             break;
         case "tempOn":
-            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
                 Monome[iColumn][aRow].tempOn();
             }
             break;
         case "tempOff":
-            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
                 Monome[iColumn][aRow].tempOff();
             }
             break;
         case "blink":
-            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
                 Monome[iColumn][aRow].blink();
             }
             break;
         case "blinkIfOff":
-            for (iColumn = 0; iColumn < parameter.monomeWidth.value; iColumn++) {
+            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
                 Monome[iColumn][aRow].blinkIfOff();
             }
             break;
@@ -335,32 +306,32 @@ Monome.column = function(aColumn, aMethodToInvoke) {
     switch (aMethodToInvoke) {
         case "ledOn":
             var iRow;
-            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
                 Monome[aColumn][iRow].ledOn();
             }
             break;
         case "ledOff":
-            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
                 Monome[aColumn][iRow].ledOff();
             }
             break;
         case "tempOn":
-            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
                 Monome[aColumn][iRow].tempOn();
             }
             break;
         case "tempOff":
-            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
                 Monome[aColumn][iRow].tempOff();
             }
             break;
         case "blink":
-            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
                 Monome[aColumn][iRow].blink();
             }
             break;
         case "blinkIfOff":
-            for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
                 Monome[aColumn][iRow].blinkIfOff();
             }
             break;
@@ -375,79 +346,333 @@ function refreshMonome() {
     if (mDebugLevel[1]) { post("    --refreshMonome--\n"); }
     var iCol;
     var iRow;
-    for (iCol = 0; iCol < parameter.monomeWidth.value; iCol++) {
-        for (iRow = 0; iRow < parameter.monomeHeight.value; iRow++) {
+    for (iCol = 0; iCol < gParameters.monomeWidth.value; iCol++) {
+        for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
             Monome[iCol][iRow].checkActual();
         }
     }
 }
 
-function setParameterProperty(aObject) {
+//<Parameters
+//      \/\/\<Parameters(?m).+\/\/Parameters\>
 
-    var aProperty = parameter[aObject.key],
-        aValue = aObject.value,
-        aSlot = (aObject.slot === undefined) ? null : aObject.slot,
-        lPatcherObjectNameString,
-        lValue;
+
+function Parameters(aObject) {
+    if (gDebugItem.functionName) { post("    --Parameters--\n"); }
     
-    //check validity of aValue
-    if ((aProperty.type === "number") || (aProperty.type === "toggle") || (aProperty.type === "slotArray")) {
-        if ((aValue >= aProperty.minValue) && (aValue <= aProperty.maxValue)) { lValue = aValue; }
-        else if (aValue < aProperty.minValue) { lValue = aProperty.minValue; }
-        else if (aValue > aProperty.maxValue) { lValue = aProperty.maxValue; }
-        else { post("something has gane awry in setParameterProperty!\n"); }
-    }
-    else { lValue = aValue; }
-
-    //update HUD
-    if (aProperty.type == "slotArray") {
-        aProperty.value[aSlot] = lValue;
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value[aSlot],
-            format : HudFormat.slotSet,
-            slot : aSlot
-        });
-    }
-     else {
-        aProperty.value = lValue;
-        sendToHud({
-            key : aProperty.name,
-            value : aProperty.value,
-            format : HudFormat.set
-        });
+    if (! (this instanceof arguments.callee)) {
+        return new Parameters(aObject);
     }
     
-    // Save it.
-    if (aProperty.saveInPattr) {
-        patcherObjectNameString = aProperty.name + parameter.patchString + "Pattr";
-        this.patcher.getnamed(patcherObjectNameString).message(aProperty.value);
+    var mParameters = this,
+        mOutlet = aObject.outlet;
+    
+    function resolveValue(aObject, aType, aSlot) {
+        var lValue;
+        if (gDebugItem.frequentFunctionName) { post("    --Parameters.resolveValue--\n"); }
+        
+        if (aType == "slotArray") {            
+            if (aObject instanceof Function) {
+                lValue = aObject(aSlot);
+            }
+            else if (aObject instanceof Array) {
+                lValue = aObject[aSlot];
+            }
+            else {
+                lValue = aObject;
+            }
+
+        }
+        else {
+            lValue = (aObject instanceof Function) ? aObject() : aObject;
+        }
+        return lValue;
     }
+       
+    function sendToHud(aObject) {
+
+        var aKey = aObject.key,
+            aFormat = (aObject.format == null) ? false : aObject.format,
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot,
+            aValue = aObject.value;
+
+        if (gDebugItem.frequentFunctionName) { post("    --Parameter.sendToHud --\n"); }
+        if (gDebugItem.functionArguments) {
+            post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
+            (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+        
+        switch (aFormat) {
+            case "set":
+                outlet(mOutlet, aKey, "set", aValue);
+                break;
+            case "trigger":
+                outlet(mOutlet, aKey, aValue);
+                break;
+            case "symbol":
+                outlet(mOutlet, aKey, "setsymbol", aValue);
+                break;
+            case "measures":
+                outlet(mOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
+                break;
+            case "slotSet":
+                outlet(mOutlet, aSlot, aKey, "set", aValue);
+                break;
+            case "slotTrigger":
+                outlet(mOutlet, aSlot, "setsymbol", aValue);
+                break;
+            case "slotSymbol":
+                outlet(mOutlet, aSlot, aKey, "setsymbol", aValue);
+                break;
+            default: 
+                post("error in Parameter.sendToHud. aFormat:", aFormat, "\n");
+                break;
+        }
+    }
+    
+    function callListenersForParameter(aArrayOfListeners, aParameter, aSlot) {
+        var lListenerArrayLength = aArrayOfListeners.length,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            iCounter;
+        
+        if (gDebugItem.functionName) { post("    --callListenersForParameter--\n"); }
+        
+        for (iCounter = 0; iCounter < lListenerArrayLength; iCounter++) {
+            gThis[aArrayOfListeners[iCounter]]((lIsSlotArray) ? aSlot: undefined);
+            if (gDebugItem.localValue) { post("lPostListenerKeys[" + iCounter + ".name]:", iFunctionName, "\n"); }
+        }
+    }
+    
+    this.set = function(aObject) {
+        if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
+        if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
+
+        var aParameter = mParameters[aObject.key],
+            aValue = aObject.value,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            aSlot = (aObject.slot === undefined) ? null: aObject.slot,
+            aQuietly = (aObject.silent === true),
+            lPatcherObjectNameString,
+            lValue,
+            lMinimum = resolveValue(aParameter.minValue, aParameter.type, aSlot),
+            lMaximum = resolveValue(aParameter.maxValue, aParameter.type, aSlot),
+            iCounter;
+            
+        //check validity of aValue
+        if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) {
+                lValue = aValue;
+            }
+            else if (aValue < lMinimum) {
+                lValue = lMinimum;
+            }
+            else if (aValue > lMaximum) {
+                lValue = lMaximum;
+            }
+            else { post("something has gane awry in Parameters.set!\n"); }
+        }
+        else {
+            lValue = aValue;
+        }
+
+
+        // call postListeners
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
+        }
+
+        // either assign to slot or not.
+        if (lIsSlotArray) {
+            aParameter.value[aSlot] = lValue;
+        }
+        else {
+            aParameter.value = lValue;
+        }   
+
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.postListeners, aParameter, aSlot);
+            
+            // Save.
+            if (aParameter.saveInPattr) {
+                lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+                if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+            }
+        }
+        mParameters.display(aParameter.name);
+
+    };
+    
+    this.display = function(aParameterName, aSlot) {
+        if (gDebugItem.functionName) {
+            post("    --Parameters.display " + aParameterName + "--");
+            (mParameters[aParameterName].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+
+        var iCounter,
+        aParameter = mParameters[aParameterName],
+        lValueIsFunction = aParameter.value instanceof Function,
+        lLength;
+        
+        if (aParameter.format === null) return;
+        
+        if (aParameter.type == "slotArray") {
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
+            
+            if (aSlot != undefined) {
+                sendToHud({
+                    key: aParameter.name,
+                    value: resolveValue(aParameter.value, aParameter.type, aSlot),
+                    format: aParameter.format,
+                    slot: aSlot
+                });
+            }
+
+            else {
+                for (iCounter = 0; iCounter < lLength; iCounter++) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: resolveValue(aParameter.value, aParameter.type, iCounter),
+                        format: aParameter.format,
+                        slot: iCounter
+                    });
+                }
+            }
+        }
+        else {
+
+            sendToHud({
+                key: aParameter.name,
+                value: resolveValue(aParameter.value),
+                format: aParameter.format
+            });
+        }
+    };
+    
+    this.displayAll = function(aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
+
+        var iProperty;
+
+        if (!aSlot) {
+            for (iProperty in mParameters) {
+                if (mParameters[iProperty].format != null) {
+                    if (mParameters[iProperty].value != null) {
+                        mParameters.display(iProperty);
+                    }
+                    else {
+                        if (gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
+                    }
+                }
+            }
+        }
+        else {
+            for (iProperty in mParameters) {
+                if ((mParameters[iProperty].format) || (mParameters[iProperty].type == "slotArray")) {
+                    mParameters.display(iProperty, aSlot);
+                }
+            }
+        }
+    };
+
+    this.toggle = function(aParameterName, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
+        
+        if (mParameters[aParameterName].type == "toggle") {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value))
+            });
+        }
+        else if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value[aSlot])),
+                slot : aSlot
+            });
+        }
+        else { post(aParameterName, "is not a toggle gParameters\n");}
+    };
+    
+    this.change = function(aParameterName, aAmount, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.change--\n"); }
+
+        if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value[aSlot] + aAmount,
+                slot: aSlot
+            });
+        }
+         else {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value + aAmount
+            });
+        }
+        };
+
+    this.grab = function(aParameter) {
+        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+
+        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
+            lValue;
+
+        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
+        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+
+        switch (aParameter.type) {
+            case "number" : 
+                /*jsl:fallthru*/
+            case "toggle" :
+                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
+                break;
+            case "string" :
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
+                break;
+            case "slotArray" :
+                /*jsl:fallthru*/
+            case "array" :
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                break;
+            default :
+                post(aParameter.name + ".type:", aParameter.type , "\n");
+                break;
+        }
+
+        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+
+        if (aParameter.type == "slotArray") {
+            aParameter.value = lValue;
+            mParameters.display(aParameter.name);
+        }
+         else {
+            mParameters.set({
+                key: aParameter.name,
+                value: lValue,
+                silent: true
+            });
+        }
+
+        if (gDebugItem.endValue) {
+            post(aParameter.name + ".value: ", aParameter.value, "\n");
+        }
+    };
+
+    this.grabAll = function() {   
+         if (gDebugItem.functionName) { post("    --Parameters.grabAll --\n"); }
+         
+        var iProperty,
+            iCounter,
+            lLength;
+
+        for (iProperty in mParameters) {
+            if (mParameters[iProperty].saveInPattr) {
+                mParameters.grab(mParameters[iProperty]);
+            }
+        }
+    };
+    return this;
 }
 
-function changeParameterProperty(aPropertyString, aAmount) {
-    var lValue = parameter[aPropertyString].value + aAmount;
-    setParameterProperty({
-        key : aPropertyString,
-        value : lValue
-    });    
-}
-
-function toggleParameterProperty(aPropertyString) {
-    var lValue = Number(!Boolean(parameter[aPropertyString].value));
-    setParameterProperty({
-        key : aPropertyString,
-        value : lValue
-    });
-}
-
-function grabAllPattrValues() {
-    grabPattrValue(parameter.monomeWidth);
-    grabPattrValue(parameter.monomeHeight);
-    grabPattrValue(parameter.channel);
-}
-
-function grabPattrValue(aProperty) {
-    var patcherObjectNameString = aProperty.name + parameter.patchString + "Object";
-    aProperty.value = Number(this.patcher.getnamed(patcherObjectNameString).getvalueof());
-}
+//Parameters>
