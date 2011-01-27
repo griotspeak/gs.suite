@@ -881,7 +881,7 @@ function Parameters(aObject) {
         }
 
 
-        // call listeners
+        // call postListeners
         if (!aQuietly) {
             callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
         }
@@ -946,9 +946,10 @@ function Parameters(aObject) {
             }
         }
         else {
+
             sendToHud({
                 key: aParameter.name,
-                value: aParameter.value,
+                value: resolveValue(aParameter.value),
                 format: aParameter.format
             });
         }
