@@ -36,7 +36,7 @@ var gThisPatcher = this.patcher;
 
 var post;
 var outlet;
-var Monome = [];
+var gMonome;
 
 var gDebugItem = {
     arguments : false,
@@ -96,7 +96,7 @@ function initialize() {
     setDebugLevel(0);
     gParameters.grabAll();
     
-    buildMonome();
+    gMonome = new Monome(gParameters.monomeWidth.value, gParameters.monomeHeight.value, 0);
 }
 
 function setDebugLevel(level) {
@@ -144,12 +144,12 @@ function press(aCol, aRow, aPress) {
     if (aPress == 1) {
         lNumber = aRow * gParameters.monomeWidth.value + aCol;
         sendMessageNumber(lNumber);
-        Monome[aCol][aRow].push();
-        Monome[aCol][aRow].ledOn();
+        gMonome[aCol][aRow].push();
+        gMonome[aCol][aRow].ledOn();
     }
     else if (aPress == 0) {
-        Monome[aCol][aRow].release();
-        Monome[aCol][aRow].ledOff();
+        gMonome[aCol][aRow].release();
+        gMonome[aCol][aRow].ledOff();
     }
 }
 
@@ -173,185 +173,256 @@ function setMonomeWidth( aWidth) {
         key : "monomeWidth",
         value : aWidth
     });
-    buildMonome();
+    gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
 }
 function setMonomeHeight( aHeight) {
     gParameters.set({
         key : "monomeHeight",
         value : aHeight
     });
-    buildMonome();
+    gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
 }
-function SingleCell(aCol, aRow, aOutlet) {
-    this.outlet = aOutlet;
 
-    this.col = aCol;
-    this.row = aRow;
+//<Monome
+//      \/\/\<Monome(?m).+\/\/Monome\>
+
+   // Method: Monome
+   // 
+   // Monome abstraction
+   // 
+   // Parameters:
+   // 
+   //    aColumns - The number of columns to initialize with.
+   //    aRows - The number of rows to initialize with.
+
+
+function Monome(aColumns, aRows, aOutlet) {
+    var iCol,
+        iRow,
+        that = this,
+        mColumns = aColumns,
+        mRows = aRows,
+        mUpdating = false;
+        
+        if (! (this instanceof arguments.callee)) {
+            post("use new! - Monome\n");
+            return new Monome(aColumns, aRows, aOutlet);
+        }
     
-    // local variables
-    this.actualState = 0;
-    this.tempState =  0;
-    this.isHeld = 0;
-
-    this.checkHeld = function() {
-        return this.isHeld;
-    };
-
-    this.push = function() {
-        this.isHeld = 1;
-        return this.isHeld;
-    };
-
-    this.release = function() {
-        this.isHeld = 0;
-        return this.isHeld;
-    };
-
-    this.ledOn = function() {
-        this.actualState = 1;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-
-    this.ledOff = function() {
-        this.actualState = 0;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-
-    this.checkActual = function() {
-        outlet(this.outlet, this.col, this.row, this.actualState);
-        this.tempState = 0;
-    };
-
-    this.blink = function() {
-        this.tempState = (this.tempState == 1) ? 0:1;
-        outlet(this.outlet, this.col, this.row, this.tempState);
-    };
-
-    this.blinkIfOff = function() {
-        if (this.actualState == 0) {
-            this.tempState = (this.tempState == 1) ? 0:1;
-            outlet(this.outlet, this.col, this.row, this.tempState);
-        }
-    };
-
-    this.tempOn = function() {
-        this.tempState = 1;
-        outlet(this.outlet, this.col, this.row, this.tempState);
-    };
-
-    this.tempOff = function() {
-        this.tempState = 0;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-}
-function buildMonome() {    
-    if (mDebugLevel[1]) { post("    --buildMonome--\n"); }
-    if (mDebugLevel[2]) { post("buildMonome called\n"); }
-    if (mDebugLevel[4]) {
-        post("gParameters.monomeWidth.value:", gParameters.monomeWidth.value, "\n");
-        post("gParameters.monomeHeight.value:", gParameters.monomeHeight.value, "\n");
-    }
+    if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
-    for (var iCol = 0; iCol < gParameters.monomeWidth.value; iCol++) {
-        Monome[iCol] = new Array();
-        for (var iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-            Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
-        }
-        if (mDebugLevel[4]) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
+    if (gDebugItem.functionName) { post("    --Monome--\n"); }
+    if (gDebugItem.startValue) {
+        post("monomeWidth:", aColumns, "\n");
+        post("monomeHeight:", aRows, "\n");
     }
-    if (mDebugLevel[4]) { post("Monome.length (width):", Monome.length, "\n"); }
+
+    function SingleCell(aCol, aRow, aOutlet) {
+        var outletNumber = aOutlet;
+
+        var mCol = aCol;
+        var mRow = aRow;
+
+        // local variables
+        var actualState = 0;
+        var tempState = 0;
+        var held = 0;
+
+        // Method: Monome[column][row].isHeld
+        // 
+        // Returns wether or not a button is currently held (1) or not (0)
+        
+        this.isHeld = function() {
+            return held;
+        };
+        
+        // Method: Monome[column][row].push
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to held 
+
+        this.push = function() {
+            held = 1;
+            return held;
+        };
+
+        // Method: Monome[column][row].release
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to NOT held    
+        
+        this.release = function() {
+            held = 0;
+            return held;
+        };
+        
+        // Method: Monome[column][row].ledOn
+        //
+        // Change the state of the button to lit (sends message out of designated outlet)
+
+        this.ledOn = function() {
+            actualState = 1;
+            if(!mUpdating) {
+                outlet(outletNumber, mCol, mRow, actualState);
+            }
+        };
+
+        this.ledOff = function() {
+            actualState = 0;
+            if (!mUpdating) {
+                outlet(outletNumber, mCol, mRow, actualState);
+            }
+        };
+
+        this.checkActual = function() {
+            //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
+            outlet(outletNumber, mCol, mRow, actualState);
+            tempState = 0;
+        };
+
+        this.blink = function() {
+            tempState = (tempState == 1) ? 0: 1;
+            outlet(outletNumber, mCol, mRow, tempState);
+        };
+
+        this.blinkIfOff = function() {
+            if (actualState == 0) {
+                tempState = (tempState == 1) ? 0: 1;
+                outlet(outletNumber, mCol, mRow, tempState);
+            }
+        };
+
+        this.tempOn = function() {
+            tempState = 1;
+            outlet(outletNumber, mCol, mRow, tempState);
+        };
+
+        this.tempOff = function() {
+            tempState = 0;
+            outlet(outletNumber, mCol, mRow, actualState);
+        };
+    }
+
+    this.column = function(aColumn, aMethodToInvoke) {
+        var iRow, 
+            lHeight = mRows;
+        
+        for (iRow = 0; iRow < lHeight; iRow++) {
+            that[aColumn][iRow][aMethodToInvoke]();
+        }
+    };
+
+    this.row = function(aRow, aMethodToInvoke) {
+        var iColumn,
+            lWidth = mColumns;
+            
+        for (iColumn = 0; iColumn < lWidth; iColumn++) {
+            that[iColumn][aRow][aMethodToInvoke]();
+        }
+    };
+    this.isValidColumn = function(aNumber) {
+        return (mColumns > aNumber) ? true : false;
+    };
+    
+    this.isValidRow = function(aNumber) {
+        return (aRows > aNumber) ? true : false;
+    };
+    
+    this.rebuild = function(aColumns, aRows) {
+        var iCol,
+            iRow,
+            lMaxColumns = Math.max(aColumns, mColumns),
+            lMaxRows = Math.max(aRows, mRows);
+            
+        if (gDebugItem.functionName) { post("    --rebuild--\n"); }
+        
+        mColumns = aColumns;
+        mRows = aRows;
+        
+        for (iCol = 0; iCol < lMaxColumns; iCol++) {
+            if ((that[iCol] != null) && (iCol < aColumns)) {
+                if (gDebugItem.list) { post("column:", iCol, "is fine!\n"); }
+            }
+            else if ((that[iCol] != null) && (iCol >= aColumns)) {
+                if (gDebugItem.list) { post("column:", iCol, "will be deleted!\n"); }
+                that[iCol] = null;
+            }
+            
+            else if((!that[iCol]) && (iCol < aColumns)) {
+                that[iCol] = [];
+                if (gDebugItem.list) { post("column:", iCol, "added!\n"); }
+            }
+            
+            
+        if (that[iCol] != null) {
+            for (iRow = 0; iRow < lMaxRows; iRow++) {
+                if ((that[iCol][iRow] != null) && (iRow < aRows)) {
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
+                }
+                else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
+                    that[iCol][iRow] = null;
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
+                }
+
+                else if ((!that[iCol][iRow]) && (iRow < aRows)) {
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
+                    that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
+                }
+            }
+            if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
+        }
+
+    };
+    
+    this.refresh = function() {
+        if (gDebugItem.functionName) { post("    --refresh--\n"); }
+        
+        var iCol,
+            iRow,
+            lHeight = mRows,
+            lWidth = mColumns;
+
+        for (iCol = 0; iCol < lWidth; iCol++) {
+            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
+                that[iCol][iRow].checkActual();
+            }
+        }
+    };
+
+    this.beginUpdates = function() {
+        if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
+        
+        mUpdating = true;
+    };
+    this.endUpdates = function() {
+        if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
+        
+        var iCol;
+        var iRow;
+        
+        mUpdating = false;
+        that.refresh();
+    };
+    
+    for (iCol = 0; iCol < aColumns; iCol++) {
+        
+        that[iCol] = [];
+        for (iRow = 0; iRow < aRows; iRow++) {
+            that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
+        }
+        if (gDebugItem.startValue) {
+            post("Monome[", iCol, "].length:", that[iCol].length, "\n");
+        }
+    }
+    if (gDebugItem.startValue) {
+        post("Monome.length (width):", that.length, "\n");
+    }
+    return this;
 }
 
-Monome.row = function(aRow, aMethodToInvoke) {
-    switch (aMethodToInvoke) {
-        case "ledOn":
-            var iColumn;
-            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
-                Monome[iColumn][aRow].ledOn();
-            }
-            break;
-        case "ledOff":
-            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
-                Monome[iColumn][aRow].ledOff();
-            }
-            break;
-        case "tempOn":
-            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
-                Monome[iColumn][aRow].tempOn();
-            }
-            break;
-        case "tempOff":
-            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
-                Monome[iColumn][aRow].tempOff();
-            }
-            break;
-        case "blink":
-            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
-                Monome[iColumn][aRow].blink();
-            }
-            break;
-        case "blinkIfOff":
-            for (iColumn = 0; iColumn < gParameters.monomeWidth.value; iColumn++) {
-                Monome[iColumn][aRow].blinkIfOff();
-            }
-            break;
-    	default: {
-			post("error in Monome.row. aMethodToInvoke:", aMethodToInvoke, "\n");
-			break;
-		}
-    }
-};
-
-Monome.column = function(aColumn, aMethodToInvoke) {
-    switch (aMethodToInvoke) {
-        case "ledOn":
-            var iRow;
-            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-                Monome[aColumn][iRow].ledOn();
-            }
-            break;
-        case "ledOff":
-            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-                Monome[aColumn][iRow].ledOff();
-            }
-            break;
-        case "tempOn":
-            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-                Monome[aColumn][iRow].tempOn();
-            }
-            break;
-        case "tempOff":
-            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-                Monome[aColumn][iRow].tempOff();
-            }
-            break;
-        case "blink":
-            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-                Monome[aColumn][iRow].blink();
-            }
-            break;
-        case "blinkIfOff":
-            for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-                Monome[aColumn][iRow].blinkIfOff();
-            }
-            break;
-        default: {
-			post("error in Monome.column. aMethodToInvoke:", aMethodToInvoke, "\n");
-			break;
-		}
-    }
-};
-
-function refreshMonome() {
-    if (mDebugLevel[1]) { post("    --refreshMonome--\n"); }
-    var iCol;
-    var iRow;
-    for (iCol = 0; iCol < gParameters.monomeWidth.value; iCol++) {
-        for (iRow = 0; iRow < gParameters.monomeHeight.value; iRow++) {
-            Monome[iCol][iRow].checkActual();
-        }
-    }
-}
+//Monome>
 
 //<Parameters
 //      \/\/\<Parameters(?m).+\/\/Parameters\>
