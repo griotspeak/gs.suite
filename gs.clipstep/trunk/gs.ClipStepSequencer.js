@@ -61,7 +61,7 @@ var gThis = this,
         frequentList: false,
         frequentName : false,
         functionArguments : false,
-        functionName : false, // !!!!!!!!!!!!!!
+        functionName : true, // !!!!!!!!!!!!!!
         list : false,
         loading : false,
         localValue : false,
@@ -258,7 +258,8 @@ gParameters.clipScene = {
         return (gWatchersCreated) ? (gWatchSet.getcount("scenes") - 1) : 2048;
     },
     saveInPattr: true,
-    listeners: ["focusOnClip"]
+    preListeners : [],
+    postListeners: ["focusOnClip"]
 };
 gParameters.currentScale = {
     name: "currentScale",
@@ -268,7 +269,8 @@ gParameters.currentScale = {
     minValue: null,
     maxValue: null,
     saveInPattr: false,
-    listeners: ["updateNoteDisplay"]
+    preListeners : [],
+    postListeners: ["updateNoteDisplay"]
 };
 gParameters.currentScaleName = {
     name: "currentScaleName",
@@ -278,7 +280,8 @@ gParameters.currentScaleName = {
     minValue: null,
     maxValue: null,
     saveInPattr: true,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.cycles = {
     name: "cycles",
@@ -288,7 +291,8 @@ gParameters.cycles = {
     minValue: 1,
     maxValue: 127,
     saveInPattr: true,
-    listeners: ["onScaleVariableChange"]
+    preListeners : [],
+    postListeners: ["onScaleVariableChange"]
 };
 gParameters.displayWidth = {
     name: "displayWidth",
@@ -298,7 +302,8 @@ gParameters.displayWidth = {
     minValue: 0.00625,
     maxValue: 127,
     saveInPattr: true,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.width = {
     name: "width",
@@ -310,7 +315,8 @@ gParameters.width = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.latest = {
     name: "latest",
@@ -320,7 +326,8 @@ gParameters.latest = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.clipLength = {
     name: "clipLength",
@@ -337,7 +344,8 @@ gParameters.clipLength = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.top = {
     name: "top",
@@ -349,7 +357,8 @@ gParameters.top = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.folding = {
     name: "folding",
@@ -359,7 +368,8 @@ gParameters.folding = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: true,
-    listeners: ["updateFunctionModeLeds", "updateNoteDisplay"]
+    preListeners : [],
+    postListeners: ["updateFunctionModeLeds", "updateNoteDisplay"]
 };
 
 gParameters.foldingRowOffset = {
@@ -372,7 +382,8 @@ gParameters.foldingRowOffset = {
         return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
     },
     saveInPattr: true,
-    listeners: ["updateNoteDisplay"]
+    preListeners : [],
+    postListeners: ["updateNoteDisplay"]
 };
 gParameters.functionMode = {
     name: "functionMode",
@@ -382,7 +393,8 @@ gParameters.functionMode = {
     minValue: 0,
     maxValue: 4,
     saveInPattr: true,
-    listeners: ["updateControlLeds"]
+    preListeners : [],
+    postListeners: ["updateControlLeds"]
 };
 gParameters.inSuite = {
     name: "inSuite",
@@ -392,7 +404,8 @@ gParameters.inSuite = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: true,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.monomeHeight = {
     name: "monomeHeight",
@@ -402,7 +415,8 @@ gParameters.monomeHeight = {
     minValue: 2,
     maxValue: 2048,
     saveInPattr: true,
-    listeners: ["rebuildAndUpdateMonome"]
+    preListeners : [],
+    postListeners: ["rebuildAndUpdateMonome"]
 };
 gParameters.monomeWidth = {
     name: "monomeWidth",
@@ -412,7 +426,8 @@ gParameters.monomeWidth = {
     minValue: 2,
     maxValue: 2048,
     saveInPattr: true,
-    listeners: ["rebuildAndUpdateMonome"]
+    preListeners : [],
+    postListeners: ["rebuildAndUpdateMonome"]
 };
 gParameters.newNoteLength = {
     name: "newNoteLength",
@@ -422,7 +437,8 @@ gParameters.newNoteLength = {
     minValue: 0.000390625,
     maxValue: 127,
     saveInPattr: true,
-    listeners: ["updateMultiPurposeLeds"]
+    preListeners : [],
+    postListeners: ["updateMultiPurposeLeds"]
 };
 gParameters.newNoteVelocity = {
     name: "newNoteVelocity",
@@ -432,7 +448,8 @@ gParameters.newNoteVelocity = {
     minValue: 0,
     maxValue: 127,
     saveInPattr: true,
-    listeners: ["updateMultiPurposeLeds"]
+    preListeners : [],
+    postListeners: ["updateMultiPurposeLeds"]
 };
 gParameters.scene = {
     name: "scene",
@@ -444,7 +461,8 @@ gParameters.scene = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.time = {
     name: "time",
@@ -456,7 +474,8 @@ gParameters.time = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.track = {
     name: "track",
@@ -468,7 +487,8 @@ gParameters.track = {
     minValue: -Infinity,
     maxValue: Infinity,
     saveInPattr: false,
-    listeners: []
+    preListeners : [],
+    postListeners: []
 };
 gParameters.trackIndex = {
     name: "trackIndex",
@@ -480,7 +500,8 @@ gParameters.trackIndex = {
         return (gWatchersCreated) ? (gTrackArray.length - 1) : 2048;
     },
     saveInPattr: true,
-    listeners: ["focusOnClip"]
+    preListeners : [],
+    postListeners: ["focusOnClip"]
 };
 gParameters.rootNote = {
     name: "rootNote",
@@ -490,7 +511,8 @@ gParameters.rootNote = {
     minValue: 0,
     maxValue: 127,
     saveInPattr: true,
-    listeners: ["onScaleVariableChange"]
+    preListeners : [],
+    postListeners: ["onScaleVariableChange"]
 };
 gParameters.followPlayingClip = {
     name: "followPlayingClip",
@@ -500,7 +522,8 @@ gParameters.followPlayingClip = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: true,
-    listeners: ["updateFunctionModeLeds", "onFollowPlayingClipChange"]
+    preListeners : [],
+    postListeners: ["updateFunctionModeLeds", "onFollowPlayingClipChange"]
 };
 gParameters.rowOffset = {
     name: "rowOffset",
@@ -512,7 +535,8 @@ gParameters.rowOffset = {
         return (gWatchersCreated) ? (gDisplayNoteList.length - monomeLastRow()) : 2048;
     },
     saveInPattr: true,
-    listeners: ["updateNoteDisplay"]
+    preListeners : [],
+    postListeners: ["updateNoteDisplay"]
 };
 gParameters.timeOffset = {
     name: "timeOffset",
@@ -527,7 +551,8 @@ gParameters.timeOffset = {
         else return 0;
     },
     saveInPattr: true,
-    listeners: ["updateNoteDisplay"]
+    preListeners : [],
+    postListeners: ["updateNoteDisplay"]
 };
 gParameters.patchString = "GsCss";
 //                                  ---===conditions===---
@@ -540,7 +565,8 @@ gParameters.extendedLengthOptions = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: false,
-    listeners: ["updateControlLeds"]
+    preListeners : [],
+    postListeners: ["updateControlLeds"]
 };
 gParameters.extendedWidthOptions = {
     name: "extendedWidthOptions",
@@ -550,7 +576,8 @@ gParameters.extendedWidthOptions = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: false,
-    listeners: ["updateControlLeds"]
+    preListeners : [],
+    postListeners: ["updateControlLeds"]
 };
 gParameters.extendedVelocityOptions = {
     name: "extendedVelocityOptions",
@@ -560,7 +587,8 @@ gParameters.extendedVelocityOptions = {
     minValue: 0,
     maxValue: 1,
     saveInPattr: false,
-    listeners: ["updateControlLeds"]
+    preListeners : [],
+    postListeners: ["updateControlLeds"]
 };
 
 function bang() {
@@ -613,7 +641,8 @@ function initialize() {
 }
 
 function setClipFromGlobal(aTrack, aScene) {
-    if (gDebugItem.getSetName) { post("    ---setClipFromGlobal-\n"); }
+    if (!gDebugItem.getSetName) { post("    ---setClipFromGlobal-\n"); }
+    post("aTrack:", aTrack, "aScene:", aScene, "\n");
     
     var index = getIndexOfTrack(aTrack);
     if (index > -1) {
@@ -2403,6 +2432,11 @@ function Monome(aColumns, aRows, aOutlet) {
         mColumns = aColumns,
         mRows = aRows,
         mUpdating = false;
+        
+        if (! (this instanceof arguments.callee)) {
+            post("use new! - Monome\n");
+            return new Monome(aColumns, aRows, aOutlet);
+        }
     
     if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
@@ -2631,21 +2665,51 @@ function recall(aNumber) {
     gParameters.displayAll();
 }
 
+//<Parameters
+//      \/\/\<Parameters(?m).+\/\/Parameters\>
+
+
 function Parameters(aObject) {
     if (gDebugItem.functionName) { post("    --Parameters--\n"); }
+    
+    if (! (this instanceof arguments.callee)) {
+        return new Parameters(aObject);
+    }    
     
     var mParameters = this,
         mOutlet = aObject.outlet;
     
+    function resolveValue(aObject, aType, aSlot) {
+        var lValue;
+        if (gDebugItem.frequentFunctionName) { post("    --Parameters.resolveValue--\n"); }
+        
+        if (aType == "slotArray") {            
+            if (aObject instanceof Function) {
+                lValue = aObject(aSlot);
+            }
+            else if (aObject instanceof Array) {
+                lValue = aObject[aSlot];
+            }
+            else {
+                lValue = aObject;
+            }
+
+        }
+        else {
+            lValue = (aObject instanceof Function) ? aObject() : aObject;
+        }
+        return lValue;
+    }
+       
     function sendToHud(aObject) {
 
         var aKey = aObject.key,
-            aValue = (typeof aObject.value === "function") ? aObject.value() : aObject.value,
             aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
-            aSlot = (aObject.slot == undefined) ? null : aObject.slot;
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot,
+            aValue = aObject.value;
 
-        if (gDebugItem.functionName) { post("    --Parameter.sendToHud --\n"); }
-        if (!gDebugItem.functionArguments) {
+        if (gDebugItem.frequentFunctionName) { post("    --Parameter.sendToHud --\n"); }
+        if (gDebugItem.functionArguments) {
             post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
             (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
         }
@@ -2679,96 +2743,123 @@ function Parameters(aObject) {
         }
     }
     
+    function callListenersForParameter(aArrayOfListeners, aParameter, aSlot) {
+        var lListenerArrayLength = aArrayOfListeners.length,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            iCounter;
+        
+        if (gDebugItem.functionName) { post("    --callListenersForParameter--\n"); }
+        
+        for (iCounter = 0; iCounter < lListenerArrayLength; iCounter++) {
+            gThis[aArrayOfListeners[iCounter]]((lIsSlotArray) ? aSlot: undefined);
+            if (gDebugItem.localValue) { post("lPostListenerKeys[" + iCounter + ".name]:", iFunctionName, "\n"); }
+        }
+    }
+    
     this.set = function(aObject) {
         if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
         if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
+
         var aParameter = mParameters[aObject.key],
             aValue = aObject.value,
             lIsSlotArray = (aParameter.type == "slotArray"),
-            aSlot = (aObject.slot === undefined) ? null : aObject.slot,
+            aSlot = (aObject.slot === undefined) ? null: aObject.slot,
             aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
             lValue,
-            lMinimum = (aParameter.minValue instanceof Function) ? aParameter.minValue() : aParameter.minValue,
-            lMaximum = (aParameter.maxValue instanceof Function) ? aParameter.maxValue() : aParameter.maxValue,
-            lListenerKeys = aParameter.listeners,
-            lListenerLength = lListenerKeys.length,
+            lMinimum = resolveValue(aParameter.minValue, aParameter.type, aSlot),
+            lMaximum = resolveValue(aParameter.maxValue, aParameter.type, aSlot),
             iCounter;
-
+            
         //check validity of aValue
         if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
-            if ((aValue >= lMinimum) && (aValue <= lMaximum)) { lValue = aValue; }
-            else if (aValue < lMinimum) { lValue = lMinimum; }
-            else if (aValue > lMaximum) { lValue = lMaximum; }
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) {
+                lValue = aValue;
+            }
+            else if (aValue < lMinimum) {
+                lValue = lMinimum;
+            }
+            else if (aValue > lMaximum) {
+                lValue = lMaximum;
+            }
             else { post("something has gane awry in Parameters.set!\n"); }
         }
-        else { lValue = aValue; }
-        
-        if (lIsSlotArray) { aParameter.value[aSlot] = lValue; }
-        else { aParameter.value = lValue; }
-        
-        mParameters.display(aParameter.name);
+        else {
+            lValue = aValue;
+        }
 
-        // call listeners
-        
-        if (aQuietly) { 
-            return;
+
+        // call postListeners
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
         }
-        for (iCounter = 0; iCounter < lListenerLength; iCounter++) {
-            gThis[lListenerKeys[iCounter]]((lIsSlotArray) ? aSlot : undefined);
-            if (gDebugItem.localValue) { post("lListenerKeys[" +iCounter + ".name]:", iFunctionName, "\n"); }
+
+        // either assign to slot or not.
+        if (lIsSlotArray) {
+            aParameter.value[aSlot] = lValue;
         }
-        
-        // Save.
-        if (aParameter.saveInPattr) {
-            lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-            if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
-            gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+        else {
+            aParameter.value = lValue;
+        }   
+
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.postListeners, aParameter, aSlot);
+            
+            // Save.
+            if (aParameter.saveInPattr) {
+                lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+                if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+            }
+            mParameters.display(aParameter.name);
+
         }
+
     };
     
     this.display = function(aParameterName, aSlot) {
-        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
-        
-        var iCounter,
-            aParameter = mParameters[aParameterName],
-            lValueIsFunction = typeof aParameter.value == "function",
-            lLength;
-            
-        if (aParameter.type == "slotArray") {
-            lLength = (lValueIsFunction) ? aParameter.value.arrayLength : aParameter.value.length
+        if (gDebugItem.functionName) {
+            post("    --Parameters.display " + aParameterName + "--");
+            (mParameters[aParameterName].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
         }
-            
-        if (aParameter.format != undefined) {
-            if (aParameter.type == "slotArray") {
-                if (aSlot != undefined) {
-                                        
-                    sendToHud({
-                        key: aParameter.name,
-                        value: (lValueIsFunction) ? aParameter.value(aSlot) : aParameter.value[aSlot],
-                        format: aParameter.format,
-                        slot: aSlot
-                    });
-                }
 
-                 else {
-                    for (iCounter = 0; iCounter < lLength; iCounter++) {
-                        sendToHud({
-                            key: aParameter.name,
-                            value: (lValueIsFunction) ? aParameter.value(iCounter) : aParameter.value[iCounter],
-                            format: aParameter.format,
-                            slot: iCounter
-                        });
-                    }
-                } 
-            }
-            else {
+        var iCounter,
+        aParameter = mParameters[aParameterName],
+        lValueIsFunction = aParameter.value instanceof Function,
+        lLength;
+
+        if (aParameter.type == "slotArray") {
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
+        }
+
+        if (aParameter.type == "slotArray") {
+            if (aSlot != undefined) {
                 sendToHud({
                     key: aParameter.name,
-                    value: aParameter.value,
-                    format: aParameter.format
+                    value: resolveValue(aParameter.value, aParameter.type, aSlot),
+                    format: aParameter.format,
+                    slot: aSlot
                 });
             }
+
+            else {
+                for (iCounter = 0; iCounter < lLength; iCounter++) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: resolveValue(aParameter.value, aParameter.type, iCounter),
+                        format: aParameter.format,
+                        slot: iCounter
+                    });
+                }
+            }
+        }
+        else {
+
+            sendToHud({
+                key: aParameter.name,
+                value: resolveValue(aParameter.value),
+                format: aParameter.format
+            });
         }
     };
     
@@ -2784,7 +2875,7 @@ function Parameters(aObject) {
                         mParameters.display(iProperty);
                     }
                     else {
-                        if (!gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
+                        if (gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
                     }
                 }
             }
@@ -2895,11 +2986,15 @@ function Parameters(aObject) {
             }
         }
     };
+    return this;
 }
+
+//Parameters>
 
 function freebang() {
     if (gDebugItem.functionName) { post("    --freebang--\n"); }
     if (gDebugItem.list) { postPattrs("end"); }
+    gGlobal = null;
     if (gWatchSet) { gWatchSet = null; }
     if (gCountAllTracks) { gCountAllTracks = null; }
     if (gWatchSetTracks) { gWatchSetTracks = null; }
