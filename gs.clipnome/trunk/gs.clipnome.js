@@ -50,6 +50,7 @@ var gDebugItem = {
 
 gParameters.monomeWidth = {};
 gParameters.monomeHeight = {};
+var gClipstepGlobal = new Global("GsCssGlobalControl");
 
 var gPlayingClipsArray;
 var gDebugLevel = [];
@@ -98,8 +99,6 @@ function initialize() {
     //monome variables
     gParameters.monomeWidth.value = this.patcher.getnamed("monomeWidthGsClipnomePattr").getvalueof();
     gParameters.monomeHeight.value = this.patcher.getnamed("monomeHeightGsClipnomePattr").getvalueof();
-
-    glob = new Global("clipStepGlobalController");
 
     var colOrder = (jsarguments[1] != null) ? jsarguments[1] : 0;
 
@@ -469,7 +468,13 @@ function press(_column, _row, _updown) {
             if (_updown == 1) {
                 var track_send = _column + trackOffset();
                 var scene_send = _row + sceneOffset();
-                glob.setClip(track_send, scene_send);
+                if (gClipstepGlobal.setClip) {
+                    post("looks good so far\n");
+                    gClipstepGlobal.setClip(track_send, scene_send);
+                }
+                else {
+                    post("no dice captain!\n");
+                }
                 if (gDebugLevel[3]) { post("send clip", track_send, scene_send,"\n");}
                 gMonome[_column][_row].push();
                 break;
@@ -513,11 +518,13 @@ function press(_column, _row, _updown) {
         // Mixer Buttons
         case isMixerButton(_column, _row):
             if (_updown == 1) {
+                gMonome[_column][_row].ledOn();                
                 gMonome[_column][_row].push();
                 mixer();
                 break;
                 }
             else {
+                gMonome[_column][_row].ledOff();                
                 gMonome[_column][_row].release();
                 updateClipWindow();
                 break;
@@ -585,17 +592,17 @@ function press(_column, _row, _updown) {
                 break;
             }
 
-            case isClipstepButton(_column, _row):
-                if (_updown == 1) {
-                    gMonome[_column][_row].push();
-                    gMonome[_column][_row].ledOn();
-                    break;
-                }
-                else { 
-                    gMonome[_column][_row].release();
-                    gMonome[_column][_row].ledOff();
-                    break;
-                }
+        case isClipstepButton(_column, _row):
+            if (_updown == 1) {
+                gMonome[_column][_row].push();
+                gMonome[_column][_row].ledOn();
+                break;
+            }
+            else { 
+                gMonome[_column][_row].release();
+                gMonome[_column][_row].ledOff();
+                break;
+            }
 
         case isOffsetWindow(_column, _row):
             if (_updown == 1) {
