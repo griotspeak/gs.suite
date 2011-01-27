@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -16,7 +14,7 @@
 			<key>filename</key>
 			<string>../gs.tile/gs.tile.router.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-26T02:39:37Z</date>
+			<date>2011-01-27T18:49:15Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -40,9 +38,7 @@
 			<key>filename</key>
 			<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T18:04:39Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-01-27T18:49:13Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -60,19 +56,21 @@
 			<key>filename</key>
 			<string>../gs.chordScale/gs.chordScale.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T18:04:30Z</date>
+			<date>2011-01-27T18:36:27Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>../gs.channel/gs.channel.receive.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T14:24:56Z</date>
+			<date>2011-01-27T18:49:43Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>../gs.channel/gs.channel.send.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T14:24:59Z</date>
+			<date>2011-01-27T18:49:35Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -84,32 +82,13 @@
 			<key>filename</key>
 			<string>gs.abstract.parameters.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T18:04:38Z</date>
+			<date>2011-01-27T18:41:45Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>190</integer>
 	<key>metaData</key>
-	<dict>
-		<key>../gs.clipstep/gs.ClipStepSequencer.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>18</integer>
-				<key>line</key>
-				<integer>2856</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>2850</integer>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
-	</array>
+	<dict/>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
