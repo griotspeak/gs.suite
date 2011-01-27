@@ -62,9 +62,7 @@ function setProgramChangeThru(aValue) {
 }
 
 function channelNote(aChannel, aPitch, aVelocity) {
-    post("aChannel:", aChannel, "\n");
-    post("aPitch:", aPitch, "\n");
-    post("aVelocity:", aVelocity, "\n");
+
     if (aChannel == parameter.channel.value) {
         sendNoteMessage(aPitch, aVelocity);
     }
