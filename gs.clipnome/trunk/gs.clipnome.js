@@ -1043,13 +1043,18 @@ function Monome(aColumns, aRows, aOutlet) {
         mColumns = aColumns,
         mRows = aRows,
         mUpdating = false;
+        
+        if (! (this instanceof arguments.callee)) {
+            post("use new! - Monome\n");
+            return new Monome(aColumns, aRows, aOutlet);
+        }
     
     if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
     if (gDebugItem.functionName) { post("    --Monome--\n"); }
     if (gDebugItem.startValue) {
-        post("gParameters.monomeWidth.value:", aColumns, "\n");
-        post("gParameters.monomeHeight.value:", aRows, "\n");
+        post("monomeWidth:", aColumns, "\n");
+        post("monomeHeight:", aRows, "\n");
     }
 
     function SingleCell(aCol, aRow, aOutlet) {
@@ -1254,6 +1259,7 @@ function Monome(aColumns, aRows, aOutlet) {
     if (gDebugItem.startValue) {
         post("Monome.length (width):", that.length, "\n");
     }
+    return this;
 }
 
 //Monome>
