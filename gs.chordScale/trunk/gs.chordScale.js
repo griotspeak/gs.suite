@@ -796,7 +796,7 @@ function Parameters(aObject) {
     function sendToHud(aObject) {
 
         var aKey = aObject.key,
-            aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
+            aFormat = (aObject.format == null) ? false : aObject.format,
             aSlot = (aObject.slot == undefined) ? null : aObject.slot,
             aValue = aObject.value;
 
@@ -806,7 +806,6 @@ function Parameters(aObject) {
             (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
         }
         
-
         switch (aFormat) {
             case "set":
                 outlet(mOutlet, aKey, "set", aValue);
@@ -919,12 +918,12 @@ function Parameters(aObject) {
         aParameter = mParameters[aParameterName],
         lValueIsFunction = aParameter.value instanceof Function,
         lLength;
-
+        
+        if (aParameter.format === null) return;
+        
         if (aParameter.type == "slotArray") {
             lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
-        }
-
-        if (aParameter.type == "slotArray") {
+            
             if (aSlot != undefined) {
                 sendToHud({
                     key: aParameter.name,
@@ -962,7 +961,7 @@ function Parameters(aObject) {
 
         if (!aSlot) {
             for (iProperty in mParameters) {
-                if (mParameters[iProperty].format) {
+                if (mParameters[iProperty].format != null) {
                     if (mParameters[iProperty].value != null) {
                         mParameters.display(iProperty);
                     }
