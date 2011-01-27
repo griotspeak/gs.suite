@@ -473,6 +473,8 @@ function note(aPitch, aVelocity) {
     }
 }
 
+note.immediate = 1;
+
 function replaceNote(aVoice) {
 
     if (gDebugItem.functionName) { post("    --replaceNote--\n"); }
