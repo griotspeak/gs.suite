@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>../gs.chordScale/gs.chordScale.js</string>
+	<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -40,7 +40,9 @@
 			<key>filename</key>
 			<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T14:24:46Z</date>
+			<date>2011-01-27T18:04:39Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -58,9 +60,7 @@
 			<key>filename</key>
 			<string>../gs.chordScale/gs.chordScale.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T15:33:31Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-01-27T18:04:30Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -84,47 +84,31 @@
 			<key>filename</key>
 			<string>gs.abstract.parameters.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-27T14:31:01Z</date>
+			<date>2011-01-27T18:04:38Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>190</integer>
 	<key>metaData</key>
 	<dict>
-		<key>../gs.chordScale/gs.chordScale.js</key>
+		<key>../gs.clipstep/gs.ClipStepSequencer.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>7</integer>
+				<integer>18</integer>
 				<key>line</key>
-				<integer>426</integer>
+				<integer>2856</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>407</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>427</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>7</integer>
-				<key>line</key>
-				<integer>426</integer>
-			</dict>
+			<integer>2850</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>../gs.chordScale/gs.chordScale.js</string>
+		<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

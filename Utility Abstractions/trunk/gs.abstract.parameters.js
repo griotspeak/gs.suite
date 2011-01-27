@@ -15,18 +15,36 @@ function Parameters(aObject) {
     var mParameters = this,
         mOutlet = aObject.outlet;
     
-    function resolveValue(aProperty) {
-        return (aProperty instanceof Function) ? aProperty() : aProperty;
+    function resolveValue(aObject, aType, aSlot) {
+        var lValue;
+        if (gDebugItem.frequentFunctionName) { post("    --Parameters.resolveValue--\n"); }
+        
+        if (aType == "slotArray") {            
+            if (aObject instanceof Function) {
+                lValue = aObject(aSlot);
+            }
+            else if (aObject instanceof Array) {
+                lValue = aObject[aSlot];
+            }
+            else {
+                lValue = aObject;
+            }
+
+        }
+        else {
+            lValue = (aObject instanceof Function) ? aObject() : aObject;
+        }
+        return lValue;
     }
        
     function sendToHud(aObject) {
 
         var aKey = aObject.key,
-            aValue = resolveValue(aObject.value),
             aFormat = (aObject.format == undefined) ? Boolean(false) : aObject.format,
-            aSlot = (aObject.slot == undefined) ? null : aObject.slot;
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot,
+            aValue = aObject.value;
 
-        if (gDebugItem.functionName) { post("    --Parameter.sendToHud --\n"); }
+        if (gDebugItem.frequentFunctionName) { post("    --Parameter.sendToHud --\n"); }
         if (gDebugItem.functionArguments) {
             post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
             (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
@@ -66,6 +84,8 @@ function Parameters(aObject) {
             lIsSlotArray = (aParameter.type == "slotArray"),
             iCounter;
         
+        if (gDebugItem.functionName) { post("    --callListenersForParameter--\n"); }
+        
         for (iCounter = 0; iCounter < lListenerArrayLength; iCounter++) {
             gThis[aArrayOfListeners[iCounter]]((lIsSlotArray) ? aSlot: undefined);
             if (gDebugItem.localValue) { post("lPostListenerKeys[" + iCounter + ".name]:", iFunctionName, "\n"); }
@@ -83,10 +103,10 @@ function Parameters(aObject) {
             aQuietly = (aObject.silent === true),
             lPatcherObjectNameString,
             lValue,
-            lMinimum = resolveValue(aParameter.minValue),
-            lMaximum = resolveValue(aParameter.maxValue),
+            lMinimum = resolveValue(aParameter.minValue, aParameter.type, aSlot),
+            lMaximum = resolveValue(aParameter.maxValue, aParameter.type, aSlot),
             iCounter;
-
+            
         //check validity of aValue
         if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
             if ((aValue >= lMinimum) && (aValue <= lMaximum)) {
@@ -105,7 +125,7 @@ function Parameters(aObject) {
         }
 
 
-        // call listeners
+        // call postListeners
         if (!aQuietly) {
             callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
         }
@@ -116,7 +136,7 @@ function Parameters(aObject) {
         }
         else {
             aParameter.value = lValue;
-        }
+        }   
 
         if (!aQuietly) {
             callListenersForParameter(aParameter.postListeners, aParameter, aSlot);
@@ -124,9 +144,7 @@ function Parameters(aObject) {
             // Save.
             if (aParameter.saveInPattr) {
                 lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
-                if (gDebugItem.localValue) {
-                    post("lPatcherObjectNameString", lPatcherObjectNameString, "\n");
-                }
+                if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
                 gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
             }
             mParameters.display(aParameter.name);
@@ -136,47 +154,48 @@ function Parameters(aObject) {
     };
     
     this.display = function(aParameterName, aSlot) {
-        if (gDebugItem.functionName) { post("    --Parameters.display "+ aParameterName +"--\n"); }
-        
-        var iCounter,
-            aParameter = mParameters[aParameterName],
-            lValueIsFunction = typeof aParameter.value == "function",
-            lLength;
-            
-        if (aParameter.type == "slotArray") {
-            lLength = (lValueIsFunction) ? aParameter.value.arrayLength : aParameter.value.length;
+        if (gDebugItem.functionName) {
+            post("    --Parameters.display " + aParameterName + "--");
+            (mParameters[aParameterName].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
         }
-            
-        if (aParameter.format != undefined) {
-            if (aParameter.type == "slotArray") {
-                if (aSlot != undefined) {
-                                        
-                    sendToHud({
-                        key: aParameter.name,
-                        value: (lValueIsFunction) ? aParameter.value(aSlot) : aParameter.value[aSlot],
-                        format: aParameter.format,
-                        slot: aSlot
-                    });
-                }
 
-                 else {
-                    for (iCounter = 0; iCounter < lLength; iCounter++) {
-                        sendToHud({
-                            key: aParameter.name,
-                            value: (lValueIsFunction) ? aParameter.value(iCounter) : aParameter.value[iCounter],
-                            format: aParameter.format,
-                            slot: iCounter
-                        });
-                    }
-                } 
-            }
-            else {
+        var iCounter,
+        aParameter = mParameters[aParameterName],
+        lValueIsFunction = aParameter.value instanceof Function,
+        lLength;
+
+        if (aParameter.type == "slotArray") {
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
+        }
+
+        if (aParameter.type == "slotArray") {
+            if (aSlot != undefined) {
                 sendToHud({
                     key: aParameter.name,
-                    value: aParameter.value,
-                    format: aParameter.format
+                    value: resolveValue(aParameter.value, aParameter.type, aSlot),
+                    format: aParameter.format,
+                    slot: aSlot
                 });
             }
+
+            else {
+                for (iCounter = 0; iCounter < lLength; iCounter++) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: resolveValue(aParameter.value, aParameter.type, iCounter),
+                        format: aParameter.format,
+                        slot: iCounter
+                    });
+                }
+            }
+        }
+        else {
+
+            sendToHud({
+                key: aParameter.name,
+                value: resolveValue(aParameter.value),
+                format: aParameter.format
+            });
         }
     };
     
