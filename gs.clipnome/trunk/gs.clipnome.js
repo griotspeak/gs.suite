@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 var autowatch = 1;
 
 var inlets = 1;
-var outlets = 2;
+var outlets = 3;
 var post;
 var outlet;
 var gWatchersConstructed = false;
