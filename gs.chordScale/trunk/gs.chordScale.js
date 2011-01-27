@@ -471,9 +471,8 @@ function note(aPitch, aVelocity) {
             sendNoteMessage(iVoice, lSemitones, aVelocity);
         }
     }
+    note.immediate = 1;
 }
-
-note.immediate = 1;
 
 function replaceNote(aVoice) {
 
