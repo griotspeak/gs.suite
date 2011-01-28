@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>../gs.tile/gs.tile.client.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -19,9 +17,7 @@
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.client.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T17:43:15Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2011-01-28T17:45:06Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -36,31 +32,31 @@
 					<key>filename</key>
 					<string>../gs.pChange/gs.pChange.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T01:11:13Z</date>
+					<date>2011-01-28T17:45:34Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.chordScale/gs.chordScale.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T13:30:25Z</date>
+					<date>2011-01-28T17:45:44Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T13:30:08Z</date>
+					<date>2011-01-28T17:45:51Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.clipnome/gs.clipnome.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T03:12:20Z</date>
+					<date>2011-01-28T17:45:57Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.midiControl/gs.midiControl.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T01:09:21Z</date>
+					<date>2011-01-28T17:46:10Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -81,7 +77,9 @@
 					<key>filename</key>
 					<string>gs.abstract.monome.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T17:26:05Z</date>
+					<date>2011-01-28T17:46:26Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -126,26 +124,7 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>190</integer>
 	<key>metaData</key>
-	<dict>
-		<key>../gs.tile/gs.tile.client.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>34</integer>
-				<key>line</key>
-				<integer>677</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>639</integer>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>../gs.tile/gs.tile.client.js</string>
-	</array>
+	<dict/>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>

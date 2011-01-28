@@ -20,7 +20,7 @@ function Monome(aColumns, aRows, aOutlet) {
         mColumns = aColumns,
         mRows = aRows,
         mUpdating = false,
-        mOutlet = aOutlet;
+        mOutlet;
         
         if (! (this instanceof arguments.callee)) {
             post("use new! - Monome\n");
@@ -35,11 +35,19 @@ function Monome(aColumns, aRows, aOutlet) {
         post("monomeHeight:", aRows, "\n");
     }
     
-    function mLedOutlet(aColumn, aRow, aState) {
-        outlet(mOutlet, aColumn, aRow, aState);
+    if (aOutlet instanceof Number) {
+        mOutlet = aOutlet;
+        that.ledFunction = function(aColumn, aRow, aState) {
+            post(mOutlet, aColumn, aRow, aState);
+        };
     }
-    
-    this.ledFunction = mLedOutlet;
+    else if (aOutlet instanceof Function) {
+        that.ledFunction = aOutlet;
+    }
+    else if (aOutlet === undefined) {
+        post("ERROR. No Outlet provided!\n");
+        return false;
+    }
 
     function SingleCell(aCol, aRow) {
 
@@ -88,14 +96,14 @@ function Monome(aColumns, aRows, aOutlet) {
         this.ledOn = function() {
             actualState = 1;
             if(!mUpdating) {
-                outlet(mOutlet, mCol, mRow, actualState);
+                that.ledFunction(mCol, mRow, actualState);
             }
         };
 
         this.ledOff = function() {
             actualState = 0;
             if (!mUpdating) {
-                outlet(mOutlet, mCol, mRow, actualState);
+                that.ledFunction(mCol, mRow, actualState);
             }
         };
 
