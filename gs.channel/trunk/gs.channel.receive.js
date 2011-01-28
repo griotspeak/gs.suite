@@ -79,21 +79,25 @@ function thruNote(aPitch, aVelocity) {
         sendNoteMessage(aPitch, aVelocity);
     }
 }
+thruNote.immediate = 1;
 
 function thruProgramChange(aProgramChange) {
     if (parameter.programChangeThru.value) {
         sendProgramChangeMessage(aProgramChange);
     }
 }
+thruProgramChange.immediate = 1;
 
 function sendNoteMessage(aPitch, aVelocity) {
     outlet(0, aPitch, aVelocity);
     parameter.pitch[aPitch] = Boolean(aVelocity);
 }
+sendNoteMessage.immediate = 1;
 
 function sendProgramChangeMessage(aProgramChange) {
     outlet(1, aProgramChange);
 }
+sendProgramChangeMessage.immediate = 1;
 
 function panic() {
     for (var iPitch = 0; iPitch < 128; iPitch++) {

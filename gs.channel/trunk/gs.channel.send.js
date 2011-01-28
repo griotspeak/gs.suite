@@ -66,12 +66,14 @@ function thruNote(aPitch, aVelocity) {
         sendNoteMessage(aPitch, aVelocity);
     }
 }
+thruNote.immediate = 1;
 
 function thruProgramChange(aProgramChange) {
     if (parameter.programChangeThru.value) {
         sendProgramChangeMessage(aProgramChange);
     }
 }
+thruProgramChange.immediate = 1;
 
 function sendNoteMessage(aPitch, aVelocity) {
     
@@ -85,6 +87,8 @@ function sendNoteMessage(aPitch, aVelocity) {
     
 }
 
+sendNoteMessage.immediate = 1;
+
 function sendProgramChangeMessage(aProgramChange) {
     if (parameter.programChangeThru.value) {
         outlet(1, aProgramChange);
@@ -93,6 +97,7 @@ function sendProgramChangeMessage(aProgramChange) {
     messnamed("channelProgramChange", parameter.channel.value, aNumber); 
     
 }
+sendProgramChangeMessage.immediate = 1;
 
 function panic() {
     for (var iPitch = 0; iPitch < 128; iPitch++) {
