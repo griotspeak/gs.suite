@@ -234,7 +234,7 @@ function initialize() {
             });
         }
         
-        gMonome = new Monome(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value, null, prepareLedForRouter);
+        gMonome = new Monome(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value, prepareLedForRouter);
         alertRouterOfNewClient();
 
     }
@@ -646,14 +646,14 @@ function setAppMonomeHeight(aValue) {
    //    aRows - The number of rows to initialize with.
 
 
-function Monome(aColumns, aRows, aOutlet, aLedFunction) {
+function Monome(aColumns, aRows, aOutlet) {
     var iCol,
         iRow,
         that = this,
         mColumns = aColumns,
         mRows = aRows,
         mUpdating = false,
-        mOutlet = aOutlet;
+        mOutlet;
         
         if (! (this instanceof arguments.callee)) {
             post("use new! - Monome\n");
@@ -668,13 +668,18 @@ function Monome(aColumns, aRows, aOutlet, aLedFunction) {
         post("monomeHeight:", aRows, "\n");
     }
     
-    if (aLedFunction === undefined) {
+    if (aOutlet instanceof Number) {
+        mOutlet = aOutlet;
         that.ledFunction = function(aColumn, aRow, aState) {
             post(mOutlet, aColumn, aRow, aState);
         };
     }
-    else {
-        that.ledFunction = aLedFunction;
+    else if (aOutlet instanceof Function) {
+        that.ledFunction = aOutlet;
+    }
+    else if (aOutlet === undefined) {
+        post("ERROR. No Outlet provided!\n");
+        return false;
     }
 
     function SingleCell(aCol, aRow) {
