@@ -193,9 +193,21 @@ function Monome(aColumns, aRows, aOutlet) {
 
     };
     
+    this.window = function(aMethodToInvoke, aLeftColumn, aRightColumn, aTopRow, aBottomRow) {
+        if (gDebugItem.functionName) { post("    --window :", aMethodToInvoke, "--\n"); }
+        var iColumn;
+    	var iRow;    
+
+        for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
+            for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
+                that[iColumn][iRow][aMethodToInvoke]();
+            }
+        }
+    };
+    
     this.refresh = function() {
         if (gDebugItem.functionName) { post("    --refresh--\n"); }
-        window("checkActual", 0, mColumns, 0, mRows);
+        that.window("checkActual", 0, mColumns, 0, mRows);
     };
     //TODO learn how to make a catch all and pass calls to the whole monome.
     
@@ -204,18 +216,6 @@ function Monome(aColumns, aRows, aOutlet) {
         
         window("ledOff", 0, mColumns, 0, mRows);
     };
-
-    function window(aMethodToInvoke, aLeftColumn, aRightColumn, aTopRow, aBottomRow) {
-        if (gDebugItem.functionName) { post("    --window :", aMethodToInvoke, "--\n"); }
-        var iColumn;
-    	var iRow;    
-
-        for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
-            for (iRow = aTopRow; iRow < lBottomRow; iRow++) {
-                Monome[iColumn][iRow][aMethodToInvoke]();
-            }
-        }
-    }
 
     this.beginUpdates = function() {
         if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
