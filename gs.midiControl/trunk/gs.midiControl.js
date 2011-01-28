@@ -659,7 +659,8 @@ function Monome(aColumns, aRows, aOutlet) {
         that = this,
         mColumns = aColumns,
         mRows = aRows,
-        mUpdating = false;
+        mUpdating = false,
+        mOutlet;
         
         if (! (this instanceof arguments.callee)) {
             post("use new! - Monome\n");
@@ -673,9 +674,22 @@ function Monome(aColumns, aRows, aOutlet) {
         post("monomeWidth:", aColumns, "\n");
         post("monomeHeight:", aRows, "\n");
     }
+    
+    if (aOutlet instanceof Number) {
+        mOutlet = aOutlet;
+        that.ledFunction = function(aColumn, aRow, aState) {
+            post(mOutlet, aColumn, aRow, aState);
+        };
+    }
+    else if (aOutlet instanceof Function) {
+        that.ledFunction = aOutlet;
+    }
+    else if (aOutlet === undefined) {
+        post("ERROR. No Outlet provided!\n");
+        return false;
+    }
 
-    function SingleCell(aCol, aRow, aOutlet) {
-        var outletNumber = aOutlet;
+    function SingleCell(aCol, aRow) {
 
         var mCol = aCol;
         var mRow = aRow;
@@ -722,43 +736,43 @@ function Monome(aColumns, aRows, aOutlet) {
         this.ledOn = function() {
             actualState = 1;
             if(!mUpdating) {
-                outlet(outletNumber, mCol, mRow, actualState);
+                that.ledFunction(mCol, mRow, actualState);
             }
         };
 
         this.ledOff = function() {
             actualState = 0;
             if (!mUpdating) {
-                outlet(outletNumber, mCol, mRow, actualState);
+                that.ledFunction(mCol, mRow, actualState);
             }
         };
 
         this.checkActual = function() {
             //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
-            outlet(outletNumber, mCol, mRow, actualState);
+            that.ledFunction(mCol, mRow, actualState);
             tempState = 0;
         };
 
         this.blink = function() {
             tempState = (tempState == 1) ? 0: 1;
-            outlet(outletNumber, mCol, mRow, tempState);
+            that.ledFunction(mCol, mRow, tempState);
         };
 
         this.blinkIfOff = function() {
             if (actualState == 0) {
                 tempState = (tempState == 1) ? 0: 1;
-                outlet(outletNumber, mCol, mRow, tempState);
+                that.ledFunction(mCol, mRow, tempState);
             }
         };
 
         this.tempOn = function() {
             tempState = 1;
-            outlet(outletNumber, mCol, mRow, tempState);
+            that.ledFunction(mCol, mRow, tempState);
         };
 
         this.tempOff = function() {
             tempState = 0;
-            outlet(outletNumber, mCol, mRow, actualState);
+            that.ledFunction(mCol, mRow, actualState);
         };
     }
 
@@ -833,19 +847,28 @@ function Monome(aColumns, aRows, aOutlet) {
 
     };
     
-    this.refresh = function() {
-        if (gDebugItem.functionName) { post("    --refresh--\n"); }
-        
-        var iCol,
-            iRow,
-            lHeight = mRows,
-            lWidth = mColumns;
+    this.window = function(aMethodToInvoke, aLeftColumn, aRightColumn, aTopRow, aBottomRow) {
+        if (gDebugItem.functionName) { post("    --window :", aMethodToInvoke, "--\n"); }
+        var iColumn;
+    	var iRow;    
 
-        for (iCol = 0; iCol < lWidth; iCol++) {
-            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
-                that[iCol][iRow].checkActual();
+        for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
+            for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
+                that[iColumn][iRow][aMethodToInvoke]();
             }
         }
+    };
+    
+    this.refresh = function() {
+        if (gDebugItem.functionName) { post("    --refresh--\n"); }
+        that.window("checkActual", 0, mColumns, 0, mRows);
+    };
+    //TODO learn how to make a catch all and pass calls to the whole monome.
+    
+    this.clear = function() {
+        if (gDebugItem.functionName) { post("    --clear--\n"); }
+        
+        window("ledOff", 0, mColumns, 0, mRows);
     };
 
     this.beginUpdates = function() {
