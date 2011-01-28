@@ -32,6 +32,8 @@ var inlets = 1;
 var outlets = 3;
 var post;
 var outlet;
+var gThis = this;
+var gThisPatcher = this.patcher;
 var gWatchersConstructed = false;
 var gMonome;
 var gParameters = {};
