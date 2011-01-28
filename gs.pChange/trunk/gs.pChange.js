@@ -152,12 +152,14 @@ function press(aCol, aRow, aPress) {
         gMonome[aCol][aRow].ledOff();
     }
 }
+press.immediate = 1;
 
 function sendMessageNumber(aNumber) {
     
     messnamed("gs.channel", "channelProgramChange", gParameters.channel.value, aNumber);
 
 }
+sendMessageNumber.immediate = 1;
 
 function setChannel(aChannel) {
     gParameters.set({
