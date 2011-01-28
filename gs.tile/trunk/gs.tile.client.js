@@ -44,7 +44,7 @@ var gDebugItem = {
     startValue : false
 };
 
-var Monome = [];
+var gMonome = [];
 
 var gParameters = new Parameters({outlet : 1});
 
@@ -234,7 +234,7 @@ function initialize() {
             });
         }
         
-        Monome = [];
+        gMonome = [];
         buildMonome();
         alertRouterOfNewClient();
 
@@ -538,10 +538,10 @@ function processPress(aColumnFromRouter, aRowFromRouter, aStateFromRouter) {
     
     //        not doing anything with this yet, but eventually
     if (aStateFromRouter == 1) {
-        Monome[lTranslatedColumn][lTranslatedRow].push();
+        gMonome[lTranslatedColumn][lTranslatedRow].push();
     }
     else if(aStateFromRouter == 0) {
-        Monome[lTranslatedColumn][lTranslatedRow].release();
+        gMonome[lTranslatedColumn][lTranslatedRow].release();
     }    
     //        -/
     
@@ -561,10 +561,10 @@ function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
     if (gDebugItem.startValue) { post("raw col:", aColumnFromPatcher, "row:", aRowFromPatcher, "\n"); }
     
     if (aStateFromPatcher == 1) {
-        Monome[aColumnFromPatcher][aRowFromPatcher].ledOn();
+        gMonome[aColumnFromPatcher][aRowFromPatcher].ledOn();
     }
     else if(aStateFromPatcher == 0) {
-        Monome[aColumnFromPatcher][aRowFromPatcher].ledOff();
+        gMonome[aColumnFromPatcher][aRowFromPatcher].ledOff();
     }
 }
 
@@ -579,10 +579,10 @@ function ledCol (aColumnFromPatcher, aStateFromPatcher) {
     for (var iRow = 0; iRow < lengthOfBinary; iRow++) {
         
         if (lBinaryNumberValue[iRow] == 1) {
-            Monome[aColumnFromPatcher][lengthOfBinary - iRow - 1].ledOn();
+            gMonome[aColumnFromPatcher][lengthOfBinary - iRow - 1].ledOn();
         }
         else if(lBinaryNumberValue[iRow] == 0) {
-            Monome[aColumnFromPatcher][lengthOfBinary - iRow - 1].ledOff();
+            gMonome[aColumnFromPatcher][lengthOfBinary - iRow - 1].ledOff();
         }
     }
 }
@@ -598,10 +598,10 @@ function ledRow (aRowFromPatcher, aStateFromPatcher) {
     for (var iColumn = 0; iColumn < lengthOfBinary; iColumn++) {
         
         if (lBinaryNumberValue[iColumn] == 1) {
-            Monome[lengthOfBinary - iColumn - 1][aRowFromPatcher].ledOn();
+            gMonome[lengthOfBinary - iColumn - 1][aRowFromPatcher].ledOn();
         }
         else if(lBinaryNumberValue[iColumn] == 0) {
-            Monome[lengthOfBinary - iColumn - 1][aRowFromPatcher].ledOff();
+            gMonome[lengthOfBinary - iColumn - 1][aRowFromPatcher].ledOff();
         }
     }
 }
@@ -705,44 +705,44 @@ function buildMonome() {
     }
     
     for (var iWidth = 0; iWidth < (gParameters.appMonomeWidth.value); iWidth++) {
-        Monome[iWidth] = new Array();
+        gMonome[iWidth] = new Array();
         for (var iHeight = 0; iHeight < (gParameters.appMonomeHeight.value); iHeight++) {
-            Monome[iWidth][iHeight] = new SingleCell(iWidth , iHeight);
+            gMonome[iWidth][iHeight] = new SingleCell(iWidth , iHeight);
         }
     }
 }
 
-Monome.row = function(aRow, aMethodToInvoke) {
+gMonome.row = function(aRow, aMethodToInvoke) {
         switch (aMethodToInvoke) {
             case "ledOn":
                 var iColumn;
                 for (iColumn = 0; iColumn < gParameters.appMonomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].ledOn();
+                    gMonome[iColumn][aRow].ledOn();
                 }
                 break;
             case "ledOff":
                 for (iColumn = 0; iColumn < gParameters.appMonomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].ledOff();
+                    gMonome[iColumn][aRow].ledOff();
                 }
                 break;
             case "tempOn":
                 for (iColumn = 0; iColumn < gParameters.appMonomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].tempOn();
+                    gMonome[iColumn][aRow].tempOn();
                 }
                 break;
             case "tempOff":
                 for (iColumn = 0; iColumn < gParameters.appMonomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].tempOff();
+                    gMonome[iColumn][aRow].tempOff();
                 }
                 break;
             case "blink":
                 for (iColumn = 0; iColumn < gParameters.appMonomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].blink();
+                    gMonome[iColumn][aRow].blink();
                 }
                 break;
             case "blinkIfOff":
                 for (iColumn = 0; iColumn < gParameters.appMonomeWidth.value; iColumn++) {
-                    Monome[iColumn][aRow].blinkIfOff();
+                    gMonome[iColumn][aRow].blinkIfOff();
                 }
                 break;
             default :
@@ -750,37 +750,37 @@ Monome.row = function(aRow, aMethodToInvoke) {
         }
 };
 
-Monome.column = function(aColumn, aMethodToInvoke) {
+gMonome.column = function(aColumn, aMethodToInvoke) {
         switch (aMethodToInvoke) {
             case "ledOn":
                 var iRow;
                 for (iRow = 0; iRow < gParameters.appMonomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].ledOn();
+                    gMonome[aColumn][iRow].ledOn();
                 }
                 break;
             case "ledOff":
                 for (iRow = 0; iRow < gParameters.appMonomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].ledOff();
+                    gMonome[aColumn][iRow].ledOff();
                 }
                 break;
             case "tempOn":
                 for (iRow = 0; iRow < gParameters.appMonomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].tempOn();
+                    gMonome[aColumn][iRow].tempOn();
                 }
                 break;
             case "tempOff":
                 for (iRow = 0; iRow < gParameters.appMonomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].tempOff();
+                    gMonome[aColumn][iRow].tempOff();
                 }
                 break;
             case "blink":
                 for (iRow = 0; iRow < gParameters.appMonomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].blink();
+                    gMonome[aColumn][iRow].blink();
                 }
                 break;
             case "blinkIfOff":
                 for (iRow = 0; iRow < gParameters.appMonomeHeight.value; iRow++) {
-                    Monome[aColumn][iRow].blinkIfOff();
+                    gMonome[aColumn][iRow].blinkIfOff();
                 }
                 break;
             default : {
@@ -800,7 +800,7 @@ function clearWindow() {
     for (iColumn = gParameters.windowColumnOffset.value; iColumn < lBottom; iColumn++) {
         for (iRow = gParameters.windowRowOffset.value; iRow < lRight; iRow++) {
             if (gDebugItem.endValue) { post("clear col:", iColumn, "row:", iRow, "\n"); }
-            Monome[iColumn][iRow].tempOff();
+            gMonome[iColumn][iRow].tempOff();
         }
     }
 }
@@ -818,7 +818,7 @@ function refreshWindow() {
     for (iColumn = gParameters.windowColumnOffset.value; iColumn < lBottom; iColumn++) {
         for (iRow = gParameters.windowRowOffset.value; iRow < lRight; iRow++) {
             if (gDebugItem.endValue) { post("clear col:", iColumn, "row:", iRow, "\n"); }
-            Monome[iColumn][iRow].checkActual();
+            gMonome[iColumn][iRow].checkActual();
         }
     }
 }
