@@ -10,7 +10,7 @@ function Parameters(aObject) {
     
     if (! (this instanceof arguments.callee)) {
         return new Parameters(aObject);
-    }    
+    }
     
     var mParameters = this,
         mOutlet = aObject.outlet;
@@ -146,9 +146,8 @@ function Parameters(aObject) {
                 if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
                 gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
             }
-            mParameters.display(aParameter.name);
-
         }
+        mParameters.display(aParameter.name);
 
     };
     
@@ -240,7 +239,7 @@ function Parameters(aObject) {
                 slot : aSlot
             });
         }
-        else { post(aParameterName, "is not a toggle parameter\n");}
+        else { post(aParameterName, "is not a toggle gParameters\n");}
     };
     
     this.change = function(aParameterName, aAmount, aSlot) {
