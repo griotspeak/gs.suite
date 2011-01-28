@@ -2605,19 +2605,28 @@ function Monome(aColumns, aRows, aOutlet) {
 
     };
     
-    this.refresh = function() {
-        if (gDebugItem.functionName) { post("    --refresh--\n"); }
-        
-        var iCol,
-            iRow,
-            lHeight = mRows,
-            lWidth = mColumns;
+    this.window = function(aMethodToInvoke, aLeftColumn, aRightColumn, aTopRow, aBottomRow) {
+        if (gDebugItem.functionName) { post("    --window :", aMethodToInvoke, "--\n"); }
+        var iColumn;
+    	var iRow;    
 
-        for (iCol = 0; iCol < lWidth; iCol++) {
-            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
-                that[iCol][iRow].checkActual();
+        for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
+            for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
+                that[iColumn][iRow][aMethodToInvoke]();
             }
         }
+    };
+    
+    this.refresh = function() {
+        if (gDebugItem.functionName) { post("    --refresh--\n"); }
+        that.window("checkActual", 0, mColumns, 0, mRows);
+    };
+    //TODO learn how to make a catch all and pass calls to the whole monome.
+    
+    this.clear = function() {
+        if (gDebugItem.functionName) { post("    --clear--\n"); }
+        
+        window("ledOff", 0, mColumns, 0, mRows);
     };
 
     this.beginUpdates = function() {
@@ -2648,6 +2657,7 @@ function Monome(aColumns, aRows, aOutlet) {
     if (gDebugItem.startValue) {
         post("Monome.length (width):", that.length, "\n");
     }
+    return this;
 }
 
 //Monome>
