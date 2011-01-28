@@ -2431,7 +2431,8 @@ function Monome(aColumns, aRows, aOutlet) {
         that = this,
         mColumns = aColumns,
         mRows = aRows,
-        mUpdating = false;
+        mUpdating = false,
+        mOutlet;
         
         if (! (this instanceof arguments.callee)) {
             post("use new! - Monome\n");
@@ -2445,9 +2446,22 @@ function Monome(aColumns, aRows, aOutlet) {
         post("monomeWidth:", aColumns, "\n");
         post("monomeHeight:", aRows, "\n");
     }
+    
+    if (aOutlet instanceof Number) {
+        mOutlet = aOutlet;
+        that.ledFunction = function(aColumn, aRow, aState) {
+            post(mOutlet, aColumn, aRow, aState);
+        };
+    }
+    else if (aOutlet instanceof Function) {
+        that.ledFunction = aOutlet;
+    }
+    else if (aOutlet === undefined) {
+        post("ERROR. No Outlet provided!\n");
+        return false;
+    }
 
-    function SingleCell(aCol, aRow, aOutlet) {
-        var outletNumber = aOutlet;
+    function SingleCell(aCol, aRow) {
 
         var mCol = aCol;
         var mRow = aRow;
@@ -2494,43 +2508,43 @@ function Monome(aColumns, aRows, aOutlet) {
         this.ledOn = function() {
             actualState = 1;
             if(!mUpdating) {
-                outlet(outletNumber, mCol, mRow, actualState);
+                that.ledFunction(mCol, mRow, actualState);
             }
         };
 
         this.ledOff = function() {
             actualState = 0;
             if (!mUpdating) {
-                outlet(outletNumber, mCol, mRow, actualState);
+                that.ledFunction(mCol, mRow, actualState);
             }
         };
 
         this.checkActual = function() {
             //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
-            outlet(outletNumber, mCol, mRow, actualState);
+            that.ledFunction(mCol, mRow, actualState);
             tempState = 0;
         };
 
         this.blink = function() {
             tempState = (tempState == 1) ? 0: 1;
-            outlet(outletNumber, mCol, mRow, tempState);
+            that.ledFunction(mCol, mRow, tempState);
         };
 
         this.blinkIfOff = function() {
             if (actualState == 0) {
                 tempState = (tempState == 1) ? 0: 1;
-                outlet(outletNumber, mCol, mRow, tempState);
+                that.ledFunction(mCol, mRow, tempState);
             }
         };
 
         this.tempOn = function() {
             tempState = 1;
-            outlet(outletNumber, mCol, mRow, tempState);
+            that.ledFunction(mCol, mRow, tempState);
         };
 
         this.tempOff = function() {
             tempState = 0;
-            outlet(outletNumber, mCol, mRow, actualState);
+            that.ledFunction(mCol, mRow, actualState);
         };
     }
 
