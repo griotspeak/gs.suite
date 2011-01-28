@@ -78,7 +78,7 @@ gParameters.appMonomeNumber = {// used by router
     maxValue : 127,
     saveInPattr : true,
     preListeners : [],
-    postListeners: []
+    postListeners: ["updateAppWindow"]
 };
 gParameters.appMonomeLayer = {
     name : "appMonomeLayer",
@@ -89,7 +89,7 @@ gParameters.appMonomeLayer = {
     maxValue : 127,
     saveInPattr : true,
     preListeners : [],
-    postListeners: []
+    postListeners: ["updateAppWindow"]
 };
 gParameters.appChannelNumber = {
     name : "appChannelNumber",
@@ -111,7 +111,7 @@ gParameters.windowWidth = {// used by client
     maxValue : 2048,
     saveInPattr : true,
     preListeners : [],
-    postListeners: []
+    postListeners: ["updateAppWindow"]
 };
 gParameters.windowHeight = {// used by client
     name : "windowHeight",
@@ -122,7 +122,7 @@ gParameters.windowHeight = {// used by client
     maxValue : 2048,
     saveInPattr : true,
     preListeners : [],
-    postListeners: []
+    postListeners: ["updateAppWindow"]
 };
 gParameters.windowColumnOffset = {// used by client
     name : "windowColumnOffset",
@@ -155,7 +155,7 @@ gParameters.displayColumnOffset = {// used by router
     maxValue : 2048,
     saveInPattr : true,
     preListeners : [],
-    postListeners: []
+    postListeners: ["updateAppWindow"]
 };
 gParameters.displayRowOffset = {// used by router
     name : "displayRowOffset",
@@ -166,7 +166,7 @@ gParameters.displayRowOffset = {// used by router
     maxValue : 2048,
     saveInPattr : true,
     preListeners : [],
-    postListeners: []
+    postListeners: ["updateAppWindow"]
 };
 gParameters.comOrderNumber = {
     name : "comOrderNumber",
@@ -279,7 +279,6 @@ function setWindowWidth(aValue) {
         key :"windowWidth",
         value : aValue
     });
-    updateAppWindow();
 }
 
 function setWindowHeight(aValue) {
@@ -288,7 +287,6 @@ function setWindowHeight(aValue) {
         key : "windowHeight",
         value : aValue
     });
-    updateAppWindow();
 }
 
 function updateAppWindow() {
@@ -348,7 +346,6 @@ function setDisplayColumnOffset(aValue) {
         key : "displayColumnOffset",
         value :aValue
     });
-    updateAppWindow();
 }
 
 function setDisplayRowOffset(aValue) {
@@ -357,7 +354,6 @@ function setDisplayRowOffset(aValue) {
         key : "displayRowOffset",
         value : aValue
     });
-    updateAppWindow();
 }
 
 function setAppMonomeNumber(aValue) {
@@ -366,7 +362,6 @@ function setAppMonomeNumber(aValue) {
         key : "appMonomeNumber",
         value : aValue
     });
-    updateAppWindow();
 }
 
 function setAppMonomeLayer(aValue) {
@@ -375,32 +370,27 @@ function setAppMonomeLayer(aValue) {
         key : "appMonomeLayer",
         value : aValue
     });
-    updateAppWindow();
 }
 
 
 function incrementDisplayColumnOffset() {
     if (gDebugItem.functionName) { post("    --incrementDisplayColumnOffset--\n"); }
     gParameters.change("displayColumnOffset", 1);
-    updateAppWindow();
 }
 
 function decrementDisplayColumnOffset() {
     if (gDebugItem.functionName) { post("    --decrementDisplayColumnOffset--\n"); }
     gParameters.change("displayColumnOffset", -1);
-    updateAppWindow();
 }
 
 function incrementDisplayRowOffset() {
     if (gDebugItem.functionName) { post("    --incrementDisplayRowOffset--\n"); }
     gParameters.change("displayRowOffset", 1);
-    updateAppWindow();
 }
 
 function decrementDisplayRowOffset() {
     if (gDebugItem.functionName) { post("    --decrementDisplayRowOffset--\n"); }
     gParameters.change("displayRowOffset", -1);
-    updateAppWindow();
 }
 
 function newRouterAlert() {
