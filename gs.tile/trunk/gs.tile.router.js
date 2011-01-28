@@ -371,7 +371,7 @@ function removeClient(aAppName, aChannelNumber, aKey1, aKey2) {
     if (debugItem.functionName) { post("    ---removeClient-\n"); }
     
     if (debugItem.startValue) { post("entry of app to remove", lAppEntry, "\n"); }
-    var lTheApp = findApp(aAppName, aAppChannel, aKey1, aKey2);
+    var lTheApp = findApp(aAppName, aChannelNumber, aKey1, aKey2);
     
     if (debugItem.endValue) { post("(removeClient) theApp =", lTheApp, "\n"); }
     if (lTheApp > -1) { 
@@ -387,13 +387,13 @@ function removeClient(aAppName, aChannelNumber, aKey1, aKey2) {
     gsTileGlobal.appList.forEach(postClient);
 }
 
-function findApp(aAppName, aAppChannel, aKeyOne, aKeyTwo) {
+function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
     var lListLength = gsTileGlobal.appList.length,
         iApp;
     
     if (debugItem.frequentFunctionName) { post("    ---findApp-\n"); }
     
-    if (debugItem.endValue) { post("app array to find:", aAppName, aAppChannel, aKeyOne, aKeyTwo, "\n"); }
+    if (debugItem.endValue) { post("app array to find:", aAppName, aChannelNumber, aKeyOne, aKeyTwo, "\n"); }
     if (debugItem.list) { 
         post("list of current clients:\n");
         gsTileGlobal.appList.forEach(postClient);
