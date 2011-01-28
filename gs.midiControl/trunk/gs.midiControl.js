@@ -45,30 +45,43 @@ var mMessageBankRow = 4;
 var mClientBankRow = 5;
 var mClientWindowTopEdge = 6;
 
-var Monome = [];
-buildMonome();
+var gMonome = new Monome(mMonomeWidth, mMonomeHeight, 0);
 
-var parameter = {
-    messageBank : {
-        name : "messageBank",
-        value : 0,
-        minValue : 0,
-        maxValue : 7
-    },
-    clientBank : {
-        name : "clientBank",
-        value : 0,
-        minValue : 0,
-        maxValue : 7
-    },
-    currentClient : {
-        name : "currentClient",
-        value : 0,
-        minValue : 0,
-        maxValue : 127
-    },
-    patchString : "GsMidiControl"
+var gParameters = new Parameters();
+
+gParameters.messageBank = {
+    name: "messageBank",
+    type : "number",
+    format : "set",
+    value: 0,
+    minValue: 0,
+    maxValue: 7,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: ["updateMessageBankOnMonome"]
 };
+
+gParameters.clientBank = {
+    name: "clientBank",
+    value: 0,
+    minValue: 0,
+    maxValue: 7,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: ["updateClientBankOnMonome"]
+};
+
+gParameters.currentClient = {
+    name: "currentClient",
+    value: 0,
+    minValue: 0,
+    maxValue: 127,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: ["updateClientWindow"]
+};
+
+gParameters.patchString = "GsMidiControl";
 
 var debugItem = {
     arguments : false,
@@ -83,7 +96,7 @@ var debugItem = {
     loading : false
 };
 
-var eBankType = {
+var cBankType = {
     programChange : 0,
     note : 1
 };
@@ -97,10 +110,10 @@ function initialize() {
 
 function getBankType(aBankNumber) {
     if ((aBankNumber >= 0) && (aBankNumber <= 3)) {
-        return eBankType.programChange;
+        return cBankType.programChange;
     }
     else if ((aBankNumber >= 4) && (aBankNumber <= 7)) {
-        return eBankType.note;
+        return cBankType.note;
     }
     else {
         post("invalid bank:", aBankNumber, "\n");
@@ -113,10 +126,10 @@ function makeMessageNumber(aCol, aRow) {
     var lTriggerNumber = aRow * mMonomeWidth + aCol; // 'raw'
     var lBankOffset = 32;
     
-    if (getBankType(parameter.messageBank.value) == eBankType.programChange) {
+    if (getBankType(parameter.messageBank.value) == cBankType.programChange) {
         lBankOffset *= parameter.messageBank.value;
     }
-    else if (getBankType(parameter.messageBank.value) == eBankType.note) {
+    else if (getBankType(parameter.messageBank.value) == cBankType.note) {
         lBankOffset *= (parameter.messageBank.value - 4);
     }
     else {
@@ -171,49 +184,21 @@ function setDebugLevel(aLevel) {
 // 8 - setters and getters - value at beginning
 
 
-//                                  ---===Communicate with Patcher===---
-function sendToHud(aKey, aValue, aFormat) {
-    if (mDebugLevel[1]) { post("    --sendToHud - " + aKey + " --\n"); }
-    if (mDebugLevel[5]) { post("aKey:", aKey, "aValue:", aValue, "\n"); }
-    var lOutlet = 1;
-    
-    switch (aFormat) {
-        case 0:
-            outlet(lOutlet, aKey, "set", aValue);
-            break;
-        case 1:
-            outlet(lOutlet, aKey, aValue);
-            break;
-        case 2:
-            outlet(lOutlet, aKey, "setsymbol", aValue);
-            break;
-        case 3:
-            outlet(lOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
-            break;
-        default: {
-            post("error in sendToHud. aFormat:", aFormat, "\n");
-            break;
-        }
-    }
-}
-
 function setCurrentClient(aClientNumber) {
-    setParameterProperty("currentClient", aClientNumber);
-    updateClientWindow();
+    gParameters.set("currentClient", aClientNumber);
 }
 
 function setMessageBank(aValue) {
-    setParameterProperty("messageBank", aValue);
-    updateMessageBankOnMonome();
+    gParameters.set("messageBank", aValue);
 }
 
 function sendMessageNumber(aNumber, aPress) {
     if (mDebugLevel[1]) { post("    --sendMessageNumber--\n"); }
 
-    if (getBankType(parameter.messageBank.value) == eBankType.programChange) {
+    if (getBankType(parameter.messageBank.value) == cBankType.programChange) {
         if (aPress == 1) {messnamed("gs.channel", "channelProgramChange", parameter.currentClient.value, aNumber); }
     }
-    else if (getBankType(parameter.messageBank.value) == eBankType.note) {
+    else if (getBankType(parameter.messageBank.value) == cBankType.note) {
         messnamed("gs.channel", "channelNote",parameter.currentClient.value, aNumber, aPress*127);
     }
     else {
@@ -221,22 +206,21 @@ function sendMessageNumber(aNumber, aPress) {
         post("error in getBankType:", getBankType(parameter.messageBank.value), "\n");
     }
 }
-
+sendMessageNumber.immediate = 1;
 
 function setClientBank(aValue) {
-    setParameterProperty("clientBank", aValue);
-    updateClientBankOnMonome();
+    gParameters.set("clientBank", aValue);
 }
 
 function updateClientBankOnMonome() {
-    Monome.row(mClientBankRow, "ledOff");
-    Monome[parameter.clientBank.value][mClientBankRow].ledOn();
+    gMonome.row(mClientBankRow, "ledOff");
+    gMonome[parameter.clientBank.value][mClientBankRow].ledOn();
     updateClientWindow();
 }
 
 function updateClientWindow() {
-    Monome.row(6, "ledOff");
-    Monome.row(7, "ledOff");
+    gMonome.row(6, "ledOff");
+    gMonome.row(7, "ledOff");
     
     var lRelativeValue = parameter.currentClient.value % 16; 
     var lBank = (parameter.currentClient.value - lRelativeValue) / 16;
@@ -245,14 +229,14 @@ function updateClientWindow() {
         var lRow = (lRelativeValue >= 8) ? 7: 6;
         var lCol = parameter.currentClient.value % 8;
         
-        Monome[lCol][lRow].ledOn();
+        gMonome[lCol][lRow].ledOn();
     }
 }
 
 
 function updateMessageBankOnMonome() {
-    Monome.row(mMessageBankRow, "ledOff");
-    Monome[parameter.messageBank.value][mMessageBankRow].ledOn();
+    gMonome.row(mMessageBankRow, "ledOff");
+    gMonome[parameter.messageBank.value][mMessageBankRow].ledOn();
 }
 
 //                                  ---===Controller Methods===---
@@ -263,18 +247,18 @@ function press(aCol, aRow, aPress) {
         post("press called.\n aCol:", aCol, "aRow", aRow, "aPress", aPress, "\n");
     }
     
-    if (aPress == 1) { Monome[aCol][aRow].push(); }
-    else if (aPress == 0) { Monome[aCol][aRow].release(); }
+    if (aPress == 1) { gMonome[aCol][aRow].push(); }
+    else if (aPress == 0) { gMonome[aCol][aRow].release(); }
     
     if (aRow < mTriggerWindowHeight) {
         sendMessageNumber(makeMessageNumber(aCol, aRow), aPress);
         switch (aPress) {
             case (1) : {
-                Monome[aCol][aRow].ledOn();
+                gMonome[aCol][aRow].ledOn();
                 break;
             }
             case (0) : {
-                Monome[aCol][aRow].ledOff();
+                gMonome[aCol][aRow].ledOff();
                 break;
             }
             default : {
@@ -330,215 +314,569 @@ function press(aCol, aRow, aPress) {
     }
 }
 
+//<Parameters
+//      \/\/\<Parameters(?m).+\/\/Parameters\>
+
+
+function Parameters(aObject) {
+    if (gDebugItem.functionName) { post("    --Parameters--\n"); }
+    
+    if (! (this instanceof arguments.callee)) {
+        return new Parameters(aObject);
+    }
+    
+    var mParameters = this,
+        mOutlet = aObject.outlet;
+    
+    function resolveValue(aObject, aType, aSlot) {
+        var lValue;
+        if (gDebugItem.frequentFunctionName) { post("    --Parameters.resolveValue--\n"); }
+        
+        if (aType == "slotArray") {            
+            if (aObject instanceof Function) {
+                lValue = aObject(aSlot);
+            }
+            else if (aObject instanceof Array) {
+                lValue = aObject[aSlot];
+            }
+            else {
+                lValue = aObject;
+            }
+
+        }
+        else {
+            lValue = (aObject instanceof Function) ? aObject() : aObject;
+        }
+        return lValue;
+    }
+       
+    function sendToHud(aObject) {
+
+        var aKey = aObject.key,
+            aFormat = (aObject.format == null) ? false : aObject.format,
+            aSlot = (aObject.slot == undefined) ? null : aObject.slot,
+            aValue = aObject.value;
+
+        if (gDebugItem.frequentFunctionName) { post("    --Parameter.sendToHud --\n"); }
+        if (gDebugItem.functionArguments) {
+            post("aKey:", aKey, "aValue:", aValue, "aFormat:", aFormat);
+            (mParameters[aObject.key].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+        
+        switch (aFormat) {
+            case "set":
+                outlet(mOutlet, aKey, "set", aValue);
+                break;
+            case "trigger":
+                outlet(mOutlet, aKey, aValue);
+                break;
+            case "symbol":
+                outlet(mOutlet, aKey, "setsymbol", aValue);
+                break;
+            case "measures":
+                outlet(mOutlet, aKey, "set", aValue, (aValue == 1) ? "measure" : "measures");
+                break;
+            case "slotSet":
+                outlet(mOutlet, aSlot, aKey, "set", aValue);
+                break;
+            case "slotTrigger":
+                outlet(mOutlet, aSlot, "setsymbol", aValue);
+                break;
+            case "slotSymbol":
+                outlet(mOutlet, aSlot, aKey, "setsymbol", aValue);
+                break;
+            default: 
+                post("error in Parameter.sendToHud. aFormat:", aFormat, "\n");
+                break;
+        }
+    }
+    
+    function callListenersForParameter(aArrayOfListeners, aParameter, aSlot) {
+        var lListenerArrayLength = aArrayOfListeners.length,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            iCounter;
+        
+        if (gDebugItem.functionName) { post("    --callListenersForParameter--\n"); }
+        
+        for (iCounter = 0; iCounter < lListenerArrayLength; iCounter++) {
+            gThis[aArrayOfListeners[iCounter]]((lIsSlotArray) ? aSlot: undefined);
+            if (gDebugItem.localValue) { post("lPostListenerKeys[" + iCounter + ".name]:", iFunctionName, "\n"); }
+        }
+    }
+    
+    this.set = function(aObject) {
+        if (gDebugItem.functionName) { post("    --Parameters.set", aObject.key, "set:", aObject.value, "--\n"); }
+        if (typeof aObject !== "object") { post("THAT IS NOT CORRECT SIR! NOT AT ALL CORRECT AND I DEMAND AN APOLOGY!"); }
+
+        var aParameter = mParameters[aObject.key],
+            aValue = aObject.value,
+            lIsSlotArray = (aParameter.type == "slotArray"),
+            aSlot = (aObject.slot === undefined) ? null: aObject.slot,
+            aQuietly = (aObject.silent === true),
+            lPatcherObjectNameString,
+            lValue,
+            lMinimum = resolveValue(aParameter.minValue, aParameter.type, aSlot),
+            lMaximum = resolveValue(aParameter.maxValue, aParameter.type, aSlot),
+            iCounter;
+            
+        //check validity of aValue
+        if ((aParameter.type == "number") || (aParameter.type == "toggle") || lIsSlotArray) {
+            if ((aValue >= lMinimum) && (aValue <= lMaximum)) {
+                lValue = aValue;
+            }
+            else if (aValue < lMinimum) {
+                lValue = lMinimum;
+            }
+            else if (aValue > lMaximum) {
+                lValue = lMaximum;
+            }
+            else { post("something has gane awry in Parameters.set!\n"); }
+        }
+        else {
+            lValue = aValue;
+        }
+
+
+        // call postListeners
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.preListeners, aParameter, aSlot);
+        }
+
+        // either assign to slot or not.
+        if (lIsSlotArray) {
+            aParameter.value[aSlot] = lValue;
+        }
+        else {
+            aParameter.value = lValue;
+        }   
+
+        if (!aQuietly) {
+            callListenersForParameter(aParameter.postListeners, aParameter, aSlot);
+            
+            // Save.
+            if (aParameter.saveInPattr) {
+                lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
+                if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
+                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+            }
+        }
+        mParameters.display(aParameter.name);
+
+    };
+    
+    this.display = function(aParameterName, aSlot) {
+        if (gDebugItem.functionName) {
+            post("    --Parameters.display " + aParameterName + "--");
+            (mParameters[aParameterName].type == "slotArray") ? post("aSlot", aSlot, "\n") : post("\n");
+        }
+
+        var iCounter,
+        aParameter = mParameters[aParameterName],
+        lValueIsFunction = aParameter.value instanceof Function,
+        lLength;
+        
+        if (aParameter.format === null) return;
+        
+        if (aParameter.type == "slotArray") {
+            lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
+            
+            if (aSlot != undefined) {
+                sendToHud({
+                    key: aParameter.name,
+                    value: resolveValue(aParameter.value, aParameter.type, aSlot),
+                    format: aParameter.format,
+                    slot: aSlot
+                });
+            }
+
+            else {
+                for (iCounter = 0; iCounter < lLength; iCounter++) {
+                    sendToHud({
+                        key: aParameter.name,
+                        value: resolveValue(aParameter.value, aParameter.type, iCounter),
+                        format: aParameter.format,
+                        slot: iCounter
+                    });
+                }
+            }
+        }
+        else {
+
+            sendToHud({
+                key: aParameter.name,
+                value: resolveValue(aParameter.value),
+                format: aParameter.format
+            });
+        }
+    };
+    
+    this.displayAll = function(aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.displayAll --\n"); }
+
+        var iProperty;
+
+        if (!aSlot) {
+            for (iProperty in mParameters) {
+                if (mParameters[iProperty].format != null) {
+                    if (mParameters[iProperty].value != null) {
+                        mParameters.display(iProperty);
+                    }
+                    else {
+                        if (gDebugItem.startValue) { post("mParameters[" + iProperty + "].value is null\n"); }
+                    }
+                }
+            }
+        }
+        else {
+            for (iProperty in mParameters) {
+                if ((mParameters[iProperty].format) || (mParameters[iProperty].type == "slotArray")) {
+                    mParameters.display(iProperty, aSlot);
+                }
+            }
+        }
+    };
+
+    this.toggle = function(aParameterName, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.toggle--\n"); }
+        
+        if (mParameters[aParameterName].type == "toggle") {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value))
+            });
+        }
+        else if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key : aParameterName,
+                value : Number(!Boolean(mParameters[aParameterName].value[aSlot])),
+                slot : aSlot
+            });
+        }
+        else { post(aParameterName, "is not a toggle gParameters\n");}
+    };
+    
+    this.change = function(aParameterName, aAmount, aSlot) {
+        if (gDebugItem.functionName) { post("    --Parameters.change--\n"); }
+
+        if (mParameters[aParameterName].type == "slotArray") {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value[aSlot] + aAmount,
+                slot: aSlot
+            });
+        }
+         else {
+            mParameters.set({
+                key: aParameterName,
+                value: mParameters[aParameterName].value + aAmount
+            });
+        }
+        };
+
+    this.grab = function(aParameter) {
+        if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
+
+        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
+            lValue;
+
+        if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
+        if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
+
+        switch (aParameter.type) {
+            case "number" : 
+                /*jsl:fallthru*/
+            case "toggle" :
+                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
+                break;
+            case "string" :
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
+                break;
+            case "slotArray" :
+                /*jsl:fallthru*/
+            case "array" :
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                break;
+            default :
+                post(aParameter.name + ".type:", aParameter.type , "\n");
+                break;
+        }
+
+        if (gDebugItem.localValue) { post("lValue from " + lPatcherObjectNameString + ":", lValue, "\n"); }
+
+        if (aParameter.type == "slotArray") {
+            aParameter.value = lValue;
+            mParameters.display(aParameter.name);
+        }
+         else {
+            mParameters.set({
+                key: aParameter.name,
+                value: lValue,
+                silent: true
+            });
+        }
+
+        if (gDebugItem.endValue) {
+            post(aParameter.name + ".value: ", aParameter.value, "\n");
+        }
+    };
+
+    this.grabAll = function() {   
+         if (gDebugItem.functionName) { post("    --Parameters.grabAll --\n"); }
+         
+        var iProperty,
+            iCounter,
+            lLength;
+
+        for (iProperty in mParameters) {
+            if (mParameters[iProperty].saveInPattr) {
+                mParameters.grab(mParameters[iProperty]);
+            }
+        }
+    };
+    return this;
+}
+
+//Parameters>
+
 //                                  ---===Monome Device Methods===---
 
-function SingleCell(aCol, aRow, aOutlet) {
-    this.outlet = aOutlet;
+//<Monome
+//      \/\/\<Monome(?m).+\/\/Monome\>
 
-    this.col = aCol;
-    this.row = aRow;
+   // Method: Monome
+   // 
+   // Monome abstraction
+   // 
+   // Parameters:
+   // 
+   //    aColumns - The number of columns to initialize with.
+   //    aRows - The number of rows to initialize with.
+
+
+function Monome(aColumns, aRows, aOutlet) {
+    var iCol,
+        iRow,
+        that = this,
+        mColumns = aColumns,
+        mRows = aRows,
+        mUpdating = false;
+        
+        if (! (this instanceof arguments.callee)) {
+            post("use new! - Monome\n");
+            return new Monome(aColumns, aRows, aOutlet);
+        }
     
-    // local variables
-    this.actualState = 0;
-    this.tempState =  0;
-    this.isHeld = 0;
+    if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
+    
+    if (gDebugItem.functionName) { post("    --Monome--\n"); }
+    if (gDebugItem.startValue) {
+        post("monomeWidth:", aColumns, "\n");
+        post("monomeHeight:", aRows, "\n");
+    }
 
-    this.checkHeld = function() {
-        return this.isHeld;
-    };
+    function SingleCell(aCol, aRow, aOutlet) {
+        var outletNumber = aOutlet;
 
-    this.push = function() {
-        this.isHeld = 1;
-        return this.isHeld;
-    };
+        var mCol = aCol;
+        var mRow = aRow;
 
-    this.release = function() {
-        this.isHeld = 0;
-        return this.isHeld;
-    };
+        // local variables
+        var actualState = 0;
+        var tempState = 0;
+        var held = 0;
 
-    this.ledOn = function() {
-        this.actualState = 1;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
+        // Method: Monome[column][row].isHeld
+        // 
+        // Returns wether or not a button is currently held (1) or not (0)
+        
+        this.isHeld = function() {
+            return held;
+        };
+        
+        // Method: Monome[column][row].push
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to held 
 
-    this.ledOff = function() {
-        this.actualState = 0;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
+        this.push = function() {
+            held = 1;
+            return held;
+        };
 
-    this.checkActual = function() {
-        outlet(this.outlet, this.col, this.row, this.actualState);
-        this.tempState = 0;
-    };
+        // Method: Monome[column][row].release
+        //
+        // (This Method should not be called directly except by <press>)
+        //
+        // Change the state of the button to NOT held    
+        
+        this.release = function() {
+            held = 0;
+            return held;
+        };
+        
+        // Method: Monome[column][row].ledOn
+        //
+        // Change the state of the button to lit (sends message out of designated outlet)
 
-    this.blink = function() {
-        this.tempState = (this.tempState == 1) ? 0:1;
-        outlet(this.outlet, this.col, this.row, this.tempState);
-    };
+        this.ledOn = function() {
+            actualState = 1;
+            if(!mUpdating) {
+                outlet(outletNumber, mCol, mRow, actualState);
+            }
+        };
 
-    this.blinkIfOff = function() {
-        if (this.actualState == 0) {
-            this.tempState = (this.tempState == 1) ? 0:1;
-            outlet(this.outlet, this.col, this.row, this.tempState);
+        this.ledOff = function() {
+            actualState = 0;
+            if (!mUpdating) {
+                outlet(outletNumber, mCol, mRow, actualState);
+            }
+        };
+
+        this.checkActual = function() {
+            //post("mUpdating:", (mUpdating) ? "true" : "false", "actualState:", actualState, "\n");
+            outlet(outletNumber, mCol, mRow, actualState);
+            tempState = 0;
+        };
+
+        this.blink = function() {
+            tempState = (tempState == 1) ? 0: 1;
+            outlet(outletNumber, mCol, mRow, tempState);
+        };
+
+        this.blinkIfOff = function() {
+            if (actualState == 0) {
+                tempState = (tempState == 1) ? 0: 1;
+                outlet(outletNumber, mCol, mRow, tempState);
+            }
+        };
+
+        this.tempOn = function() {
+            tempState = 1;
+            outlet(outletNumber, mCol, mRow, tempState);
+        };
+
+        this.tempOff = function() {
+            tempState = 0;
+            outlet(outletNumber, mCol, mRow, actualState);
+        };
+    }
+
+    this.column = function(aColumn, aMethodToInvoke) {
+        var iRow, 
+            lHeight = mRows;
+        
+        for (iRow = 0; iRow < lHeight; iRow++) {
+            that[aColumn][iRow][aMethodToInvoke]();
         }
     };
 
-    this.tempOn = function() {
-        this.tempState = 1;
-        outlet(this.outlet, this.col, this.row, this.tempState);
-    };
-
-    this.tempOff = function() {
-        this.tempState = 0;
-        outlet(this.outlet, this.col, this.row, this.actualState);
-    };
-}
-function buildMonome() {    
-    if (mDebugLevel[1]) { post("    --buildMonome--\n"); }
-    if (mDebugLevel[2]) { post("buildMonome called\n"); }
-    if (mDebugLevel[4]) {
-        post("mMonomeWidth:", mMonomeWidth, "\n");
-        post("mMonomeHeight:", mMonomeHeight, "\n");
-    }
-    
-    for (var iCol = 0; iCol < mMonomeWidth; iCol++) {
-        Monome[iCol] = new Array();
-        for (var iRow = 0; iRow < mMonomeHeight; iRow++) {
-            Monome[iCol][iRow] = new SingleCell(iCol , iRow, 0);
+    this.row = function(aRow, aMethodToInvoke) {
+        var iColumn,
+            lWidth = mColumns;
+            
+        for (iColumn = 0; iColumn < lWidth; iColumn++) {
+            that[iColumn][aRow][aMethodToInvoke]();
         }
-        if (mDebugLevel[4]) { post("Monome[", iCol, "].length:", Monome[iCol].length, "\n"); }
-    }
-    if (mDebugLevel[4]) { post("Monome.length (width):", Monome.length, "\n"); }
-}
+    };
+    this.isValidColumn = function(aNumber) {
+        return (mColumns > aNumber) ? true : false;
+    };
+    
+    this.isValidRow = function(aNumber) {
+        return (aRows > aNumber) ? true : false;
+    };
+    
+    this.rebuild = function(aColumns, aRows) {
+        var iCol,
+            iRow,
+            lMaxColumns = Math.max(aColumns, mColumns),
+            lMaxRows = Math.max(aRows, mRows);
+            
+        if (gDebugItem.functionName) { post("    --rebuild--\n"); }
+        
+        mColumns = aColumns;
+        mRows = aRows;
+        
+        for (iCol = 0; iCol < lMaxColumns; iCol++) {
+            if ((that[iCol] != null) && (iCol < aColumns)) {
+                if (gDebugItem.list) { post("column:", iCol, "is fine!\n"); }
+            }
+            else if ((that[iCol] != null) && (iCol >= aColumns)) {
+                if (gDebugItem.list) { post("column:", iCol, "will be deleted!\n"); }
+                that[iCol] = null;
+            }
+            
+            else if((!that[iCol]) && (iCol < aColumns)) {
+                that[iCol] = [];
+                if (gDebugItem.list) { post("column:", iCol, "added!\n"); }
+            }
+            
+            
+        if (that[iCol] != null) {
+            for (iRow = 0; iRow < lMaxRows; iRow++) {
+                if ((that[iCol][iRow] != null) && (iRow < aRows)) {
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
+                }
+                else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
+                    that[iCol][iRow] = null;
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
+                }
 
-Monome.row = function(aRow, aMethodToInvoke) {
-        switch (aMethodToInvoke) {
-            case "ledOn":
-                var iColumn;
-                for (iColumn = 0; iColumn < mMonomeWidth; iColumn++) {
-                    Monome[iColumn][aRow].ledOn();
+                else if ((!that[iCol][iRow]) && (iRow < aRows)) {
+                    if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
+                    that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
                 }
-                break;
-            case "ledOff":
-                for (iColumn = 0; iColumn < mMonomeWidth; iColumn++) {
-                    Monome[iColumn][aRow].ledOff();
-                }
-                break;
-            case "tempOn":
-                for (iColumn = 0; iColumn < mMonomeWidth; iColumn++) {
-                    Monome[iColumn][aRow].tempOn();
-                }
-                break;
-            case "tempOff":
-                for (iColumn = 0; iColumn < mMonomeWidth; iColumn++) {
-                    Monome[iColumn][aRow].tempOff();
-                }
-                break;
-            case "blink":
-                for (iColumn = 0; iColumn < mMonomeWidth; iColumn++) {
-                    Monome[iColumn][aRow].blink();
-                }
-                break;
-            case "blinkIfOff":
-                for (iColumn = 0; iColumn < mMonomeWidth; iColumn++) {
-                    Monome[iColumn][aRow].blinkIfOff();
-                }
-                break;
-            default: {
-                post("error in Monome.row. aMethodToInvoke:", aMethodToInvoke, "\n");
-                break;
+            }
+            if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
+        }
+
+    };
+    
+    this.refresh = function() {
+        if (gDebugItem.functionName) { post("    --refresh--\n"); }
+        
+        var iCol,
+            iRow,
+            lHeight = mRows,
+            lWidth = mColumns;
+
+        for (iCol = 0; iCol < lWidth; iCol++) {
+            for (iRow = 0, lHeight; iRow < lHeight; iRow++) {
+                that[iCol][iRow].checkActual();
             }
         }
-};
+    };
 
-Monome.column = function(aColumn, aMethodToInvoke) {
-        switch (aMethodToInvoke) {
-            case "ledOn":
-                var iRow;
-                for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-                    Monome[aColumn][iRow].ledOn();
-                }
-                break;
-            case "ledOff":
-                for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-                    Monome[aColumn][iRow].ledOff();
-                }
-                break;
-            case "tempOn":
-                for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-                    Monome[aColumn][iRow].tempOn();
-                }
-                break;
-            case "tempOff":
-                for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-                    Monome[aColumn][iRow].tempOff();
-                }
-                break;
-            case "blink":
-                for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-                    Monome[aColumn][iRow].blink();
-                }
-                break;
-            case "blinkIfOff":
-                for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-                    Monome[aColumn][iRow].blinkIfOff();
-                }
-                break;
-            default: {
-                post("error in Monome.column. aMethodToInvoke:", aMethodToInvoke, "\n");
-                break;
-            }
+    this.beginUpdates = function() {
+        if (gDebugItem.functionName) { post("    --beginUpdates--\n"); }
+        
+        mUpdating = true;
+    };
+    this.endUpdates = function() {
+        if (gDebugItem.functionName) { post("    --endUpdates--\n"); }
+        
+        var iCol;
+        var iRow;
+        
+        mUpdating = false;
+        that.refresh();
+    };
+    
+    for (iCol = 0; iCol < aColumns; iCol++) {
+        
+        that[iCol] = [];
+        for (iRow = 0; iRow < aRows; iRow++) {
+            that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
         }
-};
-
-function refreshMonome() {
-    if (mDebugLevel[1]) { post("    --refreshMonome--\n"); }
-    var iCol;
-    var iRow;
-    for (iCol = 0; iCol < mMonomeWidth; iCol++) {
-        for (iRow = 0; iRow < mMonomeHeight; iRow++) {
-            Monome[iCol][iRow].checkActual();
+        if (gDebugItem.startValue) {
+            post("Monome[", iCol, "].length:", that[iCol].length, "\n");
         }
     }
+    if (gDebugItem.startValue) {
+        post("Monome.length (width):", that.length, "\n");
+    }
+    return this;
 }
 
-function setParameterProperty(aPropertyString, aValue) {
-
-    var lValue;
-
-    post("aValue:", aValue, "\n");
-    if ((aValue >= parameter[aPropertyString].minValue) && (aValue <= parameter[aPropertyString].maxValue)) { lValue = aValue; }
-    else if (aValue < parameter[aPropertyString].minValue) { lValue = parameter[aPropertyString].minValue; }
-    else if (aValue > parameter[aPropertyString].maxValue) { lValue = parameter[aPropertyString].maxValue; }
-    else { post("something has gane awry in setParameterProperty!\n"); }
-
-    parameter[aPropertyString].value = lValue;
-
-    sendToHud(parameter[aPropertyString].name, parameter[aPropertyString].value, 0);
-    
-    var patcherObjectNameString = parameter[aPropertyString].name + parameter.patchString + "Object";
-    this.patcher.getnamed(patcherObjectNameString).message("set", parameter[aPropertyString].value);
-    
-}
-
-function changeParameterProperty(aPropertyString, aAmount) {
-    var lValue = parameter[aPropertyString].value + aAmount;
-    setParameterProperty(aPropertyString, lValue);    
-}
-
-function toggleParameterProperty(aPropertyString) {
-    var lValue = Number(!Boolean(parameter[aPropertyString].value));
-    setParameterProperty(aPropertyString, lValue);
-}
-
-function grabAllPattrValues() {
-    grabPattrValue(parameter.currentClient);
-    grabPattrValue(parameter.messageBank);
-    grabPattrValue(parameter.clientBank);
-}
-
-function grabPattrValue(aProperty) {
-    var patcherObjectNameString = aProperty.name + parameter.patchString + "Object";
-    aProperty.value = Number(this.patcher.getnamed(patcherObjectNameString).getvalueof());
-}
+//Monome>
