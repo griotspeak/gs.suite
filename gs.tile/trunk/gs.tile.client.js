@@ -31,6 +31,7 @@ autowatch = 1;
 inlets = 2;
 outlets = 2;
 
+var gThis = this;
 var gThisPatcher = this.patcher;
 var gDebugItem = {
     endValue : false,
@@ -77,7 +78,7 @@ gParameters.appMonomeNumber = {// used by router
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearWindow"],
     postListeners: ["updateAppWindow"]
 };
 gParameters.appMonomeLayer = {
@@ -132,7 +133,7 @@ gParameters.windowColumnOffset = {// used by client
     minValue : 0,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearWindow"],
     postListeners: []
 };
 gParameters.windowRowOffset = {// used by client
@@ -143,7 +144,7 @@ gParameters.windowRowOffset = {// used by client
     minValue : 0,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearWindow"],
     postListeners: []
 };
 gParameters.displayColumnOffset = {// used by router
@@ -154,7 +155,7 @@ gParameters.displayColumnOffset = {// used by router
     minValue : -2048,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearWindow"],
     postListeners: ["updateAppWindow"]
 };
 gParameters.displayRowOffset = {// used by router
@@ -165,7 +166,7 @@ gParameters.displayRowOffset = {// used by router
     minValue : -2048,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearWindow"],
     postListeners: ["updateAppWindow"]
 };
 gParameters.comOrderNumber = {
