@@ -413,6 +413,13 @@ function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
 }
 
 function freebang() {
+    gsTileGlobal.appList = null;
+    gsTileGlobal.toRouter = null;
+    gsTileGlobal.newClient = null;
+    gsTileGlobal.removeClient = null;
+    gsTileGlobal.led = null;
+    gsTileGlobal.appWindow = null;
+    gsTileGlobal = null;
     post("gs.tile.router freed");
     
 }
@@ -485,8 +492,8 @@ function testAppChannels(_ar) {
     }
 }
 
-/*function initialize() {
-    makeMonomeChannels(1);
+
+function initialize() {
     messnamed("gs.tile.allClients", "newRouterAlert");
     post("gs.tile.router Finished loading\n");
-}*/
+}

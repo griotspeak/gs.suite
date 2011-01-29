@@ -245,10 +245,10 @@ function initialize() {
 var mAppName = (jsarguments[1]    !=      null)       ?    jsarguments[1]      :       "unnamedClient";
 
 var gsTileGlobal = new Global("gsTileRouter");
-if (!gsTileGlobal.appWindow) { gsTileGlobal.appWindow = false; }
-if (!gsTileGlobal.removeClient) { gsTileGlobal.removeClient = false; }
-if (!gsTileGlobal.led) {gsTileGlobal.led = false; }
-if (!gsTileGlobal.newClient) { gsTileGlobal.newClient = false; }
+if (gsTileGlobal.appWindow === undefined) { gsTileGlobal.appWindow = null; }
+if (gsTileGlobal.removeClient ===  undefined) { gsTileGlobal.removeClient = null; }
+if (gsTileGlobal.led === undefined) {gsTileGlobal.led = null; }
+if (gsTileGlobal.newClient === undefined) { gsTileGlobal.newClient = null; }
 
 
 //                        ---===Abstraction is a pain ===---
@@ -292,7 +292,7 @@ function setWindowHeight(aValue) {
 function updateAppWindowDetails() {
     if (gDebugItem.frequentFunctionName) { post("    --updateAppWindowDetails--\n"); }
     
-    if (gsTileGlobal.appWindow) {
+    if (gsTileGlobal.appWindow != null) {
         if (gDebugItem.list) { post("appName:", mAppName, "channel:", gParameters.appChannelNumber.value, "windowHeight:", gParameters.windowHeight.value, "\n"); }
         gsTileGlobal.appWindow(
             mAppName,
@@ -317,7 +317,7 @@ function setWindowColumnOffset(aValue) {
         value : aValue
     });
     
-    if (gsTileGlobal.newClient) {
+    if (gsTileGlobal.newClient != null) {
         messnamed("mMC.allClients", "refreshAppWindow");
     }
 }
@@ -330,7 +330,7 @@ function setWindowRowOffset(aValue) {
         value : aValue
     });
     
-    if (gsTileGlobal.newClient) {
+    if (gsTileGlobal.newClient != null) {
         messnamed("mMC.allClients", "refreshAppWindow");
     }
 }
@@ -410,7 +410,7 @@ function alertRouterOfNewClient() {
     // send: "newClientNotification"
     // 0<appName> 1<randomKey> 2<hasChannel> 3<channelIfAssigned>
     // 4<windowWidth> 5<height> 6<windowColumnOffset> 7<windowRowOffset>
-    if (gsTileGlobal.newClient) {
+    if (gsTileGlobal.newClient != null) {
         if (gDebugItem.endValue) { 
             post("appName", mAppName,
             "randomKeyOne", gParameters.randomKeyOne.value,
@@ -481,7 +481,7 @@ function prepareLedForRouter(aColumnFromMonomeFunction, aRowFromMonomeFunction, 
     var lTranslatedColumn = aColumnFromMonomeFunction - gParameters.windowColumnOffset.value;
     var lTranslatedRow = aRowFromMonomeFunction - gParameters.windowRowOffset.value;
     
-    if (isInWindow(aColumnFromMonomeFunction, aRowFromMonomeFunction) && gsTileGlobal.led) {
+    if (isInWindow(aColumnFromMonomeFunction, aRowFromMonomeFunction) && (gsTileGlobal.led != null)) {
         if (gDebugItem.frequentItem) { post("in window and channel made!\n"); }
         gsTileGlobal.led(
             mAppName,
