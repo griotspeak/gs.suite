@@ -49,6 +49,16 @@ var gDebugItem = {
     localValue : false,
     startValue : false
 };
+var cFunctionButtons = {
+    play : 0,
+    ovr : 1,
+    metronome : 2,
+    disableTrackStops : 3,
+    clipstep : 5,
+    mixer : 4,
+    shift : 6,
+    release : 7
+};
 
 gParameters.monomeWidth = {};
 gParameters.monomeHeight = {};
@@ -768,39 +778,50 @@ function press(_column, _row, _updown) {
 
     // Core Functions       
     function isPlayButton(_c, _r) { //Any mod state
-        if ((_c == functionCol()) && (_r == 0) ) { return true; }
+        if ((_c == functionCol()) && (_r == cFunctionButtons.play) ) { return true; }
         else { return false; }
     }
 
     function isOVRButton(_c, _r) { //Any mod state
-        if ((_c == functionCol()) && (_r == 1) ) { return true; }
+        if ((_c == functionCol()) && (_r == cFunctionButtons.ovr) ) { return true; }
         else {return false; }
     }
-
-    function isStopAllClips (_c, _r) { //Any mod state
-        if ((_c == sceneLaunchCol()) && (_r == hardLastRow()) ) {return true; }
+    
+    function isMetronomeButton(_c, _r) { // Only Mixer
+        if ((_c == functionCol()) && (_r == cFunctionButtons.metronome) && just_mixer_held() ) { return true; }
+        else {return false; }
+    }
+    
+    function isDisableTrackstopsButton(_c, _r) { // Only Mixer
+        if ((_c == functionCol()) && (_r == cFunctionButtons.disableTrackStops) && just_mixer_held() ) {return true; }
         else { return false; }
     }
-
+    
     function isClipstepButton (_c, _r) { //Any mod state
-        if ((_c == functionCol()) && (_r == hardLastRow() - 3) ) {return true; }
+        if ((_c == functionCol()) && (_r == cFunctionButtons.clipstep)) {return true; }
         else { return false; }
     }
     
     function isMixerButton (_c, _r) { //Any mod state
-        if ((_c == functionCol()) && (_r == hardLastRow() - 2) ) {return true; }
+        if ((_c == functionCol()) && (_r == cFunctionButtons.mixer)) {return true; }
         else { return false; }
     }
     
     function isShift (_c, _r) { //Any mod state
-        if ((_c == functionCol()) && (_r == hardLastRow() - 1) ) {return true; }
+        if ((_c == functionCol()) && (_r == cFunctionButtons.shift)) {return true; }
         else { return false; }
     }
 
     function isRelease(_c, _r) { //Any mod state
-        if ((_c == functionCol()) && (_r == hardLastRow()) ) {return true; }
+        if ((_c == functionCol()) && (_r == cFunctionButtons.release )) {return true; }
         else { return false; }
     }
+    
+    function isStopAllClips (_c, _r) { //Any mod state
+        if ((_c == sceneLaunchCol()) && (_r == hardLastRow()) ) {return true; }
+        else { return false; }
+    }
+    
 
 
     // Main View Buttons
@@ -835,19 +856,9 @@ function press(_column, _row, _updown) {
         else { return false; }
     }
 
-    function isDisableTrackstopsButton(_c, _r) { // Only Mixer
-        if ((_c == functionCol()) && (_r == hardLastRow() - 4) && just_mixer_held() ) {return true; }
-        else { return false; }
-    }
-
     function isTapTempoButton(_c, _r) { // Only Mixer
         if ((_c == 0) && (_r == 0) && just_mixer_held() ) { return true; }
         else { return false; }
-    }
-
-    function isMetronomeButton(_c, _r) { // Only Mixer
-        if ((_c == functionCol()) && (_r == 2) && just_mixer_held() ) { return true; }
-        else {return false; }
     }
 
     // Shift Buttons
@@ -862,6 +873,9 @@ function press(_column, _row, _updown) {
         else { return false; }
     }
 }
+
+press.immediate = 1;
+
 function clipstepIsHeld() {
     var _r = hardLastRow() - 3;
     if (gMonome[functionCol()][_r].isHeld() == 1) {
@@ -1052,6 +1066,8 @@ function Monome(aColumns, aRows, aOutlet) {
             return new Monome(aColumns, aRows, aOutlet);
         }
     
+    if (gDebugItem.functionArguments) { post("typeof aOutlet", typeof aOutlet, "\n"); }
+    
     if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
     if (gDebugItem.functionName) { post("    --Monome--\n"); }
@@ -1060,13 +1076,13 @@ function Monome(aColumns, aRows, aOutlet) {
         post("monomeHeight:", aRows, "\n");
     }
     
-    if (aOutlet instanceof Number) {
+    if (typeof aOutlet == "number") {
         mOutlet = aOutlet;
         that.ledFunction = function(aColumn, aRow, aState) {
-            post(mOutlet, aColumn, aRow, aState);
+            outlet(mOutlet, aColumn, aRow, aState);
         };
     }
-    else if (aOutlet instanceof Function) {
+    else if (typeof aOutlet == "function") {
         that.ledFunction = aOutlet;
     }
     else if (aOutlet === undefined) {
