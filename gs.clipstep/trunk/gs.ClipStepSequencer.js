@@ -1808,16 +1808,16 @@ function press(aCol, aRow, aPress) {
     else if ((aRow == monomeLastRow()) && (aCol >= 8) && (aCol <= 15)) {
         switch (aCol) {
             case cFunctionButton.store_0:
-                if (aPress == 1) { outlet(lOutlet, 1); }
+                if (aPress == 1) { sendPresetMessage(1); }
                 break;
             case cFunctionButton.store_1:
-                if (aPress == 1) { outlet(lOutlet, 2); }
+                if (aPress == 1) { sendPresetMessage(2); }
                 break;
             case cFunctionButton.store_2:
-                if (aPress == 1) { outlet(lOutlet, 3); }
+                if (aPress == 1) { sendPresetMessage(3); }
                 break;
             case cFunctionButton.store_3:
-                if (aPress == 1) { outlet(lOutlet, 4); }
+                if (aPress == 1) { sendPresetMessage(4); }
                 break;
             case cFunctionButton.shift_2:
                 post("boo:", 1, "\n");
@@ -1842,7 +1842,20 @@ function press(aCol, aRow, aPress) {
                 break;
         }
     }
+    function sendPresetMessage(aPreset) {
+        if (shiftIsHeld()) {
+            outlet(lOutlet, "behavior", "setsymbol", "store");
+            outlet(lOutlet, "preset", aPreset);
+            outlet(lOutlet, "behavior", "setsymbol", "ignore");
+        }
+        else {
+            outlet(lOutlet, "behavior", "setsymbol", "recall");
+            outlet(lOutlet, "preset", aPreset);
+            outlet(lOutlet, "behavior", "setsymbol", "ignore");
+        }
+    }
 }
+press.immediate = 1;
 
 
 function shiftButton(aPress) {
@@ -2439,6 +2452,8 @@ function Monome(aColumns, aRows, aOutlet) {
             return new Monome(aColumns, aRows, aOutlet);
         }
     
+    if (gDebugItem.functionArguments) { post("typeof aOutlet", typeof aOutlet, "\n"); }
+    
     if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
     
     if (gDebugItem.functionName) { post("    --Monome--\n"); }
@@ -2447,13 +2462,13 @@ function Monome(aColumns, aRows, aOutlet) {
         post("monomeHeight:", aRows, "\n");
     }
     
-    if (aOutlet instanceof Number) {
+    if (typeof aOutlet == "number") {
         mOutlet = aOutlet;
         that.ledFunction = function(aColumn, aRow, aState) {
-            post(mOutlet, aColumn, aRow, aState);
+            outlet(mOutlet, aColumn, aRow, aState);
         };
     }
-    else if (aOutlet instanceof Function) {
+    else if (typeof aOutlet == "function") {
         that.ledFunction = aOutlet;
     }
     else if (aOutlet === undefined) {
