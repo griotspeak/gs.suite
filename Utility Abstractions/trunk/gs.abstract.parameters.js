@@ -144,7 +144,7 @@ function Parameters(aObject) {
             if (aParameter.saveInPattr) {
                 lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
                 if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
-                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+                this.patcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
             }
         }
         mParameters.display(aParameter.name);
@@ -273,15 +273,15 @@ function Parameters(aObject) {
             case "number" : 
                 /*jsl:fallthru*/
             case "toggle" :
-                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
+                lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "string" :
-                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
+                lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
                 break;
             case "slotArray" :
                 /*jsl:fallthru*/
             case "array" :
-                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
+                lValue = this.patcher.getnamed(lPatcherObjectNameString).getvalueof();
                 break;
             default :
                 post(aParameter.name + ".type:", aParameter.type , "\n");

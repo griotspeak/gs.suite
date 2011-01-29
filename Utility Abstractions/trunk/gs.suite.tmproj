@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>../gs.tile/gs.tile.router.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -13,15 +11,13 @@
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.router.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T19:11:31Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2011-01-29T22:02:23Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.client.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T19:11:31Z</date>
+					<date>2011-01-29T22:16:59Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -36,31 +32,33 @@
 					<key>filename</key>
 					<string>../gs.pChange/gs.pChange.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T17:46:49Z</date>
+					<date>2011-01-29T22:17:24Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.chordScale/gs.chordScale.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T16:32:15Z</date>
+					<date>2011-01-29T22:17:16Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T16:32:07Z</date>
+					<date>2011-01-29T22:17:07Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.clipnome/gs.clipnome.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T16:31:57Z</date>
+					<date>2011-01-29T22:17:03Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.midiControl/gs.midiControl.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-29T16:31:46Z</date>
+					<date>2011-01-29T22:16:45Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -75,7 +73,7 @@
 					<key>filename</key>
 					<string>gs.abstract.parameters.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T20:54:07Z</date>
+					<date>2011-01-29T22:02:55Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -96,7 +94,7 @@
 					<key>filename</key>
 					<string>../gs.channel/gs.channel.send.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-28T18:38:12Z</date>
+					<date>2011-01-29T22:03:50Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -114,7 +112,7 @@
 			<key>filename</key>
 			<string>../gs.clipLoop/gs.clipLoop.js</string>
 			<key>lastUsed</key>
-			<date>2011-01-28T19:49:03Z</date>
+			<date>2011-01-29T22:03:54Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -126,41 +124,7 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>190</integer>
 	<key>metaData</key>
-	<dict>
-		<key>../gs.tile/gs.tile.client.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>12</integer>
-				<key>line</key>
-				<integer>1088</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>1072</integer>
-		</dict>
-		<key>../gs.tile/gs.tile.router.js</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>23</integer>
-				<key>line</key>
-				<integer>497</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>447</integer>
-		</dict>
-	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>../gs.tile/gs.tile.client.js</string>
-		<string>../gs.tile/gs.tile.router.js</string>
-	</array>
+	<dict/>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
