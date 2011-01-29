@@ -78,8 +78,8 @@ gParameters.appMonomeNumber = {// used by router
     minValue : 0,
     maxValue : 127,
     saveInPattr : true,
-    preListeners : ["clearWindow"],
-    postListeners: ["updateAppWindow"]
+    preListeners : ["clearAppWindow"],
+    postListeners: ["updateAppWindowDetails"]
 };
 gParameters.appMonomeLayer = {
     name : "appMonomeLayer",
@@ -90,7 +90,7 @@ gParameters.appMonomeLayer = {
     maxValue : 127,
     saveInPattr : true,
     preListeners : [],
-    postListeners: ["updateAppWindow"]
+    postListeners: ["updateAppWindowDetails"]
 };
 gParameters.appChannelNumber = {
     name : "appChannelNumber",
@@ -112,7 +112,7 @@ gParameters.windowWidth = {// used by client
     maxValue : 2048,
     saveInPattr : true,
     preListeners : [],
-    postListeners: ["updateAppWindow"]
+    postListeners: ["updateAppWindowDetails"]
 };
 gParameters.windowHeight = {// used by client
     name : "windowHeight",
@@ -123,7 +123,7 @@ gParameters.windowHeight = {// used by client
     maxValue : 2048,
     saveInPattr : true,
     preListeners : [],
-    postListeners: ["updateAppWindow"]
+    postListeners: ["updateAppWindowDetails"]
 };
 gParameters.windowColumnOffset = {// used by client
     name : "windowColumnOffset",
@@ -133,7 +133,7 @@ gParameters.windowColumnOffset = {// used by client
     minValue : 0,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : ["clearWindow"],
+    preListeners : ["clearAppWindow"],
     postListeners: []
 };
 gParameters.windowRowOffset = {// used by client
@@ -144,7 +144,7 @@ gParameters.windowRowOffset = {// used by client
     minValue : 0,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : ["clearWindow"],
+    preListeners : ["clearAppWindow"],
     postListeners: []
 };
 gParameters.displayColumnOffset = {// used by router
@@ -155,8 +155,8 @@ gParameters.displayColumnOffset = {// used by router
     minValue : -2048,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : ["clearWindow"],
-    postListeners: ["updateAppWindow"]
+    preListeners : ["clearAppWindow"],
+    postListeners: ["updateAppWindowDetails"]
 };
 gParameters.displayRowOffset = {// used by router
     name : "displayRowOffset",
@@ -166,8 +166,8 @@ gParameters.displayRowOffset = {// used by router
     minValue : -2048,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : ["clearWindow"],
-    postListeners: ["updateAppWindow"]
+    preListeners : ["clearAppWindow"],
+    postListeners: ["updateAppWindowDetails"]
 };
 gParameters.comOrderNumber = {
     name : "comOrderNumber",
@@ -289,7 +289,9 @@ function setWindowHeight(aValue) {
     });
 }
 
-function updateAppWindow() {
+function updateAppWindowDetails() {
+    if (gDebugItem.frequentFunctionName) { post("    --updateAppWindowDetails--\n"); }
+    
     if (gsTileGlobal.appWindow) {
         if (gDebugItem.list) { post("appName:", mAppName, "channel:", gParameters.appChannelNumber.value, "windowHeight:", gParameters.windowHeight.value, "\n"); }
         gsTileGlobal.appWindow(
@@ -316,7 +318,7 @@ function setWindowColumnOffset(aValue) {
     });
     
     if (gsTileGlobal.newClient) {
-        messnamed("mMC.allClients", "refreshWindow");
+        messnamed("mMC.allClients", "refreshAppWindow");
     }
 }
 
@@ -329,7 +331,7 @@ function setWindowRowOffset(aValue) {
     });
     
     if (gsTileGlobal.newClient) {
-        messnamed("mMC.allClients", "refreshWindow");
+        messnamed("mMC.allClients", "refreshAppWindow");
     }
 }
 
@@ -570,39 +572,13 @@ function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
 function ledCol (aColumnFromPatcher, aStateFromPatcher) {
     if (gDebugItem.functionName) { post("    ---ledCol-\n"); }
     
-    var lDecimalNumberValue = Number(aStateFromPatcher);
-    var lBinaryNumberValue = lDecimalNumberValue.toString(2); // little endian
-    if (gDebugItem.startValue) { post("raw col:", aColumnFromPatcher, "decimal:", aStateFromPatcher, "binary:", lBinaryNumberValue, "\n"); }
-    
-    var lengthOfBinary = lBinaryNumberValue.length; 
-    for (var iRow = 0; iRow < lengthOfBinary; iRow++) {
-        
-        if (lBinaryNumberValue[iRow] == 1) {
-            gMonome[aColumnFromPatcher][lengthOfBinary - iRow - 1].ledOn();
-        }
-        else if(lBinaryNumberValue[iRow] == 0) {
-            gMonome[aColumnFromPatcher][lengthOfBinary - iRow - 1].ledOff();
-        }
-    }
+    gMonome.row(aRowFromPatcher, (aStateFromPatcher == 0) ? "ledOff" : "ledOn");
 }
 
 function ledRow (aRowFromPatcher, aStateFromPatcher) {
     if (gDebugItem.functionName) { post("    ---ledCol-\n"); }
     
-    var lDecimalNumberValue = Number(aStateFromPatcher);
-    var lBinaryNumberValue = lDecimalNumberValue.toString(2); // little endian
-    if (gDebugItem.startValue) { post("raw row:", aColumnFromPatcher, "decimal:", aStateFromPatcher, "binary:", lBinaryNumberValue, "\n"); }
-    
-    var lengthOfBinary = lBinaryNumberValue.length; 
-    for (var iColumn = 0; iColumn < lengthOfBinary; iColumn++) {
-        
-        if (lBinaryNumberValue[iColumn] == 1) {
-            gMonome[lengthOfBinary - iColumn - 1][aRowFromPatcher].ledOn();
-        }
-        else if(lBinaryNumberValue[iColumn] == 0) {
-            gMonome[lengthOfBinary - iColumn - 1][aRowFromPatcher].ledOff();
-        }
-    }
+    gMonome.row(aRowFromPatcher, (aStateFromPatcher == 0) ? "ledOff" : "ledOn");
 }
 
 //                                  ---===Monome Device Methods===---
@@ -617,7 +593,7 @@ function setAppMonomeWidth(aValue) {
 
     gMonome.rebuild(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value);
         
-    updateAppWindow();
+    updateAppWindowDetails();
 }
 
 function setAppMonomeHeight(aValue) {
@@ -630,7 +606,7 @@ function setAppMonomeHeight(aValue) {
 
     gMonome.rebuild(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value);
         
-    updateAppWindow();
+    updateAppWindowDetails();
 }
 
 //<Monome
@@ -899,38 +875,25 @@ function Monome(aColumns, aRows, aOutlet) {
 
 //Monome>
 
-function clearWindow() {
-    if (gDebugItem.functionName) { post("    --clearWindow--\n"); }
-    var iColumn;
+function clearAppWindow() {
+    if (gDebugItem.functionName) { post("    --clearAppWindow--\n"); }
+    var lLeft = gParameters.windowColumnOffset.value;
     var lBottom = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
-    var iRow;
+    var lTop = gParameters.windowRowOffset.value;
     var lRight = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
     
-
-    for (iColumn = gParameters.windowColumnOffset.value; iColumn < lBottom; iColumn++) {
-        for (iRow = gParameters.windowRowOffset.value; iRow < lRight; iRow++) {
-            if (gDebugItem.endValue) { post("clear col:", iColumn, "row:", iRow, "\n"); }
-            gMonome[iColumn][iRow].tempOff();
-        }
-    }
+    gMonome.window("ledOff", lLeft, lRight, lTop, lBottom);
 }
 
-function refreshWindow() {
-    if (gDebugItem.functionName) { post("    --refreshWindow--\n"); }
-    
-    clearWindow();
-    var iColumn;
+function refreshAppWindow() {
+    if (gDebugItem.functionName) { post("    --refreshAppWindow--\n"); }
+        
+    var lLeft = gParameters.windowColumnOffset.value;
     var lBottom = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
-    var iRow;
+    var lTop = gParameters.windowRowOffset.value;
     var lRight = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
     
-
-    for (iColumn = gParameters.windowColumnOffset.value; iColumn < lBottom; iColumn++) {
-        for (iRow = gParameters.windowRowOffset.value; iRow < lRight; iRow++) {
-            if (gDebugItem.endValue) { post("clear col:", iColumn, "row:", iRow, "\n"); }
-            gMonome[iColumn][iRow].checkActual();
-        }
-    }
+    gMonome.window("checkActual", lLeft, lRight, lTop, lBottom);
 }
 
 //<Parameters
@@ -1264,8 +1227,8 @@ function store(aNumber) {
 function recall(aNumber) {
     this.getnamed("gsTileClientPattrstorage").message(aNumber);
     gParameters.grabAll();
-    updateAppWindow();
-    refreshWindow();
+    updateAppWindowDetails();
+    refreshAppWindow();
 }
 
 
