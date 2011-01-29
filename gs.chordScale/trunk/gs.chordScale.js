@@ -471,8 +471,9 @@ function note(aPitch, aVelocity) {
             sendNoteMessage(iVoice, lSemitones, aVelocity);
         }
     }
-    note.immediate = 1;
 }
+note.immediate = 1;
+
 
 function replaceNote(aVoice) {
 
@@ -742,6 +743,7 @@ function press(aCol, aRow, aPress) {
         }
     }
 }
+press.immediate = 1;
 
 function store(aNumber) {
     if (gDebugItem.functionName) { post("    --store--\n"); }
@@ -1109,6 +1111,8 @@ function Parameters(aObject) {
                return new Monome(aColumns, aRows, aOutlet);
            }
 
+       if (gDebugItem.functionArguments) { post("typeof aOutlet", typeof aOutlet, "\n"); }
+
        if (gDebugItem.functionArguments) { post("mColumns", mColumns, "mRows", mRows, "\n"); }
 
        if (gDebugItem.functionName) { post("    --Monome--\n"); }
@@ -1117,13 +1121,13 @@ function Parameters(aObject) {
            post("monomeHeight:", aRows, "\n");
        }
 
-       if (aOutlet instanceof Number) {
+       if (typeof aOutlet == "number") {
            mOutlet = aOutlet;
            that.ledFunction = function(aColumn, aRow, aState) {
-               post(mOutlet, aColumn, aRow, aState);
+               outlet(mOutlet, aColumn, aRow, aState);
            };
        }
-       else if (aOutlet instanceof Function) {
+       else if (typeof aOutlet == "function") {
            that.ledFunction = aOutlet;
        }
        else if (aOutlet === undefined) {
