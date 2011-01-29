@@ -30,6 +30,8 @@ var autowatch = 1;
 
 var inlets = 1;
 var outlets = 2;
+var gThis = this;
+var gThisPatcher = this.patcher;
 
 var mDebugLevel;
 setDebugLevel(0);
@@ -45,14 +47,30 @@ var mMessageBankRow = 4;
 var mClientBankRow = 5;
 var mClientWindowTopEdge = 6;
 
+
+var gDebugItem = {
+    functionArguments : false,
+    endValue : false,
+    frequentItem : false,
+    frequentList: false,
+    functionName : false,
+    list : false,
+    localValue : false,
+    startValue : false,
+    frequentFunctionName : false,
+    loading : false
+};
+
 var gMonome = new Monome(mMonomeWidth, mMonomeHeight, 0);
 
-var gParameters = new Parameters();
+var gParameters = new Parameters({
+    outlet : 1
+});
 
 gParameters.messageBank = {
     name: "messageBank",
     type : "number",
-    format : "set",
+    format : null,
     value: 0,
     minValue: 0,
     maxValue: 7,
@@ -63,6 +81,8 @@ gParameters.messageBank = {
 
 gParameters.clientBank = {
     name: "clientBank",
+    type : "number",
+    format : null,
     value: 0,
     minValue: 0,
     maxValue: 7,
@@ -73,6 +93,8 @@ gParameters.clientBank = {
 
 gParameters.currentClient = {
     name: "currentClient",
+    type : "number",
+    format : "set",
     value: 0,
     minValue: 0,
     maxValue: 127,
@@ -83,26 +105,13 @@ gParameters.currentClient = {
 
 gParameters.patchString = "GsMidiControl";
 
-var debugItem = {
-    arguments : false,
-    endValue : false,
-    frequentItem : false,
-    frequentList: false,
-    functionName : false,
-    list : false,
-    localValue : false,
-    startValue : false,
-    frequentName : false,
-    loading : false
-};
-
 var cBankType = {
     programChange : 0,
     note : 1
 };
 
 function initialize() {
-    grabAllPattrValues();
+    gParameters.grabAll();
     updateMessageBankOnMonome();
     updateClientBankOnMonome();
 }
@@ -126,14 +135,14 @@ function makeMessageNumber(aCol, aRow) {
     var lTriggerNumber = aRow * mMonomeWidth + aCol; // 'raw'
     var lBankOffset = 32;
     
-    if (getBankType(parameter.messageBank.value) == cBankType.programChange) {
-        lBankOffset *= parameter.messageBank.value;
+    if (getBankType(gParameters.messageBank.value) == cBankType.programChange) {
+        lBankOffset *= gParameters.messageBank.value;
     }
-    else if (getBankType(parameter.messageBank.value) == cBankType.note) {
-        lBankOffset *= (parameter.messageBank.value - 4);
+    else if (getBankType(gParameters.messageBank.value) == cBankType.note) {
+        lBankOffset *= (gParameters.messageBank.value - 4);
     }
     else {
-        post("error in getMessageValue parameter.messageBank.value:", parameter.messageBank.value, "\n");
+        post("error in getMessageValue gParameters.messageBank.value:", gParameters.messageBank.value, "\n");
     }
     
     lTriggerNumber += lBankOffset;
@@ -144,9 +153,8 @@ function makeMessageNumber(aCol, aRow) {
 function makeClientNumber(aCol, aRow) {
     var lNumber = (aRow - mClientWindowTopEdge) * mMonomeWidth + aCol; // 'raw'
     
-    lNumber += (16 * parameter.clientBank.value);
+    lNumber += (16 * gParameters.clientBank.value);
     
-    post("Client:", lNumber, "\n");
     return lNumber;
 }
 
@@ -185,36 +193,45 @@ function setDebugLevel(aLevel) {
 
 
 function setCurrentClient(aClientNumber) {
-    gParameters.set("currentClient", aClientNumber);
+    gParameters.set({
+        key : "currentClient", 
+        value : aClientNumber
+    });
 }
 
 function setMessageBank(aValue) {
-    gParameters.set("messageBank", aValue);
+    gParameters.set({
+        key : "messageBank",
+        value : aValue
+    });
 }
 
 function sendMessageNumber(aNumber, aPress) {
     if (mDebugLevel[1]) { post("    --sendMessageNumber--\n"); }
 
-    if (getBankType(parameter.messageBank.value) == cBankType.programChange) {
-        if (aPress == 1) {messnamed("gs.channel", "channelProgramChange", parameter.currentClient.value, aNumber); }
+    if (getBankType(gParameters.messageBank.value) == cBankType.programChange) {
+        if (aPress == 1) {messnamed("gs.channel", "channelProgramChange", gParameters.currentClient.value, aNumber); }
     }
-    else if (getBankType(parameter.messageBank.value) == cBankType.note) {
-        messnamed("gs.channel", "channelNote",parameter.currentClient.value, aNumber, aPress*127);
+    else if (getBankType(gParameters.messageBank.value) == cBankType.note) {
+        messnamed("gs.channel", "channelNote",gParameters.currentClient.value, aNumber, aPress*127);
     }
     else {
-        post("error in sendMessageNumber parameter.messageBank.value:", parameter.messageBank.value, "\n");
-        post("error in getBankType:", getBankType(parameter.messageBank.value), "\n");
+        post("error in sendMessageNumber gParameters.messageBank.value:", gParameters.messageBank.value, "\n");
+        post("error in getBankType:", getBankType(gParameters.messageBank.value), "\n");
     }
 }
 sendMessageNumber.immediate = 1;
 
 function setClientBank(aValue) {
-    gParameters.set("clientBank", aValue);
+    gParameters.set({
+        key : "clientBank",
+        value : aValue
+    });
 }
 
 function updateClientBankOnMonome() {
     gMonome.row(mClientBankRow, "ledOff");
-    gMonome[parameter.clientBank.value][mClientBankRow].ledOn();
+    gMonome[gParameters.clientBank.value][mClientBankRow].ledOn();
     updateClientWindow();
 }
 
@@ -222,12 +239,12 @@ function updateClientWindow() {
     gMonome.row(6, "ledOff");
     gMonome.row(7, "ledOff");
     
-    var lRelativeValue = parameter.currentClient.value % 16; 
-    var lBank = (parameter.currentClient.value - lRelativeValue) / 16;
-    post("lBank:", lBank, "\n");
-    if (lBank == parameter.clientBank.value) {
+    var lRelativeValue = gParameters.currentClient.value % 16; 
+    var lBank = (gParameters.currentClient.value - lRelativeValue) / 16;
+
+    if (lBank == gParameters.clientBank.value) {
         var lRow = (lRelativeValue >= 8) ? 7: 6;
-        var lCol = parameter.currentClient.value % 8;
+        var lCol = gParameters.currentClient.value % 8;
         
         gMonome[lCol][lRow].ledOn();
     }
@@ -236,7 +253,7 @@ function updateClientWindow() {
 
 function updateMessageBankOnMonome() {
     gMonome.row(mMessageBankRow, "ledOff");
-    gMonome[parameter.messageBank.value][mMessageBankRow].ledOn();
+    gMonome[gParameters.messageBank.value][mMessageBankRow].ledOn();
 }
 
 //                                  ---===Controller Methods===---
