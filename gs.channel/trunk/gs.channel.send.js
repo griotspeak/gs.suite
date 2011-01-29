@@ -86,7 +86,6 @@ function sendNoteMessage(aPitch, aVelocity) {
     parameter.pitch[aPitch] = Boolean(aVelocity);
     
 }
-
 sendNoteMessage.immediate = 1;
 
 function sendProgramChangeMessage(aProgramChange) {
