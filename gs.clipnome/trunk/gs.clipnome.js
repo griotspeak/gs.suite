@@ -106,11 +106,11 @@ function initialize() {
 
     trackStopDisabled = 0;
 
-    xOffset = this.patcher.getnamed("xOffsetGsClipnomePattr").getvalueof();
-    yOffset = this.patcher.getnamed("yOffsetGsClipnomePattr").getvalueof();
+    xOffset = gThisPatcher.getnamed("xOffsetGsClipnomePattr").getvalueof();
+    yOffset = gThisPatcher.getnamed("yOffsetGsClipnomePattr").getvalueof();
     //monome variables
-    gParameters.monomeWidth.value = this.patcher.getnamed("monomeWidthGsClipnomePattr").getvalueof();
-    gParameters.monomeHeight.value = this.patcher.getnamed("monomeHeightGsClipnomePattr").getvalueof();
+    gParameters.monomeWidth.value = gThisPatcher.getnamed("monomeWidthGsClipnomePattr").getvalueof();
+    gParameters.monomeHeight.value = gThisPatcher.getnamed("monomeHeightGsClipnomePattr").getvalueof();
 
     var colOrder = (jsarguments[1] != null) ? jsarguments[1] : 0;
 
@@ -142,14 +142,14 @@ function initialize() {
     clipslot = [];
 
     // Setup basic LiveAPI objects
-    watchSet = new LiveAPI(this.patcher, updateClipWindow, "live_set");
+    watchSet = new LiveAPI(gThisPatcher, updateClipWindow, "live_set");
     watchSet.property = "tracks";
 
-    watchOVR = new LiveAPI(this.patcher, api_callback, "live_set");
+    watchOVR = new LiveAPI(gThisPatcher, api_callback, "live_set");
     watchOVR.property = "overdub";
-    watchPlay = new LiveAPI(this.patcher, api_callback, "live_set");
+    watchPlay = new LiveAPI(gThisPatcher, api_callback, "live_set");
     watchPlay.property = "is_playing";
-    watchMetro = new LiveAPI(this.patcher, api_callback, "live_set");
+    watchMetro = new LiveAPI(gThisPatcher, api_callback, "live_set");
     watchMetro.property = "metronome";
     
     gWatchersConstructed = true;
@@ -170,7 +170,7 @@ function setXOffset(_newXOffset) {
     else {
         xOffset = _newXOffset;
     }
-    this.patcher.getnamed("xOffsetGsClipnomePattr").message("set", xOffset);
+    gThisPatcher.getnamed("xOffsetGsClipnomePattr").message("set", xOffset);
 
     if ((!shiftIsHeld()) && (!mixerIsHeld)) {
         updateClipWindow();
@@ -189,7 +189,7 @@ function setYOffset(_newYOffset) {
     else {
         yOffset = _newYOffset;
     }
-    this.patcher.getnamed("yOffsetGsClipnomePattr").message("set", yOffset);
+    gThisPatcher.getnamed("yOffsetGsClipnomePattr").message("set", yOffset);
     
     if ((!shiftIsHeld()) && (!mixerIsHeld)) {
         updateClipWindow();
@@ -266,7 +266,7 @@ function updateClipWindow() {
         clipPlayingStatus[a]= [];
         
         for (var b = sceneOffset(); b < d; b++) {
-            clipslot[a][b] = new LiveAPI(this.patcher, api_callback,  "live_set tracks " + a + " clip_slots " + b);
+            clipslot[a][b] = new LiveAPI(gThisPatcher, api_callback,  "live_set tracks " + a + " clip_slots " + b);
             clipslot[a][b].mode = 0;
             clipslot[a][b].track = a;
             clipslot[a][b].scene = b;
@@ -349,7 +349,7 @@ function api_callback(args) {
         /***************************************************/        
         case "has_clip": 
             if (args[1] == 1) {
-                clipPlayingStatus[track][scene] = new LiveAPI(this.patcher, api_callback, "live_set tracks " + track + " clip_slots " + scene + " clip");
+                clipPlayingStatus[track][scene] = new LiveAPI(gThisPatcher, api_callback, "live_set tracks " + track + " clip_slots " + scene + " clip");
                 clipPlayingStatus[track][scene].mode        = 0;
                 clipPlayingStatus[track][scene].property        = "playing_status";
                 clipPlayingStatus[track][scene].track = track;
@@ -450,7 +450,7 @@ function press(_column, _row, _updown) {
 
 
     var what_track = _column + trackOffset();
-    var _track = new LiveAPI(this.patcher, "live_set tracks " + what_track);
+    var _track = new LiveAPI(gThisPatcher, "live_set tracks " + what_track);
 
 
 
@@ -516,7 +516,7 @@ function press(_column, _row, _updown) {
         case isSceneLaunch(_column, _row):
             if (_updown == 1) {
                 var what_scene = _row + sceneOffset();
-                var _scene = new LiveAPI(this.patcher, "live_set scenes " + what_scene);
+                var _scene = new LiveAPI(gThisPatcher, "live_set scenes " + what_scene);
                 _scene.call("fire");
                 if (gDebugLevel[3]) { post("launch scene", what_scene, "\n"); }
                 gMonome[_column][_row].push();
@@ -1002,19 +1002,19 @@ function mixer() {
     gWatchMute = [];
 
     for (var a = trackOffset(); a < c; a++) {
-        gWatchMute[a] = new LiveAPI(this.patcher, api_callback,        "live_set tracks " + a);
+        gWatchMute[a] = new LiveAPI(gThisPatcher, api_callback,        "live_set tracks " + a);
         gWatchMute[a].mode = 0;
         gWatchMute[a].track = a;
         gWatchMute[a].scene = 0;
         gWatchMute[a].property = "mute";                 
 
-        gWatchSolo[a] = new LiveAPI(this.patcher, api_callback,        "live_set tracks " + a);
+        gWatchSolo[a] = new LiveAPI(gThisPatcher, api_callback,        "live_set tracks " + a);
         gWatchSolo[a].mode = 0;
         gWatchSolo[a].track = a;
         gWatchSolo[a].scene = 0;
         gWatchSolo[a].property = "solo";
 
-        gWatchArmed[a] = new LiveAPI(this.patcher, api_callback,           "live_set tracks " + a);
+        gWatchArmed[a] = new LiveAPI(gThisPatcher, api_callback,           "live_set tracks " + a);
         gWatchArmed[a].mode = 0;
         gWatchArmed[a].track = a;
         gWatchArmed[a].scene = 0;
@@ -1026,7 +1026,7 @@ function setMonomeWidth( mWidth) {
     post("mWidth:", mWidth, "\n");
     gParameters.monomeWidth.value = mWidth;
     gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
-    this.patcher.getnamed("monomeWidthGsClipnomePattr").message(gParameters.monomeWidth.value);
+    gThisPatcher.getnamed("monomeWidthGsClipnomePattr").message(gParameters.monomeWidth.value);
     outlet(1, "gParameters.monomeWidth.value", "set", gParameters.monomeWidth.value );
     if (gDebugLevel[3]) { post("gParameters.monomeWidth.value:", gParameters.monomeWidth.value, "\n"); }
 }
@@ -1034,7 +1034,7 @@ function setMonomeWidth( mWidth) {
 function setMonomeHeight( mHeight) {
     post("mHeight:", mHeight, "\n");
     gParameters.monomeHeight.value = mHeight;
-    this.patcher.getnamed("monomeHeightGsClipnomePattr").message(gParameters.monomeHeight.value);
+    gThisPatcher.getnamed("monomeHeightGsClipnomePattr").message(gParameters.monomeHeight.value);
     outlet(1, "gParameters.monomeHeight.value", "set", gParameters.monomeHeight.value );
     if (gDebugLevel[3]) { post("gParameters.monomeHeight.value:", gParameters.monomeHeight.value, "\n"); }
 }
@@ -1079,7 +1079,7 @@ function Monome(aColumns, aRows, aOutlet) {
     if (typeof aOutlet == "number") {
         mOutlet = aOutlet;
         that.ledFunction = function(aColumn, aRow, aState) {
-            outlet(mOutlet, aColumn, aRow, aState);
+            outlet(mOutlet, "led", aColumn, aRow, aState);
         };
     }
     else if (typeof aOutlet == "function") {
