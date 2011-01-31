@@ -1218,7 +1218,7 @@ function Parameters(aObject) {
 
            this.tempOff = function() {
                tempState = 0;
-               that.ledFunction(mCol, mRow, actualState);
+               that.ledFunction(mCol, mRow, tempState);
            };
        }
 
