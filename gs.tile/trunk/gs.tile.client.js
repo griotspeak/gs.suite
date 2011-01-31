@@ -445,7 +445,7 @@ function freebang () {
 function sendRemoveClient() {
     if (gDebugItem.functionName) { post("    --sendRemoveClient--\n"); }
     if (gDebugItem.list) { post("request removal of:", mAppName, gParameters.randomKeyOne.value, gParameters.randomKeyTwo.value, "\n"); }
-    gsTileGlobal.removeClient(mAppName, gParameters.appChannelNumber.value, gParameters.randomKeyOne.value, gParameters.randomKeyTwo.value);
+    if (gsTileGlobal.removeClient != null) { gsTileGlobal.removeClient(mAppName, gParameters.appChannelNumber.value, gParameters.randomKeyOne.value, gParameters.randomKeyTwo.value); }
 }
 
 
@@ -743,7 +743,7 @@ function Monome(aColumns, aRows, aOutlet) {
 
         this.tempOff = function() {
             tempState = 0;
-            that.ledFunction(mCol, mRow, actualState);
+            that.ledFunction(mCol, mRow, tempState);
         };
     }
 
@@ -882,11 +882,11 @@ function clearAppWindow() {
     var lTop = gParameters.windowRowOffset.value;
     var lRight = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
     
-    gMonome.window("ledOff", lLeft, lRight, lTop, lBottom);
+    gMonome.window("tempOff", lLeft, lRight, lTop, lBottom);
 }
 
 function refreshAppWindow() {
-    if (gDebugItem.functionName) { post("    --refreshAppWindow--\n"); }
+    if (!gDebugItem.functionName) { post("    --refreshAppWindow--\n"); }
         
     var lLeft = gParameters.windowColumnOffset.value;
     var lBottom = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);

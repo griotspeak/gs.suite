@@ -289,7 +289,7 @@ function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonome
     }
     
     clearMonomes();
-    messnamed("gs.tile.allClients", "refreshWindow");
+    messnamed("gs.tile.allClients", "refreshAppWindow");
 }
 
 function clearMonomes() {
@@ -300,7 +300,7 @@ function clearMonomes() {
     
     for (iMonome = 0;iMonome <mNumberOfMonomeChannels; iMonome++) {
         lClearMessage = "/mMC" + iMonome + "/clear";
-        outlet(4,lClearMessage);
+        outlet(0, lClearMessage);
     }
 }
 
