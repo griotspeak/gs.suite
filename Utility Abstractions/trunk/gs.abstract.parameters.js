@@ -144,7 +144,7 @@ function Parameters(aObject) {
             if (aParameter.saveInPattr) {
                 lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr";
                 if (gDebugItem.localValue) { post("lPatcherObjectNameString", lPatcherObjectNameString, "\n"); }
-                this.patcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
+                gThisPatcher.getnamed(lPatcherObjectNameString).message(aParameter.value);
             }
         }
         mParameters.display(aParameter.name);
@@ -162,7 +162,9 @@ function Parameters(aObject) {
         lValueIsFunction = aParameter.value instanceof Function,
         lLength;
         
-        if (aParameter.format === null) return;
+        if (aParameter.format === null) {
+            return;
+        }
         
         if (aParameter.type == "slotArray") {
             lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
@@ -262,9 +264,8 @@ function Parameters(aObject) {
 
     this.grab = function(aParameter) {
         if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
-
-        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
-            lValue;
+        
+            var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr", lValue;
 
         if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
         if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
@@ -273,15 +274,15 @@ function Parameters(aObject) {
             case "number" : 
                 /*jsl:fallthru*/
             case "toggle" :
-                lValue = Number(this.patcher.getnamed(lPatcherObjectNameString).getvalueof());
+                lValue = Number(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof());
                 break;
             case "string" :
-                lValue = String(this.patcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
+                lValue = String(gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof()) ;
                 break;
             case "slotArray" :
                 /*jsl:fallthru*/
             case "array" :
-                lValue = this.patcher.getnamed(lPatcherObjectNameString).getvalueof();
+                lValue = gThisPatcher.getnamed(lPatcherObjectNameString).getvalueof();
                 break;
             default :
                 post(aParameter.name + ".type:", aParameter.type , "\n");
