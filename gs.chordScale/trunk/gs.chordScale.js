@@ -1124,7 +1124,7 @@ function Parameters(aObject) {
        if (typeof aOutlet == "number") {
            mOutlet = aOutlet;
            that.ledFunction = function(aColumn, aRow, aState) {
-               outlet(mOutlet, aColumn, aRow, aState);
+               outlet(mOutlet, "led", aColumn, aRow, aState);
            };
        }
        else if (typeof aOutlet == "function") {
