@@ -308,6 +308,33 @@ function updateAppWindowDetails() {
     }
 }
 
+function grabFocus(aMonomeNumber) {
+    var lMonomeNumber = parseInt(aMonomeNumber, 10);
+    
+    if (gsTileGlobal.newClient != null) {
+        messnamed("gs.tile.allClients", "dropFocus", lMonomeNumber);
+    }
+    setAppMonomeNumber(lMonomeNumber);
+}
+
+function dropFocus(aMonomeNumber) {
+    if (gParameters.appMonomeNumber.value == aMonomeNumber) {
+        setAppMonomeNumber(0);
+    }
+}
+
+function numberOfMonomeChannels(aNumber) {
+    post("start\n");
+    var iCounter;
+    for (iCounter = 0; iCounter < 4; iCounter++) {
+        outlet(1, "focus-" + iCounter, "active", (iCounter < aNumber) ? 1 : 0);
+    }
+    post("end\n");
+}
+
+
+
+
 
 function setWindowColumnOffset(aValue) {
     if (gDebugItem.functionName) { post("    --setWindowColumnOffset--\n"); }
@@ -318,7 +345,7 @@ function setWindowColumnOffset(aValue) {
     });
     
     if (gsTileGlobal.newClient != null) {
-        messnamed("mMC.allClients", "refreshAppWindow");
+        messnamed("gs.tile.allClients", "refreshAppWindow");
     }
 }
 
@@ -331,7 +358,7 @@ function setWindowRowOffset(aValue) {
     });
     
     if (gsTileGlobal.newClient != null) {
-        messnamed("mMC.allClients", "refreshAppWindow");
+        messnamed("gs.tile.allClients", "refreshAppWindow");
     }
 }
 
@@ -531,8 +558,8 @@ function makeChannel(aChannelNumber) {
 }
 
 function processPress(aColumnFromRouter, aRowFromRouter, aStateFromRouter) {
-    if (!gDebugItem.functionName) { post("    ---press-\n"); }
-    if (!gDebugItem.endValue) { post("column", aColumnFromRouter, "row", aRowFromRouter, "state", aStateFromRouter ); }
+    if (gDebugItem.functionName) { post("    ---press-\n"); }
+    if (gDebugItem.endValue) { post("column", aColumnFromRouter, "row", aRowFromRouter, "state", aStateFromRouter ); }
     
     var lTranslatedColumn = aColumnFromRouter + gParameters.windowColumnOffset.value;
     var lTranslatedRow = aRowFromRouter + gParameters.windowRowOffset.value;
@@ -886,7 +913,7 @@ function clearAppWindow() {
 }
 
 function refreshAppWindow() {
-    if (!gDebugItem.functionName) { post("    --refreshAppWindow--\n"); }
+    if (gDebugItem.functionName) { post("    --refreshAppWindow--\n"); }
         
     var lLeft = gParameters.windowColumnOffset.value;
     var lBottom = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
