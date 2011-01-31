@@ -13,7 +13,7 @@
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.router.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T02:28:23Z</date>
+					<date>2011-01-31T15:27:50Z</date>
 					<key>selected</key>
 					<true/>
 				</dict>
@@ -21,7 +21,7 @@
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.client.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T02:28:22Z</date>
+					<date>2011-01-31T15:27:50Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -36,31 +36,31 @@
 					<key>filename</key>
 					<string>../gs.pChange/gs.pChange.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T02:25:21Z</date>
+					<date>2011-01-31T02:37:51Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.chordScale/gs.chordScale.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T01:48:36Z</date>
+					<date>2011-01-31T02:32:09Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T01:48:33Z</date>
+					<date>2011-01-31T02:32:07Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.clipnome/gs.clipnome.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T01:48:29Z</date>
+					<date>2011-01-31T02:32:04Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.midiControl/gs.midiControl.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T01:52:56Z</date>
+					<date>2011-01-31T02:31:42Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -75,13 +75,13 @@
 					<key>filename</key>
 					<string>gs.abstract.parameters.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T01:47:45Z</date>
+					<date>2011-01-31T02:31:55Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>gs.abstract.monome.js</string>
 					<key>lastUsed</key>
-					<date>2011-01-31T01:50:01Z</date>
+					<date>2011-01-31T02:32:01Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -127,40 +127,71 @@
 	<integer>190</integer>
 	<key>metaData</key>
 	<dict>
-		<key>../gs.tile/gs.tile.router.js</key>
+		<key>../gs.tile/gs.tile.client.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>30</integer>
+				<integer>37</integer>
 				<key>line</key>
-				<integer>311</integer>
+				<integer>314</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>265</integer>
+			<integer>288</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>23</integer>
+				<integer>19</integer>
 				<key>line</key>
-				<integer>311</integer>
+				<integer>314</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>30</integer>
+				<integer>37</integer>
 				<key>line</key>
-				<integer>311</integer>
+				<integer>314</integer>
+			</dict>
+		</dict>
+		<key>../gs.tile/gs.tile.router.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>37</integer>
+				<key>line</key>
+				<integer>139</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>106</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>19</integer>
+				<key>line</key>
+				<integer>139</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>37</integer>
+				<key>line</key>
+				<integer>139</integer>
 			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>../gs.tile/gs.tile.router.js</string>
+		<string>../gs.tile/gs.tile.client.js</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
