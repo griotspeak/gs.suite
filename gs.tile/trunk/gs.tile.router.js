@@ -32,18 +32,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 autowatch = 1;
 
 inlets = 5;
-outlets = 5;
+outlets = 1;
+var gThis = this;
+var gThisPatcher = this.patcher;
 
-var mAppChannelsMade = false,
-    mMonomeChannelsMade = false,
-    mNumberOfMonomeChannels = 0,
-    mUdpSendObject,
-    mUdpReceiveObject,
-    mPrependPressObject = [],
-    mRouteObject = [],
-    mPrependLedObject = [],
-    
-    debugItem = {
+var mAppChannelsMade = false;
+var mMonomeChannelsMade = false;
+var mNumberOfMonomeChannels = 0;
+var mUdpSendObject;
+var mUdpReceiveObject;
+var mPrependPressObject = [];
+var mRouteObject = [];
+var debugItem = {
         endValue : false,
         frequentItem : false,
         frequentList: false,
@@ -52,11 +52,11 @@ var mAppChannelsMade = false,
         frequentFunctionName : false,
         list : false,
         startValue : false
-    },
+};
 
-    mThisRouterObject = this.patcher.getnamed("routerJSObject"),
+var mThisRouterObject = gThisPatcher.getnamed("routerJSObject");
 
-    gsTileGlobal = new Global("gsTileRouter");
+var gsTileGlobal = new Global("gsTileRouter");
 
 
 gsTileGlobal.appList = [];
@@ -76,15 +76,14 @@ function reconnect() {
     gsTileGlobal.removeClient = removeClient;
     gsTileGlobal.led = processLed;
     gsTileGlobal.appWindow = updateWindowDimensions;
-    mThisRouterObject = this.patcher.getnamed("routerJSObject");
+    mThisRouterObject = gThisPatcher.getnamed("routerJSObject");
     messnamed("gs.tile.allClients", "newRouterAlert");
     post("gs.tile.router reconnected\n");
 }
 
 function makeMonomeChannels(aHowManyChannels) {
     var iChannel,
-        lRouteMessage,
-        lLedPrependMessage;
+        lRouteMessage;
     
     if (debugItem.functionName) { post("    ---makeMonomeChannels-\n"); }
     
@@ -97,42 +96,36 @@ function makeMonomeChannels(aHowManyChannels) {
 
     if (mMonomeChannelsMade) { 
         // remove from patcher...
-        this.patcher.remove(mUdpReceiveObject);
-        this.patcher.remove(mUdpSendObject);
+        gThisPatcher.remove(mUdpReceiveObject);
+        gThisPatcher.remove(mUdpSendObject);
         for (iChannel = 0; iChannel < mRouteObject.length; iChannel++) {
-            this.patcher.remove(mRouteObject[iChannel]);
-            this.patcher.remove(mPrependPressObject[iChannel]);
-            this.patcher.remove(mPrependLedObject[iChannel]);
+            gThisPatcher.remove(mRouteObject[iChannel]);
+            gThisPatcher.remove(mPrependPressObject[iChannel]);
         }
     }
     // ...then clear arrays
 
     mRouteObject = [];
     mPrependPressObject = [];
-    mPrependLedObject = [];
     
     // then make udp objects (not strictly necessary)
-    mUdpReceiveObject = this.patcher.newdefault(15, 15, "udpreceive", 8400);
-    mUdpSendObject = this.patcher.newdefault(15, 360, "udpsend", "localhost", 8700);
+    mUdpReceiveObject = gThisPatcher.newdefault(15, 15, "udpreceive", 8400);
+    mUdpSendObject = gThisPatcher.newdefault(15, 360, "udpsend", "localhost", 8700);
     
-    this.patcher.connect(mThisRouterObject, 4, mUdpSendObject, 0);
-     
+    gThisPatcher.connect(mThisRouterObject, 0, mUdpSendObject, 0);            // thisRouterObject to udpsend
+    
     for (iChannel = 0; iChannel < aHowManyChannels; iChannel++) {
         // make the receives, sends, routes, and prepends
         
         lRouteMessage = "/gs.tile-" + iChannel + "/press";
-        lLedPrependMessage = "/gs.tile-" + iChannel + "/led";
                 
-        mRouteObject[iChannel] = this.patcher.newdefault(15 + (iChannel * 180), 60, "route", lRouteMessage);
-        mPrependPressObject[iChannel] = this.patcher.newdefault(15 + (iChannel * 180), 105, "prepend", "press");
-        mPrependLedObject[iChannel] = this.patcher.newdefault(15 + (iChannel * 180), 280, "prepend", lLedPrependMessage);
+        mRouteObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 60, "route", lRouteMessage);
+        mPrependPressObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 105, "prepend", "press");
                 
         //connect  -->                                                  the 
-        this.patcher.connect(mUdpReceiveObject, 0, mRouteObject[iChannel], 0);             // udp     to the routes
-        this.patcher.connect(mRouteObject[iChannel], 0, mPrependPressObject[iChannel], 0);            // routes to the prepends
-        this.patcher.connect(mPrependPressObject[iChannel], 0, mThisRouterObject, iChannel + 1);    // press prepends to the thisRouterObject
-        this.patcher.connect(mThisRouterObject, iChannel, mPrependLedObject[iChannel], 0);            // thisRouterObject to the prepend
-        this.patcher.connect(mPrependLedObject[iChannel], 0, mUdpSendObject, 0);            // prepend to udpsend
+        gThisPatcher.connect(mUdpReceiveObject, 0, mRouteObject[iChannel], 0);             // udp     to the routes
+        gThisPatcher.connect(mRouteObject[iChannel], 0, mPrependPressObject[iChannel], 0);            // routes to the prepends
+        gThisPatcher.connect(mPrependPressObject[iChannel], 0, mThisRouterObject, iChannel + 1);    // press prepends to the thisRouterObject
     }
     
     mMonomeChannelsMade = true;
@@ -256,7 +249,7 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
         if (debugItem.frequentList) { post("properOutlet:", lProperOutlet, "\n"); }
         
         if (lProperOutlet > -1) {
-            outlet(lProperOutlet, lColumnValueAfterOffset, lRowValueAfterOffset, aState);
+            outlet(0, "/gs.tile-" + lProperOutlet + "/led", lColumnValueAfterOffset, lRowValueAfterOffset, aState);
         }
         
         if (debugItem.frequentList) { post("col:", lColumnValueAfterOffset, "row:", lRowValueAfterOffset, "\n"); }

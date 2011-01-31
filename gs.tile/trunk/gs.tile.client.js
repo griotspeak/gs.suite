@@ -218,7 +218,7 @@ gParameters.patchString = "GsTileClient";
 
 function initialize() {
     if (gDebugItem.functionName) { post("    --initialize--\n"); }
-    if (this.patcher.getnamed("parametersLoadedGsTileClientPattr").getvalueof() == 1) {
+    if (gThisPatcher.getnamed("parametersLoadedGsTileClientPattr").getvalueof() == 1) {
         gParameters.grabAll();
         
         if (gParameters.randomKeyOne.value == 0) {
@@ -531,8 +531,8 @@ function makeChannel(aChannelNumber) {
 }
 
 function processPress(aColumnFromRouter, aRowFromRouter, aStateFromRouter) {
-    if (gDebugItem.functionName) { post("    ---press-\n"); }
-    if (gDebugItem.endValue) { post("column", aColumnFromRouter, "row", aRowFromRouter, "state", aStateFromRouter ); }
+    if (!gDebugItem.functionName) { post("    ---press-\n"); }
+    if (!gDebugItem.endValue) { post("column", aColumnFromRouter, "row", aRowFromRouter, "state", aStateFromRouter ); }
     
     var lTranslatedColumn = aColumnFromRouter + gParameters.windowColumnOffset.value;
     var lTranslatedRow = aRowFromRouter + gParameters.windowRowOffset.value;
@@ -546,7 +546,7 @@ function processPress(aColumnFromRouter, aRowFromRouter, aStateFromRouter) {
     }    
     //        -/
     
-    outlet(0, lTranslatedColumn, lTranslatedRow, aStateFromRouter);
+    outlet(0, "press", lTranslatedColumn, lTranslatedRow, aStateFromRouter);
 }
 
 
@@ -559,7 +559,7 @@ function processMessagesOnPrivateChannel(aArray) {
 function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
     if (gDebugItem.functionName) { post("    ---led-\n"); }
     
-    if (gDebugItem.startValue) { post("raw col:", aColumnFromPatcher, "row:", aRowFromPatcher, "\n"); }
+    if (gDebugItem.startValue) { post("raw col:", aColumnFromPatcher, "row:", aRowFromPatcher, "state:", aStateFromPatcher, "\n"); }
     
     if (aStateFromPatcher == 1) {
         gMonome[aColumnFromPatcher][aRowFromPatcher].ledOn();
@@ -569,13 +569,13 @@ function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
     }
 }
 
-function ledCol (aColumnFromPatcher, aStateFromPatcher) {
+function led_col (aColumnFromPatcher, aStateFromPatcher) {
     if (gDebugItem.functionName) { post("    ---ledCol-\n"); }
     
-    gMonome.row(aRowFromPatcher, (aStateFromPatcher == 0) ? "ledOff" : "ledOn");
+    gMonome.column(aColumnFromPatcher, (aStateFromPatcher == 0) ? "ledOff" : "ledOn");
 }
 
-function ledRow (aRowFromPatcher, aStateFromPatcher) {
+function led_row (aRowFromPatcher, aStateFromPatcher) {
     if (gDebugItem.functionName) { post("    ---ledCol-\n"); }
     
     gMonome.row(aRowFromPatcher, (aStateFromPatcher == 0) ? "ledOff" : "ledOn");
@@ -649,7 +649,7 @@ function Monome(aColumns, aRows, aOutlet) {
     if (typeof aOutlet == "number") {
         mOutlet = aOutlet;
         that.ledFunction = function(aColumn, aRow, aState) {
-            outlet(mOutlet, aColumn, aRow, aState);
+            outlet(mOutlet, "led", aColumn, aRow, aState);
         };
     }
     else if (typeof aOutlet == "function") {
