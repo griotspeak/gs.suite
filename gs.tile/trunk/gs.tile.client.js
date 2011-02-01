@@ -1,3 +1,5 @@
+//<License
+
 /*
 -*- coding: utf-8 -*-
 gs.tile.client v0.020
@@ -26,6 +28,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+//License>
+
+
 autowatch = 1;
 
 inlets = 2;
@@ -37,7 +42,7 @@ var gDebugItem = {
     endValue : false,
     frequentItem : false,
     frequentList: false,
-    functionName : false,
+    functionName : true,
     list : false,
     localValue : false,
     frequentFunctionName : false,
@@ -233,10 +238,9 @@ function initialize() {
                 value : Math.floor(Math.random()*1000) + 1
             });
         }
-        
+        numberOfMonomeChannels(0);
         gMonome = new Monome(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value, prepareLedForRouter);
         alertRouterOfNewClient();
-
     }
 }
 
@@ -324,12 +328,10 @@ function dropFocus(aMonomeNumber) {
 }
 
 function numberOfMonomeChannels(aNumber) {
-    post("start\n");
     var iCounter;
     for (iCounter = 0; iCounter < 4; iCounter++) {
         outlet(1, "focus-" + iCounter, "active", (iCounter < aNumber) ? 1 : 0);
     }
-    post("end\n");
 }
 
 
@@ -523,7 +525,7 @@ function prepareLedForRouter(aColumnFromMonomeFunction, aRowFromMonomeFunction, 
 }
 
 function isInWindow(aColumnInQuestion, aRowInQuestion) {
-    if (gDebugItem.functionName) { post("    --isInWindow--\n"); }
+    if (gDebugItem.frequentFunctionName) { post("    --isInWindow--", aColumnInQuestion, aRowInQuestion, "\n"); }
     
     if (gDebugItem.frequentList) {
         post("col:", aColumnInQuestion, "row:", aRowInQuestion, "\n");
@@ -584,7 +586,7 @@ function processMessagesOnPrivateChannel(aArray) {
 }
 
 function led (aColumnFromPatcher, aRowFromPatcher, aStateFromPatcher) {
-    if (gDebugItem.functionName) { post("    ---led-\n"); }
+    if (gDebugItem.frequentFunctionName) { post("    ---led-\n"); }
     
     if (gDebugItem.startValue) { post("raw col:", aColumnFromPatcher, "row:", aRowFromPatcher, "state:", aStateFromPatcher, "\n"); }
     
@@ -611,29 +613,50 @@ function led_row (aRowFromPatcher, aStateFromPatcher) {
 //                                  ---===Monome Device Methods===---
 
 function setAppMonomeWidth(aValue) {
+    var lFullAppWidthShown = gParameters.appMonomeWidth.value == gParameters.windowWidth.value;
+
     if (gDebugItem.functionName) { post("    ---setAppMonomeWidth-\n"); }
     
+    gMonome.beginUpdates();
     gParameters.set({
         key : "appMonomeWidth",
         value : aValue
     });
 
     gMonome.rebuild(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value);
-        
+    
+    if (lFullAppWidthShown) {
+        gParameters.set({
+            key : "windowWidth",
+            value : aValue
+        });
+    } 
+    
     updateAppWindowDetails();
+    gMonome.endUpdates();
 }
 
 function setAppMonomeHeight(aValue) {
+    var lFullAppHeightShown = gParameters.appMonomeHeight.value == gParameters.windowHeight.value;
+    
     if (gDebugItem.functionName) { post("    ---setAppMonomeHeight-\n"); }
     
+    gMonome.beginUpdates();
     gParameters.set({
         key : "appMonomeHeight",
         value : aValue
     });
 
     gMonome.rebuild(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value);
-        
+    
+    if (lFullAppHeightShown) {
+        gParameters.set({
+            key : "windowHeight",
+            value : aValue
+        });
+    }
     updateAppWindowDetails();
+    gMonome.endUpdates();
 }
 
 //<Monome
@@ -850,6 +873,15 @@ function Monome(aColumns, aRows, aOutlet) {
         var iColumn;
     	var iRow;    
 
+        if (gDebugItem.functionArguments) {
+            post("mColumns", mColumns, "\n");
+            post("mRows", mRows, "\n");
+            post("aLeftColumn", aLeftColumn, "\n");
+            post("aRightColumn", aRightColumn, "\n");
+            post("aTopRow", aTopRow, "\n");
+            post("aBottomRow", aBottomRow, "\n");
+        }
+
         for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
             for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
                 that[iColumn][iRow][aMethodToInvoke]();
@@ -904,10 +936,11 @@ function Monome(aColumns, aRows, aOutlet) {
 
 function clearAppWindow() {
     if (gDebugItem.functionName) { post("    --clearAppWindow--\n"); }
+
     var lLeft = gParameters.windowColumnOffset.value;
-    var lBottom = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
+    var lRight = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
     var lTop = gParameters.windowRowOffset.value;
-    var lRight = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
+    var lBottom = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
     
     gMonome.window("tempOff", lLeft, lRight, lTop, lBottom);
 }
@@ -916,10 +949,10 @@ function refreshAppWindow() {
     if (gDebugItem.functionName) { post("    --refreshAppWindow--\n"); }
         
     var lLeft = gParameters.windowColumnOffset.value;
-    var lBottom = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
+    var lRight = Math.min(gParameters.windowWidth.value + gParameters.windowColumnOffset.value, gParameters.appMonomeWidth.value);
     var lTop = gParameters.windowRowOffset.value;
-    var lRight = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
-    
+    var lBottom = Math.min(gParameters.windowHeight.value + gParameters.windowRowOffset.value, gParameters.appMonomeHeight.value);
+            
     gMonome.window("checkActual", lLeft, lRight, lTop, lBottom);
 }
 
@@ -1248,11 +1281,16 @@ function Parameters(aObject) {
 //Parameters>
 
 function store(aNumber) {
-    this.getnamed("gsTileClientPattrstorage").message("store", aNumber);
+    if (gDebugItem.functionName) { post("    --store(gs.tile.client)--\n"); }
+    
+    gThisPatcher.getnamed("gsTileClientPattrstorage").message("store", aNumber);
 }
 
 function recall(aNumber) {
-    this.getnamed("gsTileClientPattrstorage").message(aNumber);
+    if (gDebugItem.functionName) { post("    --recall(gs.tile.client)--\n"); }
+    
+    clearAppWindow();
+    gThisPatcher.getnamed("gsTileClientPattrstorage").message(aNumber);
     gParameters.grabAll();
     updateAppWindowDetails();
     refreshAppWindow();

@@ -1,6 +1,7 @@
+//<License
 /*
 -*- coding: utf-8 -*-
-gs.gs.tile.router v0.020
+gs.tile.router.js
 Copyright (c) 2010, TJ Usiyan a.k.a. griotspeak
 All rights reserved.
 
@@ -25,6 +26,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+
+//License>
 
 /*jslint onevar:true */
 /*global post : false, autowatch : true, inlets : true, outlets : true, outlet : false, Global : false, messnamed : false, inlet : false */
@@ -58,14 +61,6 @@ var mThisRouterObject = gThisPatcher.getnamed("routerJSObject");
 
 var gsTileGlobal = new Global("gsTileRouter");
 
-
-gsTileGlobal.appList = [];
-gsTileGlobal.toRouter = incomingMessages;
-gsTileGlobal.newClient = processNewClientNotification;
-gsTileGlobal.removeClient = removeClient;
-gsTileGlobal.led = processLed;
-gsTileGlobal.appWindow = updateWindowDimensions;
-
 function reconnect() {
     if (gDebugItem.functionName) { post("    --reconnect--\n"); }
 
@@ -79,6 +74,17 @@ function reconnect() {
     mThisRouterObject = gThisPatcher.getnamed("routerJSObject");
     messnamed("gs.tile.allClients", "newRouterAlert");
     post("gs.tile.router reconnected\n");
+}
+
+function initialize() {
+    gsTileGlobal.appList = [];
+    gsTileGlobal.toRouter = incomingMessages;
+    gsTileGlobal.newClient = processNewClientNotification;
+    gsTileGlobal.removeClient = removeClient;
+    gsTileGlobal.led = processLed;
+    gsTileGlobal.appWindow = updateWindowDimensions;
+    messnamed("gs.tile.allClients", "newRouterAlert");
+    post("gs.tile.router Finished loading\n");
 }
 
 function makeMonomeChannels(aHowManyChannels) {
@@ -134,7 +140,7 @@ function makeMonomeChannels(aHowManyChannels) {
 }
 
 function sendNumberOfMonomes() {
-    if (!gDebugItem.functionName) { post("    --sendNumberOfMonomes--\n"); }
+    if (gDebugItem.functionName) { post("    --sendNumberOfMonomes--\n"); }
     
     if (gsTileGlobal.newClient != null) {
         messnamed("gs.tile.allClients", "numberOfMonomeChannels", mNumberOfMonomeChannels);
@@ -387,8 +393,6 @@ function removeClient(aAppName, aChannelNumber, aKey1, aKey2) {
         gsTileGlobal.appList.forEach(acknowledgeClient);
         if (gDebugItem.list) { gsTileGlobal.appList.forEach(postClient); }
     }
-    post("client removed!\n");
-    gsTileGlobal.appList.forEach(postClient);
 }
 
 function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
@@ -417,6 +421,10 @@ function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
 }
 
 function freebang() {
+    
+    mNumberOfMonomeChannels = 0;
+    sendNumberOfMonomes();
+    
     gsTileGlobal.appList = null;
     gsTileGlobal.toRouter = null;
     gsTileGlobal.newClient = null;
@@ -424,6 +432,7 @@ function freebang() {
     gsTileGlobal.led = null;
     gsTileGlobal.appWindow = null;
     gsTileGlobal = null;
+    
     post("gs.tile.router freed");
     
 }
@@ -494,10 +503,4 @@ function testAppChannels(_ar) {
         if (gDebugItem.endValue) { post("talking to:", gsTileGlobal.appList[iApp].appName, "\n"); } //!! name
         gsTileGlobal.appList[iApp].channelObject.connection();
     }
-}
-
-
-function initialize() {
-    messnamed("gs.tile.allClients", "newRouterAlert");
-    post("gs.tile.router Finished loading\n");
 }
