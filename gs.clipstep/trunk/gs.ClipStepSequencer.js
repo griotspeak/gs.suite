@@ -1,3 +1,5 @@
+//<License
+
 /*
 -*- coding: utf-8 -*-
 gs.clipStepSequencer 0.095
@@ -26,11 +28,12 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 
-Many thanks to pukunui and Andrew Pask examples and everyone else who i 
-have taken inspiration/insight from.
 
 */
+//License>
 
+// Many thanks to pukunui and Andrew Pask examples and everyone else who i 
+// have taken inspiration/insight from.
 
 /*jslint white:false, undef:false */
 /*globals post : false, inlets : true, outlets : true, outlet : false, inlet : false, autowatch : true */
@@ -2638,6 +2641,15 @@ function Monome(aColumns, aRows, aOutlet) {
         if (gDebugItem.functionName) { post("    --window :", aMethodToInvoke, "--\n"); }
         var iColumn;
     	var iRow;    
+
+        if (gDebugItem.functionArguments) {
+            post("mColumns", mColumns, "\n");
+            post("mRows", mRows, "\n");
+            post("aLeftColumn", aLeftColumn, "\n");
+            post("aRightColumn", aRightColumn, "\n");
+            post("aTopRow", aTopRow, "\n");
+            post("aBottomRow", aBottomRow, "\n");
+        }
 
         for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
             for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
