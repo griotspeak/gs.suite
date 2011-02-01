@@ -42,7 +42,7 @@ var gDebugItem = {
     endValue : false,
     frequentItem : false,
     frequentList: false,
-    functionName : true,
+    functionName : false,
     list : false,
     localValue : false,
     frequentFunctionName : false,
