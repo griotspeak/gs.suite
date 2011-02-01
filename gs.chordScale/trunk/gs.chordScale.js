@@ -1,3 +1,5 @@
+//<License
+
 /*
 -*- coding: utf-8 -*-
 gs.chordScale v00.000
@@ -25,6 +27,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+//License>
 
 var autowatch = 1;
 
@@ -1297,6 +1300,15 @@ function Parameters(aObject) {
            if (gDebugItem.functionName) { post("    --window :", aMethodToInvoke, "--\n"); }
            var iColumn;
        	var iRow;    
+
+           if (gDebugItem.functionArguments) {
+               post("mColumns", mColumns, "\n");
+               post("mRows", mRows, "\n");
+               post("aLeftColumn", aLeftColumn, "\n");
+               post("aRightColumn", aRightColumn, "\n");
+               post("aTopRow", aTopRow, "\n");
+               post("aBottomRow", aBottomRow, "\n");
+           }
 
            for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
                for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
