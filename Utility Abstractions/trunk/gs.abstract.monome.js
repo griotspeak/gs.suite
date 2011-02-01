@@ -214,6 +214,15 @@ function Monome(aColumns, aRows, aOutlet) {
         var iColumn;
     	var iRow;    
 
+        if (gDebugItem.functionArguments) {
+            post("mColumns", mColumns, "\n");
+            post("mRows", mRows, "\n");
+            post("aLeftColumn", aLeftColumn, "\n");
+            post("aRightColumn", aRightColumn, "\n");
+            post("aTopRow", aTopRow, "\n");
+            post("aBottomRow", aBottomRow, "\n");
+        }
+
         for (iColumn = aLeftColumn; iColumn < aRightColumn; iColumn++) {
             for (iRow = aTopRow; iRow < aBottomRow; iRow++) {
                 that[iColumn][iRow][aMethodToInvoke]();
