@@ -305,7 +305,10 @@ gParameters.comment = {
         var lScaleDegreeObject = cScaleDegreeArray[gParameters.degree.value[aVoice]];
         var lSpecificFunctionObject = lScaleDegreeObject[gParameters.accidental.value[aVoice] + 2];
 
-        if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.tension != null)) {
+        if (gParameters.voiceOn.value[aVoice] === 0) {
+            return "";
+        }
+        else if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.tension != null)) {
             return lSpecificFunctionObject.opinionated.tension;
         }
         else if ((gParameters.octave.value[aVoice] > 1) && (lSpecificFunctionObject.passive.tension != null)) {                
@@ -760,7 +763,7 @@ function recall(aNumber) {
     
     gThisPatcher.getnamed("gsChordScale-presetStore").message(aNumber);
     gParameters.grabAll();
-    gParameters.displayAll;
+    gParameters.displayAll();
 }
 
 //<Parameters
