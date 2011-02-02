@@ -40,6 +40,7 @@ var gThisPatcher = this.patcher;
 var gWatchersConstructed = false;
 var gMonome;
 var gParameters = {};
+gParameters.patchString = "GsClipnome";
 var gDebugItem = {
     endValue : false,
     frequentItem : false,
@@ -159,6 +160,25 @@ function initialize() {
     updateClipWindow();
 }
 
+function store(aNumber) {
+    gThisPatcher.getnamed(gParameters.patchString + "-presetStore").message("store", aNumber);
+}
+
+function recall(aNumber) {
+    gThisPatcher.getnamed(gParameters.patchString + "-presetStore").message(aNumber);
+    
+    xOffset = gThisPatcher.getnamed("xOffsetGsClipnomePattr").getvalueof();
+    yOffset = gThisPatcher.getnamed("yOffsetGsClipnomePattr").getvalueof();
+    //monome variables
+    gParameters.monomeWidth.value = gThisPatcher.getnamed("monomeWidth" + gParameters.patchString + "Pattr").getvalueof();
+    gParameters.monomeHeight.value = gThisPatcher.getnamed("monomeHeight" + gParameters.patchString + "Pattr").getvalueof();
+    
+    updateClipWindow();
+}
+
+
+
+
 function setXOffset(_newXOffset) {
     if (gDebugLevel[1]) {
         post("    ---setXOffset-\n");
@@ -167,13 +187,13 @@ function setXOffset(_newXOffset) {
     if (_newXOffset < 0) {
         xOffset = 0;
     }
-    else if (_newXOffset > 32) {
-        xOffset = 32;
+    else if (_newXOffset > 2048) {
+        xOffset = 2048;
     }
     else {
         xOffset = _newXOffset;
     }
-    gThisPatcher.getnamed("xOffsetGsClipnomePattr").message("set", xOffset);
+    gThisPatcher.getnamed("xOffsetGsClipnomePattr").message(xOffset);
 
     if ((!shiftIsHeld()) && (!mixerIsHeld)) {
         updateClipWindow();
@@ -192,7 +212,7 @@ function setYOffset(_newYOffset) {
     else {
         yOffset = _newYOffset;
     }
-    gThisPatcher.getnamed("yOffsetGsClipnomePattr").message("set", yOffset);
+    gThisPatcher.getnamed("yOffsetGsClipnomePattr").message(yOffset);
     
     if ((!shiftIsHeld()) && (!mixerIsHeld)) {
         updateClipWindow();
@@ -627,8 +647,8 @@ function press(_column, _row, _updown) {
                 gMonome[displayWidth()][yOffset].tempOff();
                 gMonome[xOffset][hardLastRow()].tempOff();
                 
-                xOffset = _column;
-                yOffset = _row;
+                setXOffset(_column);
+                setYOffset(_row);
                 
                 gMonome[displayWidth()][yOffset].tempOn();
                 gMonome[xOffset][hardLastRow()].tempOn();
