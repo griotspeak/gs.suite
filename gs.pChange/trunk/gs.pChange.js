@@ -1,26 +1,35 @@
+
 //<License
 
 /*
 -*- coding: utf-8 -*-
-gs.pChange v00.000
-Copyright (c) 2010, TJ Usiyan a.k.a. griotspeak
+
+gs.pChange
+Copyright (c) 2010, 2011, Thompson Usiyan a.k.a. griotspeak
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of the <AppName> nor the
-      names of its contributors may be used to endorse or promote products
-     derived from this software without specific prior written permission.
+    *   Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+    *   Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+    *   Neither the name of the gs.pChange nor the
+        names of its contributors may be used to endorse or promote products
+        derived from this software without specific prior written permission.
+    *   Redistributions with Non-trivial alterations must state that alterations
+        have been made.
+    *   This work may not be used for commercial purposes without the express written
+        consent of Thompson Usiyan
+    *   This work may be freely used for non-commercial purposes without any
+        further consent from Thompson Usiyan. 
 
-THIS SOFTWARE IS PROVIDED BY TJ USIYAN ``AS IS'' AND ANY
+
+THIS SOFTWARE IS PROVIDED BY THOMPSON USIYAN ``AS IS'' AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL TJ USIYAN BE LIABLE FOR ANY
+DISCLAIMED. IN NO EVENT SHALL THOMPSON USIYAN BE LIABLE FOR ANY
 DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
