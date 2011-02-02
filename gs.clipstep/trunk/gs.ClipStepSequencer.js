@@ -18,7 +18,7 @@ modification, are permitted provided that the following conditions are met:
         documentation and/or other materials provided with the distribution.
     *   Neither the name of the gs.clipStepSequencer nor the
         names of its contributors may be used to endorse or promote products
-        derived from this software without specific prior written permission.
+        derived from gs.clipStepSequencer without specific prior written permission.
     *   Redistributions with Non-trivial alterations must state that alterations
         have been made.
     *   This work may not be used for commercial purposes without the express written
@@ -27,7 +27,7 @@ modification, are permitted provided that the following conditions are met:
         further consent from Thompson Usiyan. 
 
 
-THIS SOFTWARE IS PROVIDED BY THOMPSON USIYAN ``AS IS'' AND ANY
+GS.CLIPSTEPSEQUENCER IS PROVIDED BY THOMPSON USIYAN ``AS IS'' AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL THOMPSON USIYAN BE LIABLE FOR ANY
@@ -38,9 +38,6 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 //License>
-
-// Many thanks to pukunui and Andrew Pask examples and everyone else who i 
-// have taken inspiration/insight from.
 
 /*jslint white:false, undef:false */
 /*globals post : false, inlets : true, outlets : true, outlet : false, inlet : false, autowatch : true */

@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -18,8 +20,6 @@
 					<string>../gs.tile/gs.tile.client.js</string>
 					<key>lastUsed</key>
 					<date>2011-02-02T04:41:08Z</date>
-					<key>selected</key>
-					<true/>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -46,7 +46,9 @@
 					<key>filename</key>
 					<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 					<key>lastUsed</key>
-					<date>2011-02-02T04:41:07Z</date>
+					<date>2011-02-02T04:53:42Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -128,7 +130,26 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>190</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>../gs.clipstep/gs.ClipStepSequencer.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>10</integer>
+				<key>line</key>
+				<integer>39</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
