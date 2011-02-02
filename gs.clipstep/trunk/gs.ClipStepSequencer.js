@@ -2704,7 +2704,7 @@ function Monome(aColumns, aRows, aOutlet) {
 //Monome>
 
 function store(aNumber) {
-    post(gParameters.patchString + "-presetStore\n");
+    if (gDebugItem.functionName) { post(gParameters.patchString + "-presetStore\n"); }
     gThisPatcher.getnamed(gParameters.patchString + "-presetStore").message("store", aNumber);
 }
 
