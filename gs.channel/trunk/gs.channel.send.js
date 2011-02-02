@@ -5,7 +5,7 @@
 /*
 -*- coding: utf-8 -*-
 
-<AppName>
+gs.channel.send
 Copyright (c) 2010, 2011, Thompson Usiyan a.k.a. griotspeak
 All rights reserved.
 
@@ -16,9 +16,9 @@ modification, are permitted provided that the following conditions are met:
     *   Redistributions in binary form must reproduce the above copyright
         notice, this list of conditions and the following disclaimer in the
         documentation and/or other materials provided with the distribution.
-    *   Neither the name of the <AppName> nor the
+    *   Neither the name of the gs.channel.send nor the
         names of its contributors may be used to endorse or promote products
-        derived from this software without specific prior written permission.
+        derived from gs.channel.send without specific prior written permission.
     *   Redistributions with Non-trivial alterations must state that alterations
         have been made.
     *   This work may not be used for commercial purposes without the express written
@@ -27,7 +27,7 @@ modification, are permitted provided that the following conditions are met:
         further consent from Thompson Usiyan. 
 
 
-THIS SOFTWARE IS PROVIDED BY THOMPSON USIYAN ``AS IS'' AND ANY
+GS.CHANNEL.SEND IS PROVIDED BY THOMPSON USIYAN ``AS IS'' AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL THOMPSON USIYAN BE LIABLE FOR ANY
