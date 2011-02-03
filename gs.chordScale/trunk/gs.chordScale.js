@@ -318,10 +318,10 @@ gParameters.comment = {
         if (gParameters.voiceOn.value[aVoice] === 0) {
             return "";
         }
-        else if ((gParameters.octave.value[aVoice] > 1) && (gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.tension != null)) {
+        else if ((gParameters.octave.value[aVoice] > 0) && (gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.tension != null)) {
             return lSpecificFunctionObject.opinionated.tension;
         }
-        else if ((gParameters.octave.value[aVoice] > 1) && (lSpecificFunctionObject.passive.tension != null)) {                
+        else if ((gParameters.octave.value[aVoice] > 0) && (lSpecificFunctionObject.passive.tension != null)) {                
             return lSpecificFunctionObject.passive.tension;
         }
         else if ((gParameters.opinion.value[aVoice]) && (lSpecificFunctionObject.opinionated.scale != null)) {             
