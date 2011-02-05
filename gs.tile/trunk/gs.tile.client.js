@@ -124,7 +124,7 @@ gParameters.windowWidth = {// used by client
     minValue : 1,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearAppWindow"],
     postListeners: ["updateAppWindowDetails"]
 };
 gParameters.windowHeight = {// used by client
@@ -135,7 +135,7 @@ gParameters.windowHeight = {// used by client
     minValue : 1,
     maxValue : 2048,
     saveInPattr : true,
-    preListeners : [],
+    preListeners : ["clearAppWindow"],
     postListeners: ["updateAppWindowDetails"]
 };
 gParameters.windowColumnOffset = {// used by client
