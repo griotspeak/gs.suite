@@ -68,8 +68,8 @@ var cFunctionButtons = {
     ovr : 1,
     metronome : 2,
     disableTrackStops : 3,
-    clipstep : 5,
     mixer : 4,
+    clipstep : 5,
     shift : 6,
     release : 7
 };
