@@ -937,7 +937,9 @@ function Parameters(aObject) {
         lValueIsFunction = aParameter.value instanceof Function,
         lLength;
         
-        if (aParameter.format === null) return;
+        if (aParameter.format === null) {
+            return;
+        }
         
         if (aParameter.type == "slotArray") {
             lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
@@ -1037,9 +1039,8 @@ function Parameters(aObject) {
 
     this.grab = function(aParameter) {
         if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
-
-        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
-            lValue;
+        
+            var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr", lValue;
 
         if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
         if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
@@ -1289,22 +1290,23 @@ function Parameters(aObject) {
                }
 
 
-           if (that[iCol] != null) {
-               for (iRow = 0; iRow < lMaxRows; iRow++) {
-                   if ((that[iCol][iRow] != null) && (iRow < aRows)) {
-                       if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
-                   }
-                   else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
-                       that[iCol][iRow] = null;
-                       if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
-                   }
+               if (that[iCol] != null) {
+                   for (iRow = 0; iRow < lMaxRows; iRow++) {
+                       if ((that[iCol][iRow] != null) && (iRow < aRows)) {
+                           if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "is fine!\n"); }
+                       }
+                       else if ((that[iCol][iRow] != null) && (iRow >= aRows)) {
+                           that[iCol][iRow] = null;
+                           if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "deleted!\n"); }
+                       }
 
-                   else if ((!that[iCol][iRow]) && (iRow < aRows)) {
-                       if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
-                       that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
+                       else if ((!that[iCol][iRow]) && (iRow < aRows)) {
+                           if (gDebugItem.list) { post("column:", iCol, "row:", iRow, "added!\n"); }
+                           that[iCol][iRow] = new SingleCell(iCol, iRow, aOutlet);
+                       }
                    }
+                   if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); }
                }
-               if (gDebugItem.endValue) { post("Monome[", iCol, "].length:", that[iCol].length, "\n"); } }
            }
 
        };

@@ -1014,18 +1014,18 @@ function updatePlayhead(aTimeNumber) {
     if (gParameters.playheadVisible) {
 
         if((playheadTimeInt == -1) || (playheadTimeInt == gParameters.monomeWidth.value)) {
-            that[monomeLastCol()][0].tempOff();            
+            that[monomeLastCol()][0].checkActual();            
         }
         else if(playheadTimeInt == 0) {                      
             that[playheadTimeInt][0].blink();
         }
         else if((0 < playheadTimeInt) && (playheadTimeInt < gParameters.monomeWidth.value)) {
             that[playheadTimeInt][0].blink();
-            that[playheadTimeInt -1][0].tempOff();
+            that[playheadTimeInt -1][0].checkActual();
         }
 
         if (playheadTimeInt % 2 == 0) {
-            that.row(0, "tempOff");
+            that.row(0, "checkActual");
         }
     }
 }
@@ -2294,6 +2294,7 @@ function setMonomeHeight(aHeight) {
 
 function rebuildAndUpdateMonome() {
     gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
+    outlet(0, "setAppMonomeWidthAndHeight", gParameters.monomeWidth.value, gParameters.monomeHeight.value);
     updateMonome();
 }
 
@@ -2881,7 +2882,9 @@ function Parameters(aObject) {
         lValueIsFunction = aParameter.value instanceof Function,
         lLength;
         
-        if (aParameter.format === null) return;
+        if (aParameter.format === null) {
+            return;
+        }
         
         if (aParameter.type == "slotArray") {
             lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
@@ -2981,9 +2984,8 @@ function Parameters(aObject) {
 
     this.grab = function(aParameter) {
         if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
-
-        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
-            lValue;
+        
+            var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr", lValue;
 
         if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
         if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }

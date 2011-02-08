@@ -125,6 +125,10 @@ function initialize() {
     //monome variables
     gParameters.monomeWidth.value = gThisPatcher.getnamed("monomeWidthGsClipnomePattr").getvalueof();
     gParameters.monomeHeight.value = gThisPatcher.getnamed("monomeHeightGsClipnomePattr").getvalueof();
+    
+    outlet(1, "monomeHeight", "set", gParameters.monomeHeight.value );
+    outlet(1, "monomeWidth", "set", gParameters.monomeWidth.value );
+    
 
     var colOrder = (jsarguments[1] != null) ? jsarguments[1] : 0;
 
@@ -1060,7 +1064,10 @@ function setMonomeWidth( mWidth) {
     gParameters.monomeWidth.value = mWidth;
     gMonome.rebuild(gParameters.monomeWidth.value, gParameters.monomeHeight.value);
     gThisPatcher.getnamed("monomeWidthGsClipnomePattr").message(gParameters.monomeWidth.value);
-    outlet(1, "gParameters.monomeWidth.value", "set", gParameters.monomeWidth.value );
+    outlet(1, "monomeWidth", "set", gParameters.monomeWidth.value );
+    
+    outlet(0, "setAppMonomeWidthAndHeight", gParameters.monomeWidth.value, gParameters.monomeHeight.value);
+    
     if (gDebugLevel[3]) { post("gParameters.monomeWidth.value:", gParameters.monomeWidth.value, "\n"); }
 }
 
@@ -1068,7 +1075,10 @@ function setMonomeHeight( mHeight) {
     post("mHeight:", mHeight, "\n");
     gParameters.monomeHeight.value = mHeight;
     gThisPatcher.getnamed("monomeHeightGsClipnomePattr").message(gParameters.monomeHeight.value);
-    outlet(1, "gParameters.monomeHeight.value", "set", gParameters.monomeHeight.value );
+    outlet(1, "monomeHeight", "set", gParameters.monomeHeight.value );
+    
+    outlet(0, "setAppMonomeWidthAndHeight", gParameters.monomeWidth.value, gParameters.monomeHeight.value);
+    
     if (gDebugLevel[3]) { post("gParameters.monomeHeight.value:", gParameters.monomeHeight.value, "\n"); }
 }
 

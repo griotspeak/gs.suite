@@ -49,13 +49,13 @@ outlets = 1;
 var gThis = this;
 var gThisPatcher = this.patcher;
 
-var mAppChannelsMade = false;
-var mMonomeChannelsMade = false;
-var mNumberOfMonomeChannels = 0;
-var mUdpSendObject;
-var mUdpReceiveObject;
-var mPrependPressObject = [];
-var mRouteObject = [];
+var gAppChannelsMade = false;
+var gMonomeChannelsMade = false;
+var gNumberOfMonomeChannels = 0;
+var gUdpSendObject;
+var gUdpReceiveObject;
+var gPrependPressObject = [];
+var gRouteObject = [];
 var gDebugItem = {
         endValue : false,
         frequentItem : false,
@@ -67,32 +67,32 @@ var gDebugItem = {
         startValue : false
 };
 
-var mThisRouterObject = gThisPatcher.getnamed("routerJSObject");
+var gThisRouterObject = gThisPatcher.getnamed("routerJSObject");
 
-var gsTileGlobal = new Global("gsTileRouter");
+var gGsTileGlobal = new Global("gsTileRouter");
 
 function reconnect() {
     if (gDebugItem.functionName) { post("    --reconnect--\n"); }
 
-    gsTileGlobal = new Global("gsTileRouter");
-    gsTileGlobal.appList = [];
-    gsTileGlobal.toRouter = incomingMessages;
-    gsTileGlobal.newClient = processNewClientNotification;
-    gsTileGlobal.removeClient = removeClient;
-    gsTileGlobal.led = processLed;
-    gsTileGlobal.appWindow = updateWindowDimensions;
-    mThisRouterObject = gThisPatcher.getnamed("routerJSObject");
+    gGsTileGlobal = new Global("gsTileRouter");
+    gGsTileGlobal.appList = [];
+    gGsTileGlobal.toRouter = incomingMessages;
+    gGsTileGlobal.newClient = processNewClientNotification;
+    gGsTileGlobal.removeClient = removeClient;
+    gGsTileGlobal.led = processLed;
+    gGsTileGlobal.appWindow = updateWindowDimensions;
+    gThisRouterObject = gThisPatcher.getnamed("routerJSObject");
     messnamed("gs.tile.allClients", "newRouterAlert");
     post("gs.tile.router reconnected\n");
 }
 
 function initialize() {
-    gsTileGlobal.appList = [];
-    gsTileGlobal.toRouter = incomingMessages;
-    gsTileGlobal.newClient = processNewClientNotification;
-    gsTileGlobal.removeClient = removeClient;
-    gsTileGlobal.led = processLed;
-    gsTileGlobal.appWindow = updateWindowDimensions;
+    gGsTileGlobal.appList = [];
+    gGsTileGlobal.toRouter = incomingMessages;
+    gGsTileGlobal.newClient = processNewClientNotification;
+    gGsTileGlobal.removeClient = removeClient;
+    gGsTileGlobal.led = processLed;
+    gGsTileGlobal.appWindow = updateWindowDimensions;
     messnamed("gs.tile.allClients", "newRouterAlert");
     post("gs.tile.router Finished loading\n");
 }
@@ -110,50 +110,50 @@ function makeMonomeChannels(aHowManyChannels) {
         aHowManyChannels = 4;
     }
 
-    if (mMonomeChannelsMade) { 
+    if (gMonomeChannelsMade) { 
         // remove from patcher...
-        gThisPatcher.remove(mUdpReceiveObject);
-        gThisPatcher.remove(mUdpSendObject);
-        for (iChannel = 0; iChannel < mRouteObject.length; iChannel++) {
-            gThisPatcher.remove(mRouteObject[iChannel]);
-            gThisPatcher.remove(mPrependPressObject[iChannel]);
+        gThisPatcher.remove(gUdpReceiveObject);
+        gThisPatcher.remove(gUdpSendObject);
+        for (iChannel = 0; iChannel < gRouteObject.length; iChannel++) {
+            gThisPatcher.remove(gRouteObject[iChannel]);
+            gThisPatcher.remove(gPrependPressObject[iChannel]);
         }
     }
     // ...then clear arrays
 
-    mRouteObject = [];
-    mPrependPressObject = [];
+    gRouteObject = [];
+    gPrependPressObject = [];
     
     // then make udp objects (not strictly necessary)
-    mUdpReceiveObject = gThisPatcher.newdefault(15, 15, "udpreceive", 8400);
-    mUdpSendObject = gThisPatcher.newdefault(15, 360, "udpsend", "localhost", 8700);
+    gUdpReceiveObject = gThisPatcher.newdefault(15, 15, "udpreceive", 8400);
+    gUdpSendObject = gThisPatcher.newdefault(15, 360, "udpsend", "localhost", 8700);
     
-    gThisPatcher.connect(mThisRouterObject, 0, mUdpSendObject, 0);            // thisRouterObject to udpsend
+    gThisPatcher.connect(gThisRouterObject, 0, gUdpSendObject, 0);            // thisRouterObject to udpsend
     
     for (iChannel = 0; iChannel < aHowManyChannels; iChannel++) {
         // make the receives, sends, routes, and prepends
         
         lRouteMessage = "/gs.tile-" + iChannel + "/press";
                 
-        mRouteObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 60, "route", lRouteMessage);
-        mPrependPressObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 105, "prepend", "press");
+        gRouteObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 60, "route", lRouteMessage);
+        gPrependPressObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 105, "prepend", "press");
                 
         //connect  -->                                                  the 
-        gThisPatcher.connect(mUdpReceiveObject, 0, mRouteObject[iChannel], 0);             // udp     to the routes
-        gThisPatcher.connect(mRouteObject[iChannel], 0, mPrependPressObject[iChannel], 0);            // routes to the prepends
-        gThisPatcher.connect(mPrependPressObject[iChannel], 0, mThisRouterObject, iChannel + 1);    // press prepends to the thisRouterObject
+        gThisPatcher.connect(gUdpReceiveObject, 0, gRouteObject[iChannel], 0);             // udp     to the routes
+        gThisPatcher.connect(gRouteObject[iChannel], 0, gPrependPressObject[iChannel], 0);            // routes to the prepends
+        gThisPatcher.connect(gPrependPressObject[iChannel], 0, gThisRouterObject, iChannel + 1);    // press prepends to the thisRouterObject
     }
     
-    mMonomeChannelsMade = true;
-    mNumberOfMonomeChannels = aHowManyChannels;
+    gMonomeChannelsMade = true;
+    gNumberOfMonomeChannels = aHowManyChannels;
     sendNumberOfMonomes();
 }
 
 function sendNumberOfMonomes() {
     if (gDebugItem.functionName) { post("    --sendNumberOfMonomes--\n"); }
     
-    if (gsTileGlobal.newClient != null) {
-        messnamed("gs.tile.allClients", "numberOfMonomeChannels", mNumberOfMonomeChannels);
+    if (gGsTileGlobal.newClient != null) {
+        messnamed("gs.tile.allClients", "numberOfMonomeChannels", gNumberOfMonomeChannels);
     }
 }
 
@@ -192,30 +192,30 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
     };
     
     //first check for name of app
-    if (!gsTileGlobal.appList.some(doesShareName, aAppName)) {
+    if (!gGsTileGlobal.appList.some(doesShareName, aAppName)) {
         // set channelNumber and add app to list.
-        // gsTileGlobal.appList is an array of arrays
+        // gGsTileGlobal.appList is an array of arrays
         lAppEntry.channelNumber = 0; // !!channel number
-        gsTileGlobal.appList.push(lAppEntry);
+        gGsTileGlobal.appList.push(lAppEntry);
     }
     else {
         if (gDebugItem.list) { post("in else\n"); }
         iCounter = 0;
-        lListLength = gsTileGlobal.appList.length;
+        lListLength = gGsTileGlobal.appList.length;
         if (gDebugItem.startValue) { post("listLength:", lListLength, "\n"); }
         lChannelNumbersUsed = [];
         
         //count and check for same app
         for (;iCounter < lListLength; iCounter++) {
-            if (gsTileGlobal.appList[iCounter].appName === aAppName) { // !!app Name
+            if (gGsTileGlobal.appList[iCounter].appName === aAppName) { // !!app Name
                 //check if keys 
-                if ((gsTileGlobal.appList[iCounter].keyOne === aKey1) && (gsTileGlobal.appList[iCounter].keyTwo === aKey2)) { // !!key1
+                if ((gGsTileGlobal.appList[iCounter].keyOne === aKey1) && (gGsTileGlobal.appList[iCounter].keyTwo === aKey2)) { // !!key1
                     if (gDebugItem.endValue) { post(aAppName, aKey1, aKey2, "seems to be present already\n"); }
                     return;
                 }
                 else {
                     // no need to count apps explicitly. lChannelNumbersUsed.length = the number of apps.
-                    lChannelNumbersUsed.push(gsTileGlobal.appList[iCounter].channelNumber); // !!Channel Number
+                    lChannelNumbersUsed.push(gGsTileGlobal.appList[iCounter].channelNumber); // !!Channel Number
                 }
             }
         }
@@ -225,7 +225,7 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
         while (lAppEntry.channelNumber === "unassigned") { // !!channel number
             if (lChannelNumbersUsed.indexOf(iCounter) < 0) {
                 lAppEntry.channelNumber = iCounter; // !!channel number
-                gsTileGlobal.appList.push(lAppEntry);
+                gGsTileGlobal.appList.push(lAppEntry);
             }
             else {
                 iCounter++;
@@ -233,21 +233,21 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
         }
     }
     
-    gsTileGlobal.appList.forEach(acknowledgeClient);
-    if (gDebugItem.list) { gsTileGlobal.appList.forEach(postClient); }
+    gGsTileGlobal.appList.forEach(acknowledgeClient);
+    if (gDebugItem.list) { gGsTileGlobal.appList.forEach(postClient); }
     
     makeAppChannels();
     sendNumberOfMonomes();
     
-    if (gDebugItem.startValue) { post("list Length:", gsTileGlobal.appList.length, "\n"); }
+    if (gDebugItem.startValue) { post("list Length:", gGsTileGlobal.appList.length, "\n"); }
     if (gDebugItem.functionName) { post("    ---end processNewClientNotification-\n"); }
 }
 
 function isInAppLedWindow(aIndexOfApp, aColumnOfLed, aRowOfLed) {
-    var lLeftEdgeOfWindow = gsTileGlobal.appList[aIndexOfApp].windowWidth, //!! width
-        lRightEdgeOfWindow = gsTileGlobal.appList[aIndexOfApp].windowWidth + gsTileGlobal.appList[aIndexOfApp].displayColumnOffset, //!! width + columnOffset
-        lTopEdgeOfWindow = gsTileGlobal.appList[aIndexOfApp].windowHeight, //!! height
-        lBottomEdgeOfWindow = gsTileGlobal.appList[aIndexOfApp].windowHeight + gsTileGlobal.appList[aIndexOfApp].displayRowOffset; //!! height + rowOffset
+    var lLeftEdgeOfWindow = gGsTileGlobal.appList[aIndexOfApp].windowWidth, //!! width
+        lRightEdgeOfWindow = gGsTileGlobal.appList[aIndexOfApp].windowWidth + gGsTileGlobal.appList[aIndexOfApp].displayColumnOffset, //!! width + columnOffset
+        lTopEdgeOfWindow = gGsTileGlobal.appList[aIndexOfApp].windowHeight, //!! height
+        lBottomEdgeOfWindow = gGsTileGlobal.appList[aIndexOfApp].windowHeight + gGsTileGlobal.appList[aIndexOfApp].displayRowOffset; //!! height + rowOffset
     
     if ((lLeftEdgeOfWindow < aColumnOfLed < lRightEdgeOfWindow) && (lTopEdgeOfWindow < aRowOfLed < lBottomEdgeOfWindow)) {
         return true;
@@ -265,12 +265,12 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
     if (gDebugItem.frequentFunctionName) { post("    --processLed--", aCol, aRow, "\n"); }
     
     if(lAppIndex > -1) {
-            lColumnValueAfterOffset = aCol + gsTileGlobal.appList[lAppIndex].displayColumnOffset; //!! columnOffset
-            lRowValueAfterOffset = aRow +  gsTileGlobal.appList[lAppIndex].displayRowOffset; //!! rowOffset
-            lProperOutlet = gsTileGlobal.appList[lAppIndex].monomeNumber - 1;
+            lColumnValueAfterOffset = aCol + gGsTileGlobal.appList[lAppIndex].displayColumnOffset; //!! columnOffset
+            lRowValueAfterOffset = aRow +  gGsTileGlobal.appList[lAppIndex].displayRowOffset; //!! rowOffset
+            lProperOutlet = gGsTileGlobal.appList[lAppIndex].monomeNumber - 1;
         
-        if (gsTileGlobal.appList[lAppIndex].monomeNumber > mNumberOfMonomeChannels) {
-            lProperOutlet = mNumberOfMonomeChannels - 1;
+        if (gGsTileGlobal.appList[lAppIndex].monomeNumber > gNumberOfMonomeChannels) {
+            lProperOutlet = gNumberOfMonomeChannels - 1;
         }
         
         if (gDebugItem.frequentList) { post("properOutlet:", lProperOutlet, "\n"); }
@@ -294,25 +294,25 @@ function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonome
     // 6<monomeNumber> 7<width>, 8<heigth>, 9<displayColumnOffset>, 10<displayRowOffset> 11<displayLayer>
             
     if(lAppIndex > -1) {
-        if (gDebugItem.endValue) { post("name of app to update:", gsTileGlobal.appList[lAppIndex].appName, "\n"); }
+        if (gDebugItem.endValue) { post("name of app to update:", gGsTileGlobal.appList[lAppIndex].appName, "\n"); }
         
         if (gDebugItem.list) { post("updating monome number to:", aMonomeNumber, "\n"); }
-        gsTileGlobal.appList[lAppIndex].monomeNumber = aMonomeNumber; //!!
+        gGsTileGlobal.appList[lAppIndex].monomeNumber = aMonomeNumber; //!!
 
         if (gDebugItem.list) { post("updating width to:", aWidth, "\n"); }
-        gsTileGlobal.appList[lAppIndex].windowWidth = aWidth; //!!
+        gGsTileGlobal.appList[lAppIndex].windowWidth = aWidth; //!!
         
         if (gDebugItem.list) { post("updating height to:", aHeight, "\n"); }
-        gsTileGlobal.appList[lAppIndex].windowHeight = aHeight; //!!
+        gGsTileGlobal.appList[lAppIndex].windowHeight = aHeight; //!!
         
         if (gDebugItem.list) { post("updating colOffset to:", aColOffset, "\n"); }
-        gsTileGlobal.appList[lAppIndex].displayColumnOffset = aColOffset; //!!
+        gGsTileGlobal.appList[lAppIndex].displayColumnOffset = aColOffset; //!!
         
         if (gDebugItem.list) { post("updating rowOffset to:", aRowOffset, "\n"); }
-        gsTileGlobal.appList[lAppIndex].displayRowOffset = aRowOffset; //!!
+        gGsTileGlobal.appList[lAppIndex].displayRowOffset = aRowOffset; //!!
 
         if (gDebugItem.list) { post("updating displayLayer to:", aDisplayLayer, "\n"); }
-        gsTileGlobal.appList[lAppIndex].displayLayer = aDisplayLayer; //!!
+        gGsTileGlobal.appList[lAppIndex].displayLayer = aDisplayLayer; //!!
     }
     
     clearMonomes();
@@ -325,7 +325,7 @@ function clearMonomes() {
     
     if (gDebugItem.functionName) { post("    ---clearMonomes-\n"); }
     
-    for (iMonome = 0;iMonome <mNumberOfMonomeChannels; iMonome++) {
+    for (iMonome = 0;iMonome <gNumberOfMonomeChannels; iMonome++) {
         lClearMessage = "/mMC" + iMonome + "/clear";
         outlet(0, lClearMessage);
     }
@@ -369,19 +369,19 @@ function makeAppChannels() {
     
     if (gDebugItem.functionName) { post("    ---makeAppChannels-\n"); }
     
-    if(mAppChannelsMade) {
-        gsTileGlobal.appList.forEach(closeSingleChannel);
+    if(gAppChannelsMade) {
+        gGsTileGlobal.appList.forEach(closeSingleChannel);
     }
     
-    lListLength = gsTileGlobal.appList.length;
+    lListLength = gGsTileGlobal.appList.length;
     
     for (iApp = 0; iApp < lListLength; iApp++){
-        lChannelName = gsTileGlobal.appList[iApp].appName + gsTileGlobal.appList[iApp].channelNumber; //!! name number
+        lChannelName = gGsTileGlobal.appList[iApp].appName + gGsTileGlobal.appList[iApp].channelNumber; //!! name number
         if (gDebugItem.startValue) { post("channel name is", lChannelName, "\n"); }
-        gsTileGlobal.appList[iApp].channelObject = new Global(lChannelName); //!! channel object
+        gGsTileGlobal.appList[iApp].channelObject = new Global(lChannelName); //!! channel object
     }
     if (gDebugItem.startValue) { post("channelName in router:", lChannelName, "\n"); }
-    mAppChannelsMade = true;
+    gAppChannelsMade = true;
 }
 
 
@@ -395,18 +395,18 @@ function removeClient(aAppName, aChannelNumber, aKey1, aKey2) {
     
     if (gDebugItem.endValue) { post("(removeClient) theApp =", lTheApp, "\n"); }
     if (lTheApp > -1) { 
-        gsTileGlobal.appList.splice(lTheApp, 1);
+        gGsTileGlobal.appList.splice(lTheApp, 1);
     }
     
-    if (gsTileGlobal.appList.length > 0) {
+    if (gGsTileGlobal.appList.length > 0) {
         makeAppChannels();
-        gsTileGlobal.appList.forEach(acknowledgeClient);
-        if (gDebugItem.list) { gsTileGlobal.appList.forEach(postClient); }
+        gGsTileGlobal.appList.forEach(acknowledgeClient);
+        if (gDebugItem.list) { gGsTileGlobal.appList.forEach(postClient); }
     }
 }
 
 function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
-    var lListLength = gsTileGlobal.appList.length,
+    var lListLength = gGsTileGlobal.appList.length,
         iApp;
     
     if (gDebugItem.frequentFunctionName) { post("    ---findApp-\n"); }
@@ -414,15 +414,15 @@ function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
     if (gDebugItem.endValue) { post("app array to find:", aAppName, aChannelNumber, aKeyOne, aKeyTwo, "\n"); }
     if (gDebugItem.list) { 
         post("list of current clients:\n");
-        gsTileGlobal.appList.forEach(postClient);
+        gGsTileGlobal.appList.forEach(postClient);
         post("list end.\n");
     }
     
 
     for (iApp = 0;iApp < lListLength; iApp++) {
-        if ((gsTileGlobal.appList[iApp].appName === aAppName) &&
-            (gsTileGlobal.appList[iApp].keyOne === aKeyOne) &&
-            (gsTileGlobal.appList[iApp].keyTwo === aKeyTwo)) { //!! name number key1 key2 
+        if ((gGsTileGlobal.appList[iApp].appName === aAppName) &&
+            (gGsTileGlobal.appList[iApp].keyOne === aKeyOne) &&
+            (gGsTileGlobal.appList[iApp].keyTwo === aKeyTwo)) { //!! name number key1 key2 
             return iApp;
         }
     }
@@ -432,16 +432,16 @@ function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
 
 function freebang() {
     
-    mNumberOfMonomeChannels = 0;
+    gNumberOfMonomeChannels = 0;
     sendNumberOfMonomes();
     
-    gsTileGlobal.appList = null;
-    gsTileGlobal.toRouter = null;
-    gsTileGlobal.newClient = null;
-    gsTileGlobal.removeClient = null;
-    gsTileGlobal.led = null;
-    gsTileGlobal.appWindow = null;
-    gsTileGlobal = null;
+    gGsTileGlobal.appList = null;
+    gGsTileGlobal.toRouter = null;
+    gGsTileGlobal.newClient = null;
+    gGsTileGlobal.removeClient = null;
+    gGsTileGlobal.led = null;
+    gGsTileGlobal.appWindow = null;
+    gGsTileGlobal = null;
     
     post("gs.tile.router freed");
     
@@ -451,7 +451,7 @@ function press(aColumn, aRow, aState) {
     if (gDebugItem.functionName) { post("    --press--\n"); }
 
     if (gDebugItem.list) { post("column:", aColumn, "row:", aRow, "state:", aState, "inlet:", inlet, "\n"); }
-    gsTileGlobal.appList.forEach(sendPressToWindows, [aColumn, aRow, aState, inlet]);
+    gGsTileGlobal.appList.forEach(sendPressToWindows, [aColumn, aRow, aState, inlet]);
 }
 
 function sendPressToWindows(element, index, array) {
@@ -507,10 +507,10 @@ function testAppChannels(_ar) {
     var iApp;
     if (gDebugItem.functionName) { post("    ---testAppChannels-\n"); }
     
-    if (gDebugItem.endValue) { post("list Length:", gsTileGlobal.appList.listLength, "\n"); }
+    if (gDebugItem.endValue) { post("list Length:", gGsTileGlobal.appList.listLength, "\n"); }
     
-    for (iApp = 0; iApp < gsTileGlobal.appList.listLength; iApp++){
-        if (gDebugItem.endValue) { post("talking to:", gsTileGlobal.appList[iApp].appName, "\n"); } //!! name
-        gsTileGlobal.appList[iApp].channelObject.connection();
+    for (iApp = 0; iApp < gGsTileGlobal.appList.listLength; iApp++){
+        if (gDebugItem.endValue) { post("talking to:", gGsTileGlobal.appList[iApp].appName, "\n"); } //!! name
+        gGsTileGlobal.appList[iApp].channelObject.connection();
     }
 }

@@ -667,6 +667,44 @@ function setAppMonomeHeight(aValue) {
     gMonome.endUpdates();
 }
 
+function setAppMonomeWidthAndHeight(aWidth, aHeight) {
+    var lFullAppHeightShown = gParameters.appMonomeHeight.value == gParameters.windowHeight.value;
+    var lFullAppWidthShown = gParameters.appMonomeWidth.value == gParameters.windowWidth.value;
+    
+    if (gDebugItem.functionName) { post("    ---setAppMonomeWidthAndHeight-\n"); }
+    
+    gMonome.beginUpdates();
+    
+    gParameters.set({
+        key : "appMonomeWidth",
+        value : aWidth
+    });
+    gParameters.set({
+        key : "appMonomeHeight",
+        value : aHeight
+    });
+
+    gMonome.rebuild(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value);
+    
+    if (lFullAppWidthShown) {
+        gParameters.set({
+            key : "windowWidth",
+            value : aWidth
+        });
+    }
+    if (lFullAppHeightShown) {
+        gParameters.set({
+            key : "windowHeight",
+            value : aHeight
+        });
+    }
+    
+    updateAppWindowDetails();
+
+    gMonome.endUpdates();
+}
+
+
 //<Monome
 //      \/\/\<Monome(?m).+\/\/Monome\>
 
@@ -1125,7 +1163,9 @@ function Parameters(aObject) {
         lValueIsFunction = aParameter.value instanceof Function,
         lLength;
         
-        if (aParameter.format === null) return;
+        if (aParameter.format === null) {
+            return;
+        }
         
         if (aParameter.type == "slotArray") {
             lLength = (lValueIsFunction) ? aParameter.value.arrayLength: aParameter.value.length;
@@ -1225,9 +1265,8 @@ function Parameters(aObject) {
 
     this.grab = function(aParameter) {
         if (gDebugItem.functionName) { post("    --Parameters.grab " + aParameter.name + "--\n"); }
-
-        var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr",
-            lValue;
+        
+            var lPatcherObjectNameString = aParameter.name + mParameters.patchString + "Pattr", lValue;
 
         if (gDebugItem.startValue) { post(aParameter.name + ".value:", aParameter.value, "\n"); }
         if (gDebugItem.localValue) { post("lPatcherObjectNameString:", lPatcherObjectNameString, "\n"); }
