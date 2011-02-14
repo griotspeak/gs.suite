@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>../gs.tile/gs.tile.router.js</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -11,13 +13,15 @@
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.router.js</string>
 					<key>lastUsed</key>
-					<date>2011-02-10T21:08:33Z</date>
+					<date>2011-02-14T05:37:52Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.client.js</string>
 					<key>lastUsed</key>
-					<date>2011-02-10T21:12:53Z</date>
+					<date>2011-02-14T05:37:52Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -44,7 +48,7 @@
 					<key>filename</key>
 					<string>../gs.clipstep/gs.ClipStepSequencer.js</string>
 					<key>lastUsed</key>
-					<date>2011-02-11T03:33:10Z</date>
+					<date>2011-02-12T01:27:19Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -57,8 +61,6 @@
 					<string>../gs.midiControl/gs.midiControl.js</string>
 					<key>lastUsed</key>
 					<date>2011-02-11T03:33:29Z</date>
-					<key>selected</key>
-					<true/>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -98,6 +100,12 @@
 					<string>Description.txt</string>
 					<key>lastUsed</key>
 					<date>2011-02-03T01:29:57Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>../gs.tile/gs.tile.router.preproc.js</string>
+					<key>lastUsed</key>
+					<date>2011-02-14T04:05:53Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -142,7 +150,57 @@
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>190</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>../gs.tile/gs.tile.client.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>38</integer>
+				<key>line</key>
+				<integer>339</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>312</integer>
+		</dict>
+		<key>../gs.tile/gs.tile.router.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>43</integer>
+				<key>line</key>
+				<integer>281</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>255</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>32</integer>
+				<key>line</key>
+				<integer>281</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>43</integer>
+				<key>line</key>
+				<integer>281</integer>
+			</dict>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>../gs.tile/gs.tile.router.js</string>
+		<string>../gs.tile/gs.tile.client.js</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>

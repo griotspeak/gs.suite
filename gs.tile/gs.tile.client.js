@@ -246,7 +246,7 @@ function initialize() {
                 value : Math.floor(Math.random()*1000) + 1
             });
         }
-        numberOfMonomeChannels(0);
+        monomeChannelFocus([0, 0, 0, 0]);
         gMonome = new Monome(gParameters.appMonomeWidth.value, gParameters.appMonomeHeight.value, prepareLedForRouter);
         alertRouterOfNewClient();
     }
@@ -335,10 +335,13 @@ function dropFocus(aMonomeNumber) {
     }
 }
 
-function numberOfMonomeChannels(aNumber) {
+function monomeChannelFocus(aMonome1Status, aMonome2Status, aMonome3Status, aMonome4Status) {
+    var aArray = [aMonome1Status, aMonome2Status, aMonome3Status, aMonome4Status];
+    post("aArray im monomeChannelFocus", aArray, "\n");
+    
     var iCounter;
     for (iCounter = 0; iCounter < 4; iCounter++) {
-        outlet(1, "focus-" + iCounter, "active", (iCounter < aNumber) ? 1 : 0);
+        outlet(1, "focus-" + iCounter, "active", aArray[iCounter]);
     }
 }
 

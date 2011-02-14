@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 autowatch = 1;
 
 inlets = 5;
-outlets = 1;
+outlets = 5;
 var gThis = this;
 var gThisPatcher = this.patcher;
 
@@ -66,6 +66,7 @@ var gDebugItem = {
         list : false,
         startValue : false
 };
+var gFocusArray = [0, 0, 0, 0];
 
 var gThisRouterObject = gThisPatcher.getnamed("routerJSObject");
 
@@ -97,63 +98,17 @@ function initialize() {
     post("gs.tile.router Finished loading\n");
 }
 
-function makeMonomeChannels(aHowManyChannels) {
-    var iChannel,
-        lRouteMessage;
-    
-    if (gDebugItem.functionName) { post("    ---makeMonomeChannels-\n"); }
-    
-    if (aHowManyChannels < 1) {
-        aHowManyChannels = 1;
-    }
-    else if (aHowManyChannels > 4) {
-        aHowManyChannels = 4;
-    }
+function focus(aState) {
 
-    if (gMonomeChannelsMade) { 
-        // remove from patcher...
-        gThisPatcher.remove(gUdpReceiveObject);
-        gThisPatcher.remove(gUdpSendObject);
-        for (iChannel = 0; iChannel < gRouteObject.length; iChannel++) {
-            gThisPatcher.remove(gRouteObject[iChannel]);
-            gThisPatcher.remove(gPrependPressObject[iChannel]);
-        }
-    }
-    // ...then clear arrays
+    gFocusArray[inlet - 1] = aState;
+    
+    gNumberOfMonomeChannels = gFocusArray[0] + gFocusArray[1] + gFocusArray[2] + gFocusArray[3];
 
-    gRouteObject = [];
-    gPrependPressObject = [];
-    
-    // then make udp objects (not strictly necessary)
-    gUdpReceiveObject = gThisPatcher.newdefault(15, 15, "udpreceive", 8400);
-    gUdpSendObject = gThisPatcher.newdefault(15, 360, "udpsend", "localhost", 8700);
-    
-    gThisPatcher.connect(gThisRouterObject, 0, gUdpSendObject, 0);            // thisRouterObject to udpsend
-    
-    for (iChannel = 0; iChannel < aHowManyChannels; iChannel++) {
-        // make the receives, sends, routes, and prepends
-        
-        lRouteMessage = "/gs.tile-" + iChannel + "/press";
-                
-        gRouteObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 60, "route", lRouteMessage);
-        gPrependPressObject[iChannel] = gThisPatcher.newdefault(15 + (iChannel * 180), 105, "prepend", "press");
-                
-        //connect  -->                                                  the 
-        gThisPatcher.connect(gUdpReceiveObject, 0, gRouteObject[iChannel], 0);             // udp     to the routes
-        gThisPatcher.connect(gRouteObject[iChannel], 0, gPrependPressObject[iChannel], 0);            // routes to the prepends
-        gThisPatcher.connect(gPrependPressObject[iChannel], 0, gThisRouterObject, iChannel + 1);    // press prepends to the thisRouterObject
-    }
-    
-    gMonomeChannelsMade = true;
-    gNumberOfMonomeChannels = aHowManyChannels;
-    sendNumberOfMonomes();
 }
 
-function sendNumberOfMonomes() {
-    if (gDebugItem.functionName) { post("    --sendNumberOfMonomes--\n"); }
-    
+function sendMonomeFocusStatus() {
     if (gGsTileGlobal.newClient != null) {
-        messnamed("gs.tile.allClients", "numberOfMonomeChannels", gNumberOfMonomeChannels);
+        messnamed("gs.tile.allClients", "monomeChannelFocus", gFocusArray[0], gFocusArray[1], gFocusArray[2], gFocusArray[3]);
     }
 }
 
@@ -237,7 +192,7 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
     if (gDebugItem.list) { gGsTileGlobal.appList.forEach(postClient); }
     
     makeAppChannels();
-    sendNumberOfMonomes();
+    sendMonomeFocusStatus();
     
     if (gDebugItem.startValue) { post("list Length:", gGsTileGlobal.appList.length, "\n"); }
     if (gDebugItem.functionName) { post("    ---end processNewClientNotification-\n"); }
@@ -259,29 +214,27 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
     var lAppIndex = findApp(aAppName, aAppChannel, aKeyOne, aKeyTwo),
         lColumnValueAfterOffset,
         lRowValueAfterOffset,
-        lProperOutlet;
-    
+        lAppEntry = gGsTileGlobal.appList[lAppIndex],
+        lMonomeNumber = lAppEntry.monomeNumber;
+
 
     if (gDebugItem.frequentFunctionName) { post("    --processLed--", aCol, aRow, "\n"); }
-    
-    if(lAppIndex > -1) {
-            lColumnValueAfterOffset = aCol + gGsTileGlobal.appList[lAppIndex].displayColumnOffset; //!! columnOffset
-            lRowValueAfterOffset = aRow +  gGsTileGlobal.appList[lAppIndex].displayRowOffset; //!! rowOffset
-            lProperOutlet = gGsTileGlobal.appList[lAppIndex].monomeNumber - 1;
-        
-        if (gGsTileGlobal.appList[lAppIndex].monomeNumber > gNumberOfMonomeChannels) {
-            lProperOutlet = gNumberOfMonomeChannels - 1;
-        }
-        
+
+    if (lAppIndex > -1) {
+        lColumnValueAfterOffset = aCol + lAppEntry.displayColumnOffset;
+        lRowValueAfterOffset = aRow + lAppEntry.displayRowOffset;
+
         if (gDebugItem.frequentList) { post("properOutlet:", lProperOutlet, "\n"); }
-        
-        if (lProperOutlet > -1) {
-            outlet(0, "/gs.tile-" + lProperOutlet + "/led", lColumnValueAfterOffset, lRowValueAfterOffset, aState);
+
+        if (lMonomeNumber != 0) {
+            outlet(lMonomeNumber, "/gs.tile-" + lProperOutlet + "/led", lColumnValueAfterOffset, lRowValueAfterOffset, aState);
         }
-        
+
         if (gDebugItem.frequentList) { post("col:", lColumnValueAfterOffset, "row:", lRowValueAfterOffset, "\n"); }
     }
-    else { if (gDebugItem.frequentList) { post("app:, ", aAppName, "channel:", aAppChannel, " not found!\n"); } }
+    else {
+        if (gDebugItem.frequentList) { post("app:, ", aAppName, "channel:", aAppChannel, " not found!\n"); }
+    }
 }
 
 function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aWidth, aHeight, aColOffset, aRowOffset, aDisplayLayer) {
@@ -321,13 +274,17 @@ function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonome
 
 function clearMonomes() {
     var lClearMessage,
-        iMonome;
+        iMonome,
+        lLength;
     
     if (gDebugItem.functionName) { post("    ---clearMonomes-\n"); }
     
-    for (iMonome = 0;iMonome <gNumberOfMonomeChannels; iMonome++) {
-        lClearMessage = "/mMC" + iMonome + "/clear";
-        outlet(0, lClearMessage);
+    for (iMonome = 0, lLength = gFocusArray.length;iMonome < lLength; iMonome++) {
+        
+        if (gFocusArray[iMonome]) {
+            lClearMessage = "/gs.tile-" + (iMonome + 1) + "/clear";
+            outlet((iMonome + 1), lClearMessage);
+        }
     }
 }
 
@@ -433,7 +390,7 @@ function findApp(aAppName, aChannelNumber, aKeyOne, aKeyTwo) {
 function freebang() {
     
     gNumberOfMonomeChannels = 0;
-    sendNumberOfMonomes();
+    sendMonomeFocusStatus();
     
     gGsTileGlobal.appList = null;
     gGsTileGlobal.toRouter = null;
