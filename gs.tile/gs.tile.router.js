@@ -99,11 +99,8 @@ function initialize() {
 }
 
 function focus(aState) {
-
-    gFocusArray[inlet - 1] = aState;
-    
-    gNumberOfMonomeChannels = gFocusArray[0] + gFocusArray[1] + gFocusArray[2] + gFocusArray[3];
-
+    gFocusArray[inlet - 1] = aState; 
+    sendMonomeFocusStatus();
 }
 
 function sendMonomeFocusStatus() {
@@ -226,7 +223,7 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
 
         if (gDebugItem.frequentList) { post("lMonomeNumber:", lMonomeNumber, "\n"); }
 
-        if (lMonomeNumber != 0) {
+        if ((lMonomeNumber != 0) && (gFocusArray[lMonomeNumber - 1] == 1)) {
             outlet(lMonomeNumber, "/gs.tile-" + lMonomeNumber + "/grid/led/set", lColumnValueAfterOffset, lRowValueAfterOffset, aState);
         }
 
