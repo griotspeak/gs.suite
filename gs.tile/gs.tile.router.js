@@ -224,10 +224,10 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
         lColumnValueAfterOffset = aCol + lAppEntry.displayColumnOffset;
         lRowValueAfterOffset = aRow + lAppEntry.displayRowOffset;
 
-        if (gDebugItem.frequentList) { post("properOutlet:", lProperOutlet, "\n"); }
+        if (gDebugItem.frequentList) { post("lMonomeNumber:", lMonomeNumber, "\n"); }
 
         if (lMonomeNumber != 0) {
-            outlet(lMonomeNumber, "/gs.tile-" + lProperOutlet + "/led", lColumnValueAfterOffset, lRowValueAfterOffset, aState);
+            outlet(lMonomeNumber, "/gs.tile-" + lMonomeNumber + "/grid/led/set", lColumnValueAfterOffset, lRowValueAfterOffset, aState);
         }
 
         if (gDebugItem.frequentList) { post("col:", lColumnValueAfterOffset, "row:", lRowValueAfterOffset, "\n"); }

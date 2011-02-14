@@ -13,7 +13,7 @@
 					<key>filename</key>
 					<string>../gs.tile/gs.tile.router.js</string>
 					<key>lastUsed</key>
-					<date>2011-02-14T05:37:52Z</date>
+					<date>2011-02-14T14:37:37Z</date>
 					<key>selected</key>
 					<true/>
 				</dict>
@@ -170,30 +170,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>43</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>281</integer>
+				<integer>230</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>255</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>32</integer>
-				<key>line</key>
-				<integer>281</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>43</integer>
-				<key>line</key>
-				<integer>281</integer>
-			</dict>
+			<integer>189</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
