@@ -648,7 +648,7 @@ function initialize() {
 }
 
 function setClipFromGlobal(aTrack, aScene) {
-    if (!gDebugItem.getSetName) { post("    ---setClipFromGlobal-\n"); }
+    if (gDebugItem.getSetName) { post("    ---setClipFromGlobal-\n"); }
     post("aTrack:", aTrack, "aScene:", aScene, "\n");
     
     var index = getIndexOfTrack(aTrack);

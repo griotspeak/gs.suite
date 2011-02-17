@@ -226,7 +226,17 @@ gParameters.randomKeyTwo = {
     preListeners : [],
     postListeners: []
 };
-
+gParameters.ignoreKeys = {
+    name : "ignoreKeys",
+    type : "toggle",
+    format : "set",
+    value : false,
+    minValue : 0,
+    maxValue : 1,
+    saveInPattr : true,
+    preListeners : [],
+    postListeners: ["updateAppWindowDetails"]
+};
 gParameters.patchString = "GsTileClient";
 
 function initialize() {
@@ -316,7 +326,8 @@ function updateAppWindowDetails() {
             gParameters.windowHeight.value,
             gParameters.displayColumnOffset.value,
             gParameters.displayRowOffset.value,
-            gParameters.appMonomeLayer.value);
+            gParameters.appMonomeLayer.value,
+            gParameters.ignoreKeys.value);
     }
 }
 
@@ -337,7 +348,6 @@ function dropFocus(aMonomeNumber) {
 
 function monomeChannelFocus(aMonome1Status, aMonome2Status, aMonome3Status, aMonome4Status) {
     var aArray = [aMonome1Status, aMonome2Status, aMonome3Status, aMonome4Status];
-    post("aArray im monomeChannelFocus", aArray, "\n");
     
     var iCounter;
     for (iCounter = 0; iCounter < 4; iCounter++) {
@@ -414,6 +424,14 @@ function setAppMonomeLayer(aValue) {
     });
 }
 
+function setIgnoreKeys(aValue) {
+    if (gDebugItem.functionName) { post("    --setIgnoreKeys--\n"); }
+    gParameters.set({
+        key : "ignoreKeys",
+        value : aValue
+    });
+}
+
 
 function incrementDisplayColumnOffset() {
     if (gDebugItem.functionName) { post("    --incrementDisplayColumnOffset--\n"); }
@@ -473,7 +491,8 @@ function alertRouterOfNewClient() {
             gParameters.windowHeight.value,
             gParameters.displayColumnOffset.value,
             gParameters.displayRowOffset.value,
-            gParameters.appMonomeLayer.value);
+            gParameters.appMonomeLayer.value,
+            gParameters.ignoreKeys.value);
     }
 }
 

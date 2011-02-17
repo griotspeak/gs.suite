@@ -64,6 +64,7 @@ var gDebugItem = {
         frequentFunctionName : false,
         frequentFunctionName : false,
         list : false,
+        functionArguments : false,
         startValue : false
 };
 var gFocusArray = [0, 0, 0, 0];
@@ -114,7 +115,7 @@ function incomingMessages() {
     if (gDebugItem.functionName) { post("    ---incomingMessages-\n"); }
 }
 
-function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMonomeNumber, aWidth, aHeight, aDisplayColumnOffset, aDisplayRowOffset, aDisplayLayer) {
+function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMonomeNumber, aWidth, aHeight, aDisplayColumnOffset, aDisplayRowOffset, aDisplayLayer, aIgnoreKeys) {
     var lAppEntry,
         iCounter,
         lListLength,
@@ -140,7 +141,8 @@ function processNewClientNotification(aAppName, aKey1, aKey2, aOrderNumber, aMon
         windowHeight : aHeight,
         displayColumnOffset : aDisplayColumnOffset,
         displayRowOffset : aDisplayRowOffset,
-        displayLayer : aDisplayLayer 
+        displayLayer : aDisplayLayer,
+        ignoreKeys : aIgnoreKeys
     };
     
     //first check for name of app
@@ -234,7 +236,7 @@ function processLed(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aCol
     }
 }
 
-function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aWidth, aHeight, aColOffset, aRowOffset, aDisplayLayer) {
+function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonomeNumber, aWidth, aHeight, aColOffset, aRowOffset, aDisplayLayer, aIgnoreKeys) {
     var lAppIndex = findApp(aAppName, aAppChannel, aKeyOne, aKeyTwo);
 
 
@@ -263,6 +265,9 @@ function updateWindowDimensions(aAppName, aAppChannel, aKeyOne, aKeyTwo, aMonome
 
         if (gDebugItem.list) { post("updating displayLayer to:", aDisplayLayer, "\n"); }
         gGsTileGlobal.appList[lAppIndex].displayLayer = aDisplayLayer; //!!
+        
+        if (gDebugItem.list) { post("updating ignoreKeys to:", aIgnoreKeys, "\n"); }
+        gGsTileGlobal.appList[lAppIndex].ignoreKeys = aIgnoreKeys; //!!
     }
     
     clearMonomes();
@@ -431,8 +436,10 @@ function sendPressToWindows(element, index, array) {
 
     // check which monome sent and if the message is for us
     
-    if (gDebugItem.endValue) { post("inlet:", aInlet, "Monome of this app:", element.monomeNumber, "\n"); }
-    if (element.monomeNumber === aInlet) {
+    if (gDebugItem.functionArguments) { post("inlet:", aInlet, "Monome of this app:", element.monomeNumber, "\n"); }
+    if (gDebugItem.functionArguments) { post("ignoreKeys of this app:", element.ignoreKeys, "\n"); }
+
+    if ((element.monomeNumber === aInlet) && (element.ignoreKeys !== 1)) {
         
         //!! columnOffset
         lLeftEdgeOfWindow = element.displayColumnOffset - 1; 
